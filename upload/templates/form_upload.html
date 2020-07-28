@@ -1,0 +1,54 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+
+  {% include "include_head.html" %}
+  <body>
+    <!-- Navigation -->
+    {% include "include_menus.html" %}
+    <!-- Page Content -->
+    <div class="container-fluid">
+      <!-- Page Features -->
+      <section class="page-section cta">
+        <div class="row text-center">
+          <div class="container">
+            <h5 class="display-3">Formulaire d'upload</h5>
+            <p class="lead">Il vous est demander de renseigner tous les champs disponible</p>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row text-center">
+            <div class="col-xl-9 mx-auto">
+              <div class="cta-inner text-center rounded">
+                <form action="" method="post" class="was-validated login100-form validate-form">
+                  <div class="wrap-input100 validate-input m-b-26">
+                    <ul>
+                      {% csrf_token %}
+                      {% bootstrap_form form layout='horizontal' %} 
+                    </ul>
+                  </div>
+                  {% buttons %}
+                    <button type="submit" class="btn btn-primary" name="login">Valider</button>
+                  {% endbuttons %}
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; ICAN 2020</p>
+      </div>
+    </footer>
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </body>
+
+</html>
