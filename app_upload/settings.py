@@ -127,5 +127,6 @@ STATICFILES_DIRS = (
 )
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 DATABASES['default'] = dj_database_url.config(conn_max_age=500)
 django_heroku.settings(locals())
