@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from .forms import LogIn, FormUpload
+from .models import Protocoles, UtilisateurProtocole
 
 # Create your views here.
 
@@ -15,16 +16,32 @@ def index(request):
 	    return render(request,
                   'index.html')
 
+@login_required(login_url="/upload/auth_in/")
+def contact(request):
 
+	    return render(request,
+                  'contact.html')
+
+@login_required(login_url="/upload/auth_in/")
 def formulaire(request):
+	user_current = request.user
+	liste_protocole = [("0", "Vos protocoles")]
+	x = 0
 
 	if request.method == 'POST':
 		form = FormUpload(request.POST)
 
 	else:
 		form = FormUpload()
-		form.fields['protocoles'].choices = [('1',"Protocoles de l'utilisateur")]
-		form.fields['protocoles'].initial = [1]
+		request_utilisateur_protocole = UtilisateurProtocole.objects.filter(user__exact=user_current.id)
+
+		for util_pro in request_utilisateur_protocole:
+			x += 1
+			collapse = (str(x),str(util_pro.protocole))
+			liste_protocole.append(collapse)
+
+		form.fields['protocoles'].choices = liste_protocole
+		form.fields['protocoles'].initial = [0]
 
 	return render(request, 'form_upload.html', {'form': form})
 

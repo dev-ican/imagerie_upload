@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Login V15</title>
+	<title>Upload ICAN</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -37,15 +37,13 @@
 			<div class="wrap-login100">
 				<div class="login100-form-title" style="background-image: url({% static 'images/bg-02.jpg' %});">
 					<span class="login100-form-title-1">
-						Sign In
-					</span>
-					        {% if messages %}
-			        <ul class="messages">
-			            {% for message in messages %}
-			            <il {% if message.tags %} class="{{ message.tags }}" {% endif %}><h2><p id="information" class="text-white-75 font-weight-light">{{ message }}</p></h2></il>
-			            {% endfor %}
-			        </ul>
-			        {% endif %}
+						Authentification
+						{% if messages %}
+			            	{% for message in messages %}
+			            		<p class="text-warning">{{ message }}</p>
+			            	{% endfor %}
+			        	{% endif %}
+			       </span>
 				</div>
 
 				<form action="" method="post" class="was-validated login100-form validate-form">

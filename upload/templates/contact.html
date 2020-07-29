@@ -1,0 +1,76 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+
+  {% include "include_head.html" %}
+  <body>
+    <!-- Navigation -->
+    {% include "include_menus.html" %}
+    <!-- Page Content -->
+    <div class="container-fluid">
+      <!-- Page Features -->
+      <section class="page-section cta">
+        <div class="row text-center">
+          <div class="container">
+            <h5 class="display-3">Contacts</h5>
+          </div>
+        </div>
+        <div class="container">
+          <div class="row text-center">
+            <div class="col-xl-9 mx-auto">
+              <div class="cta-inner text-center rounded">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Prénom</th>
+                      <th scope="col">Nom</th>
+                      <th scope="col">Courriel</th>
+                      <th scope="col">Téléphone</th>
+                      <th scope="col">Poste</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Prénom1</td>
+                      <td>Nom1</td>
+                      <td>test@test.com</td>
+                      <td>0650....</td>
+                      <td>Médecin</td>
+                    </tr>
+                    <tr>
+                      <td>Prénom2</td>
+                      <td>Nom2</td>
+                      <td>test@test.com</td>
+                      <td>0650....</td>
+                      <td>Responsable service</td>
+                    </tr>
+                    <tr>
+                      <td>Prénom3</td>
+                      <td>Nom3</td>
+                      <td>test@test.com</td>
+                      <td>0650....</td>
+                      <td>RH</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; ICAN 2020</p>
+      </div>
+    </footer>
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </body>
+
+</html>
