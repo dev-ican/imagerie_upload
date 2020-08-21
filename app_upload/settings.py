@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '3@bx3hwi)0=4rzp@_h5kq02!8bd9&)-b^#0g81xghe@+tjlzy7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['ican-upload.herokuapp.com']
+ALLOWED_HOSTS = ['ican-upload.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['ican-upload.herokuapp.com']
 INSTALLED_APPS = [
     'bootstrap4',
     'upload.apps.UploadConfig',
+    'auth_app.apps.AuthAppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

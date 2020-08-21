@@ -5,15 +5,69 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-class Protocoles(models.Model):
+def user_directory_path(instance, filename):
+    # faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
+    return '{0}/'.format(instance.user.centre)
+
+
+class SuiviUpload(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    etude = models.ForeignKey("JonctionUtilisateurEtude", on_delete=models.CASCADE)
+    id_patient = models.CharField(max_length=5000)
+    date_upload = models.DateTimeField("Date d'envois")
+    date_examen = models.DateTimeField("Date examen")
+    controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE)
+    fichiers = models.FileField(upload_to=user_directory_path, null=True)
+
+    def __str__(self):
+        return self.nom
+
+class JonctionUtilisateurEtude(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    etude = models.ForeignKey('RefEtudes', on_delete=models.CASCADE)
+    date_autorisation = models.DateTimeField("Date d'autorisation")
+
+    def __str__(self):
+        return self.nom
+
+class RefControleQualite(models.Model):
+    '''Création du modèle de base de donnée pour les protocoles'''
+    nom = models.CharField(max_length=5000)
+
+    def __str__(self):
+    	return self.nom
+
+class RefEtudes(models.Model):
     nom = models.CharField(max_length=5000)
     date_ouverture = models.DateTimeField("Date d'ouverture")
 
     def __str__(self):
         return self.nom
 
-class UtilisateurProtocole(models.Model):
-    '''Création du modèle de base de donnée pour les protocoles'''
+class RefInfocentre(models.Model):
+    nom = models.CharField(max_length=5000)
+    numero = models.FloatField()
+    date_ajout = models.DateTimeField("Date d'ajout")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    protocole = models.ForeignKey('Protocoles', on_delete=models.CASCADE)
-    date_ajout = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nom
+
+class RefEtapeEtude(models.Model):
+    nom = models.CharField(max_length=5000)
+    etude = models.ForeignKey("RefEtudes", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.nom
+
+class RefEtatEtape(models.Model):
+    nom = models.CharField(max_length=5000)
+
+    def __str__(self):
+        return self.nom
+
+class JonctionEtapeSuivi(models.Model):
+	upload = models.ForeignKey("SuiviUpload", on_delete=models.CASCADE)
+	etape = models.ForeignKey("RefEtapeEtude", on_delete=models.CASCADE)
+	etat = models.ForeignKey("RefEtatEtape", on_delete=models.CASCADE)
+	date = models.DateTimeField("Date de l'étape")

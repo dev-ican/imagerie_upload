@@ -3,8 +3,7 @@ from django.core.validators import *
 from django.http import *
 
 from .models import *
-
-
+    
 class LogIn(forms.Form):
     log_id = forms.CharField(label='Identifiant', max_length=100)
     pwd = forms.CharField(
@@ -12,9 +11,11 @@ class LogIn(forms.Form):
         widget=forms.PasswordInput(),
         max_length=100)
 
-class FormUpload(forms.Form):
-    info = forms.CharField(label='Info', max_length=100)
-    infoB = forms.CharField(label='Info', max_length=100)
-    infoT = forms.CharField(label='Info', max_length=100)
-    protocoles = forms.ChoiceField(widget=forms.Select(), choices=(
-        ['liste de vos protocoles']), initial='0', required=True,)
+class UploadForm(forms.Form):
+    nip = forms.CharField(label='Numéro patient', max_length=100)
+    etudes = forms.ChoiceField(widget=forms.Select(), choices=(['liste de vos études']), initial='0', required=True,)
+    date_irm = forms.CharField(label="Date de l'examen", max_length=100)
+    upload = forms.FileField()
+
+
+
