@@ -1,6 +1,7 @@
 from django import forms
 from django.core.validators import *
 from django.http import *
+from datetime import date
 
 from .models import *
     
@@ -14,7 +15,7 @@ class LogIn(forms.Form):
 class UploadForm(forms.Form):
     nip = forms.CharField(label='Numéro patient', max_length=100)
     etudes = forms.ChoiceField(widget=forms.Select(), choices=(['liste de vos études']), initial='0', required=True,)
-    date_irm = forms.CharField(label="Date de l'examen", max_length=100)
+    date_irm = forms.DateField()
     upload = forms.FileField()
 
 

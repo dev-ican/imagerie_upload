@@ -1,0 +1,39 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+
+  {% include "include_head.html" %}
+  <body>
+    {% include "include_menus.html" %}
+      <div class="row justify-content-center">
+        {% include "include_menus_admin.html" %}
+        <section class="col-sm-offset-2 col-lg-10">
+          Section
+          <div class="row">
+            <article class="col-lg-4">
+              {% block section_one %}
+              {% endblock %}
+            </article>
+            <article class="col-lg-8">
+              {% block section_two %}
+              {% endblock %}
+            </article>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; ICAN 2020</p>
+      </div>
+    </footer>
+    <!-- Bootstrap core JavaScript -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </body>
+
+</html>

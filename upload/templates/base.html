@@ -1,0 +1,33 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+{% include "include_head.html" %}
+  <body>
+    <!-- Navigation -->
+    {% include "include_menus.html" %}
+    <!-- Page Content -->
+    <div class="container">
+      <!-- Jumbotron Header -->
+        {% block cadre_master %}
+        {% endblock %}
+      <div class="row text-center">
+        <div class="col-lg-3 col-md-6 mb-4">
+          {% block cadre_news %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+    <footer class="py-5 bg-dark">
+      <div class="container">
+        {% block cadre_footer %}
+        {% endblock %}
+      </div>
+    </footer>
+    <!-- Bootstrap core JavaScript -->
+    <script src="../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  </body>
+</html>

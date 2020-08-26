@@ -45,3 +45,5 @@ def formulaire(request):
 
 	return render(request, 'form_upload.html', {'form': form})
 
+
+

@@ -1,0 +1,22 @@
+{% load static %}
+{% load bootstrap4 %}
+
+<nav class="navbar bg-secondary justify-content-center">
+  <ul class="navbar-nav text-dark">
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'admin_etude' %}">Ajouter des études</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="{% url 'admin_etape' %}">Création des étapes</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Ajouter un utilisateur</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Ajouter un centre</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="#">Autorisation des utilisateurs</a>
+    </li>
+  </ul>
+</nav>

@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'upload.apps.UploadConfig',
     'auth_app.apps.AuthAppConfig',
+    'admin_page.apps.AdminPageConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
