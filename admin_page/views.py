@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre
 
 # Create your views here.
 @login_required(login_url="/auth/auth_in/")
@@ -91,3 +91,20 @@ def etapeEdit(request, id_etape):
 	etape_tab = RefEtapeEtude.objects.all()
 	return render(request,
 		'admin_etapes_edit.html',{"form":form, 'resultat':etape_tab})
+
+@login_required(login_url="/auth/auth_in/")
+def adminuser(request):
+	liste_protocole = []
+	if request.method == 'POST':
+		nom = request.POST['nom']
+		etude = request.POST['etude']
+
+		RefEtapeEtude.objects.create(nom=nom, etude=etude)
+
+	form = FormsUser()
+	request_etude = RefEtudes.objects.all()
+
+
+	user_tab = RefInfocentre.objects.filter(user__id__gt=0)
+	return render(request,
+		'admin_user.html',{"form":form, 'resultat':user_tab})
