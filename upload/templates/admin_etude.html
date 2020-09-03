@@ -2,7 +2,7 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_one %}
-<h4><p class="text-white-75 font-weight-light mb-5">Ajouter une étude à votre base de donnée</p></h4>
+<h4><p class="text-white-75 font-weight-light mb-5">Ajouter une étude</p></h4>
 <form action="" method="post" class="was-validated border border-primary bg-light mb-2 justify-content-center">
   <div class="form-group">
       {% csrf_token %}
@@ -15,11 +15,17 @@
 {% endblock %}
 {% block section_two %}
 <h4><p class="text-white-75 font-weight-light mb-5">Vos études actuellement enregistrées</p></h4>
+{% if messages %}
+        {% for message in messages %}
+          <p class="text-warning">{{ message }}</p>
+        {% endfor %}
+{% endif %}
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
       <th scope="col">Nom de l'étude</th>
       <th scope="col">Date d'entrée</th>
+      <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -27,6 +33,7 @@
       <tr>
         <td>{{ item.nom }}</td>
         <td>{{ item.date_ouverture }}</td>
+        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/etudes/edit/{{item.id}}/">EDITER</a><div id="supprEtude" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
       </tr>
     {% endfor %}
   </tbody>

@@ -18,20 +18,20 @@
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
-      <th scope="col">Identifiant</th>
-      <th scope="col">Courriel</th>
+      <th scope="col">Nom du centre</th>
+      <th scope="col">Numéro du centre</th>
+      <th scope="col">Date d'ajout</th>
       <th scope="col">Actions</th>
     </tr>
   </thead>
   <tbody>
     {% for item in resultat %}
-    {% if not item.is_superuser %}
       <tr>
-        <td>{{ item.username }}</td>
-        <td>{{ item.email }}</td>
-        <td><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/viewUser/edit/{{item.id}}/">EDITER</a></td>
+        <td>{{ item.nom }}</td>
+        <td>{{ item.numero }}</td>
+        <td>{{ item.date_ajout }}</td>
+        <td><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/centre/edit/{{item.id}}/">EDITER</a></td>
       </tr>
-      {% endif %}
     {% endfor %}
   </tbody>
 </table>

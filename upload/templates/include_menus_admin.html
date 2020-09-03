@@ -1,22 +1,25 @@
 {% load static %}
 {% load bootstrap4 %}
 
-<nav class="navbar bg-secondary justify-content-center">
-  <ul class="navbar-nav text-dark">
+<nav class="nav bg-secondary">
+  <ul class="navbar-nav flex-column text-dark m-2">
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'admin_etude' %}">Ajouter des études</a>
+      <a class="nav-link text-warning" href="{% url 'admin' %}">Tableau récapitulatif</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'admin_etape' %}">Création des étapes</a>
+      <a class="nav-link text-warning" href="{% url 'admin_etude' %}">Ajouter des études</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Ajouter un centre</a>
+      <a class="nav-link text-warning" href="{% url 'admin_etape' %}">Création des étapes</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="#">Autorisation des utilisateurs</a>
+      <a class="nav-link text-warning" href="{% url 'admin_centre' %}">Ajouter un centre</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="{% url 'admin_utilisateur' %}">Ajouter un utilisateur</a>
+      <a class="nav-link text-warning" href="{% url 'admin_autorisation' %}">Autorisation des utilisateurs</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-warning" href="{% url 'admin_utilisateur' %}">Ajouter un utilisateur</a>
     </li>
   </ul>
 </nav>

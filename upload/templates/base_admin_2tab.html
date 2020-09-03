@@ -4,37 +4,53 @@
 <html lang="en">
 
   {% include "include_head.html" %}
-  <body id="ajax">
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
     {% include "include_menus.html" %}
+        </div>
+      </div>
       <div class="row justify-content-center">
+        <div class="col-2">
         {% include "include_menus_admin.html" %}
-        <section class="col-offset-2 col-lg-10 col-md-8 col-sm-6">
+        </div>
+        <section class="col-10">
           Section
           <div class="row">
-            <article class="col-lg-4">
+            <article class="col-3">
               {% block section_one %}
               {% endblock %}
             </article>
-            <article class="col-lg-8">
-              {% block section_two %}
-              {% endblock %}
-            </article>
+            <div class="col-9">
+              <div class="row">
+                <div class="col-12">
+                  {% block aside_1 %}
+                  {% endblock %}
+                </div>
+                <div class="col-12">
+                  {% block aside_2 %}
+                  {% endblock %}
+                </div>
+              </div>
+              </div>
           </div>
         </section>
       </div>
-    </div>
 
     <footer class="py-5 bg-dark">
       <div class="container">
         <p class="m-0 text-center text-white">Copyright &copy; ICAN 2020</p>
       </div>
     </footer>
+    </div>
     <!-- Bootstrap core JavaScript -->
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="{% static 'js/custom_script.js' %}"></script>
+
   </body>
 
 </html>
