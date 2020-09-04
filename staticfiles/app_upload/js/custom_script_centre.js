@@ -1,5 +1,5 @@
-$('#supprEtape a[role="button"]').click(function(event) {
-	var url_etude = "/admin_page/etapes/delete/"
+$('#supprCentre a[role="button"]').click(function(event) {
+	var url_etude = "/admin_page/centres/delete/"
 	var id_etude = $(this).attr('value');
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
@@ -34,10 +34,10 @@ $('#supprEtape a[role="button"]').click(function(event) {
 	
 });
 
-$('#msgEtape').change(function(event) {
+$('#message').change(function(event) {
 	x = setTimeout(effaceinfo, 2000);
 });
 
 function effaceinfo() {
-	$('#msgEtape').text("");
+	$('#message').text("");
 }

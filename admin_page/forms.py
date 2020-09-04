@@ -31,8 +31,8 @@ class FormsUser(forms.Form):
 		max_length=200,
 		validators=[
 			EmailValidator()])
-	nom = forms.CharField(label="Nom du Centre", max_length=100)
-	numero = forms.IntegerField(label="Numero du Centre")
+	nom = forms.CharField(label="Nom du Centre", max_length=100, required=False)
+	numero = forms.IntegerField(label="Numero du Centre", required=False)
 	pass_first = forms.CharField(label='Mot de passe',widget=forms.PasswordInput,max_length=100,validators=[RegexValidator(regex="([a-zA-Z]){4,12}([0-9]){2,12}",message="Mot de passe invalide")])
 	pass_second = forms.CharField(label='Répéter le mot de passe',widget=forms.PasswordInput,max_length=100,validators=[RegexValidator(regex="([a-zA-Z]){4,12}([0-9]){2,12}",message="Mot de passe invalide")])
 

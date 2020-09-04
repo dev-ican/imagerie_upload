@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from datetime import date, time, datetime
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload
 
 # Create your views here.
 @login_required(login_url="/auth/auth_in/")
@@ -212,6 +212,13 @@ def etapeDel(request, id_etape):
 	context = {"form":form, 'resultat':etape_tab, 'message':message}
 	return render(request,'admin_etapes.html', context)
 
+
+# Gère la partie Admin Utilisateur
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+
+
 @login_required(login_url="/auth/auth_in/")
 def adminuser(request):
 	liste_protocole = []
@@ -285,6 +292,57 @@ def userEdit(request, id_etape):
 	return render(request,
 		'admin_user_edit.html',{"form":form, 'resultat':user_tab, 'select':int(id_etape)})
 
+@login_required(login_url="/auth/auth_in/")
+def userDel(request, id_etape):
+	liste_protocole = []
+	x = 0
+
+	if request.method == 'POST':
+		suppr = True
+
+		info_suivi = User.objects.get(id__exact=id_etape)
+		info_upload =  SuiviUpload.objects.filter(user__id__exact=info_suivi.id)
+
+		if info_upload.exists():
+			for nbr in info_upload:
+				x += 1
+			suppr = False
+
+		if suppr == True:
+
+			exist_jonction = JonctionUtilisateurEtude.objects.filter(user__id__exact=info_suivi.id)
+			if exist_jonction.exists():
+				JonctionUtilisateurEtude.objects.get(user__exact=info_suivi).delete()
+
+			User.objects.get(id__exact=id_etape).delete()
+			message = messages.add_message(
+		        request,
+		        messages.WARNING,
+		        "Suppression Faite")
+
+		else:
+			if x == 0 :
+				terme = "suivi"
+			else:
+				terme = "suivis"
+			message = messages.add_message(
+		        request,
+		        messages.WARNING,
+		        "Suppression annulée, cette étape est liée à : " + str(x) + terme)
+
+
+	form = FormsUser()
+	user_tab = User.objects.all().order_by('username')
+
+	context = {"form":form, 'resultat':user_tab, 'message':message}
+	return render(request,'admin_user.html', context)
+
+
+# Gère la partie Admin Centres
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+
 
 @login_required(login_url="/auth/auth_in/")
 def admincentre(request):
@@ -332,6 +390,46 @@ def centreEdit(request, id_etape):
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
 		'admin_centre_edit.html',{"form":form, 'resultat':centre_tab, 'select':int(id_etape)})
+
+@login_required(login_url="/auth/auth_in/")
+def centreDel(request, id_etape):
+	liste_protocole = []
+	x = 0
+
+	if request.method == 'POST':
+		suppr = True
+
+		info_centre = RefInfocentre.objects.get(id__exact=id_etape)
+		info_user = User.objects.filter(refinfocentre__id__exact=info_centre.id)
+
+		if info_user.exists():
+			for item in info_user:
+				info_suivi = SuiviUpload.objects.filter(user__exact=item.id)
+		
+				if info_suivi.exists():
+					for nbr in info_suivi:
+						x += 1
+					suppr = False
+
+		if suppr == True:
+
+			RefInfocentre.objects.get(id__exact=id_etape).delete()
+
+			message = messages.add_message(
+		        request,
+		        messages.WARNING,
+		        "Suppression Faite")
+		else:
+			message = messages.add_message(
+		        request,
+		        messages.WARNING,
+		        "Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
+
+	form = FormCentre()
+
+	centre_tab = RefInfocentre.objects.all().order_by('nom')
+	context = {"form":form, 'resultat':centre_tab, 'message':message}
+	return render(request,'admin_centre.html', context)
 
 @login_required(login_url="/auth/auth_in/")
 def adminauth(request):
