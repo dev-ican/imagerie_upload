@@ -17,7 +17,7 @@
 <h4><p class="text-white-75 font-weight-light mb-5">Vos études actuellement enregistrées</p></h4>
 {% if messages %}
         {% for message in messages %}
-          <p class="text-warning">{{ message }}</p>
+          <p class="text-warning" id="message">{{ message }}</p>
         {% endfor %}
 {% endif %}
 <table class="table table-info table-responsive-sm table-hover">

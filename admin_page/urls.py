@@ -13,6 +13,7 @@ urlpatterns = [
 	re_path(r'^etudes/delete/([0-9]+)/',views.etudeDel, name='etude_suppr'),	
 	path('etapes/', views.adminetape, name='admin_etape'),
 	re_path(r'^etapes/edit/([0-9]+)/',views.etapeEdit, name='etape_edit'),
+	re_path(r'^etapes/delete/([0-9]+)/',views.etapeDel, name='etape_suppr'),
 	path('viewUser/', views.adminuser, name='admin_utilisateur'),
 	re_path(r'^viewUser/edit/([0-9]+)/',views.userEdit, name='user_edit'),
 	path('centre/', views.admincentre, name='admin_centre'),

@@ -1,6 +1,5 @@
-
-$('#supprEtude a[role="button"]').click(function(event) {
-	var url_etude = "/admin_page/etudes/delete/"
+$('#supprEtape a[role="button"]').click(function(event) {
+	var url_etude = "/admin_page/etapes/delete/"
 	var id_etude = $(this).attr('value');
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
@@ -30,7 +29,15 @@ $('#supprEtude a[role="button"]').click(function(event) {
 			$('#ajax').html(response);}
 	})
 	} else {
-		  window.alert("La suppréssion est annulé");
+		  window.alert("La suppréssion est annulée");
 		}
 	
 });
+
+$('#message').change(function(event) {
+	x = setTimeout(effaceinfo, 2000);
+});
+
+function effaceinfo() {
+	$('#message').text("");
+}

@@ -75,7 +75,7 @@ def etudeDel(request, id_etape):
 	x = 0
 
 	if request.method == 'POST':
-		info_etape = RefEtapeEtude.objects.filter(id__exact=id_etape)
+		info_etape = RefEtapeEtude.objects.filter(etude__id__exact=id_etape)
 
 		if info_etape.exists():
 			for item in info_etape:
@@ -126,12 +126,10 @@ def adminetape(request):
 	form = FormsEtape()
 	request_etude = RefEtudes.objects.all()
 
-	for util_pro in enumerate(request_etude):
-
-		collapse = (util_pro[1].id,util_pro[1].nom)
-		liste_protocole.append(collapse)
+	liste_protocole = choiceEtude(True)
 
 	form.fields['etudes'].choices = liste_protocole
+	form.fields['etudes'].initial = [0]
 
 	etape_tab = RefEtapeEtude.objects.all()
 	return render(request,
@@ -164,19 +162,55 @@ def etapeEdit(request, id_etape):
 		form = FormsEtape()
 		request_etude = RefEtudes.objects.all()
 
-		for util_pro in enumerate(request_etude):
+		liste_protocole = choiceEtude(False)
 
-			collapse = util_pro
-			liste_protocole.append(collapse)
-
-		field_choice = id_etude.id - 1
 		form.fields['etudes'].choices = liste_protocole
-		form.fields['etudes'].initial = [field_choice]
+		form.fields['etudes'].initial = [id_etude.id]
 		form.fields['nom'].initial = etape_filtre.nom
 
 	etape_tab = RefEtapeEtude.objects.all()
 	return render(request,
-		'admin_etapes_edit.html',{"form":form, 'resultat':etape_tab})
+		'admin_etapes_edit.html',{"form":form, 'resultat':etape_tab, 'select':int(id_etape)})
+
+@login_required(login_url="/auth/auth_in/")
+def etapeDel(request, id_etape):
+	liste_protocole = []
+	x = 0
+
+	if request.method == 'POST':
+		suppr = True
+
+		info_suivi = JonctionEtapeSuivi.objects.filter(etape__id__exact=id_etape)
+		if info_suivi.exists():
+			for nbr in info_suivi:
+				x += 1
+			suppr = False
+
+		if suppr == True:
+
+			RefEtapeEtude.objects.get(id__exact=id_etape).delete()
+
+			message = messages.add_message(
+		        request,
+		        messages.WARNING,
+		        "Suppression Faite")
+
+		else:
+			message = messages.add_message(
+		        request,
+		        messages.WARNING,
+		        "Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
+
+
+	form = FormsEtape()
+
+	liste_protocole = choiceEtude(True)
+	form.fields['etudes'].choices = liste_protocole
+	form.fields['etudes'].initial = [0]
+
+	etape_tab = RefEtapeEtude.objects.all()
+	context = {"form":form, 'resultat':etape_tab, 'message':message}
+	return render(request,'admin_etapes.html', context)
 
 @login_required(login_url="/auth/auth_in/")
 def adminuser(request):
@@ -249,7 +283,7 @@ def userEdit(request, id_etape):
 	user_tab = User.objects.all().order_by('username')
 
 	return render(request,
-		'admin_user_edit.html',{"form":form, 'resultat':user_tab})
+		'admin_user_edit.html',{"form":form, 'resultat':user_tab, 'select':int(id_etape)})
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -338,8 +372,8 @@ def authEdit(request, id_etape):
 			print("ne prend pas en compte")
 
 
-	liste_etude = choiceEtude()
-	liste_centre = choiceCentre()
+	liste_etude = choiceEtude(True)
+	liste_centre = choiceCentre(True)
 
 	form = FormsAutorisation()
 
@@ -381,7 +415,7 @@ def take_data(etude,centre):
 
 	return list_response
 
-def choiceEtude():
+def choiceEtude(val_zero):
 	liste_etude = []
 	request_etude = RefEtudes.objects.all()
 
@@ -389,11 +423,12 @@ def choiceEtude():
 		collapse = (util_pro[1].id,util_pro[1].nom)
 		liste_etude.append(collapse)
 
-	liste_etude.append((0,""))
+	if val_zero == True:
+		liste_etude.append((0,"Séléctionner une étude"))
 
 	return liste_etude
 
-def choiceCentre():
+def choiceCentre(val_zero):
 	liste_centre = []
 	request_centre = RefInfocentre.objects.all().order_by('nom')
 
@@ -401,7 +436,8 @@ def choiceCentre():
 		collapse = (util_pro[1].id,util_pro[1].nom)
 		liste_centre.append(collapse)
 
-	liste_centre.append((0,""))
+	if val_zero == True:
+		liste_centre.append((0,"Sélectionner un centre"))
 	return liste_centre
 
 
