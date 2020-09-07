@@ -130,24 +130,24 @@ class Command(BaseCommand):
             info = RefInfocentre.objects.create(
                 nom="Nom_centre1",
                 numero="001",
-                date_ajout="2020-08-20",
-                user=test_user1)
+                date_ajout="2020-08-20")
             info.save()
+            info.user.add(test_user1)
 
             info = RefInfocentre.objects.create(
                 nom="Nom_centre3",
                 numero="003",
-                date_ajout="2020-08-20",
-                user=test_user2)
+                date_ajout="2020-08-20")
             info.save()
+            info.user.add(test_user2)
 
             info = RefInfocentre.objects.create(
                 nom="Nom_centre2",
                 numero="002",
-                date_ajout="2020-08-20",
-                user=test_user3)
+                date_ajout="2020-08-20")
             info.save()
-
+            nw_centre.user.add(test_user3)
+            
         #Renseigne les controles qualités
 
         if not RefControleQualite.objects.filter(pk=1).exists():
