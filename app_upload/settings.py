@@ -83,8 +83,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'icanupload',
-        'USER': 'icanuser',
-        'PASSWORD': 'ican+user*projet+upload/+',
+        'USER': 'postgres',
+        'PASSWORD': 'postgresql-mdp-all*', #'ican+user*projet+upload/+',
         'HOST': 'localhost',
         'PORT': '',
     }
