@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 from datetime import date, time, datetime
+from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
 from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload
@@ -144,8 +145,8 @@ def etapeEdit(request, id_etape):
 		nom = request.POST['nom']
 		etudes = request.POST['etudes']
 
-		nbr = int(etudes) + 1
-		ref_etude = RefEtudes.objects.get(id=nbr)
+		#nbr = int(etudes) + 1
+		ref_etude = RefEtudes.objects.get(id=etudes)
 
 		select_etape.nom = nom
 		select_etape.etude = ref_etude
@@ -452,10 +453,8 @@ def authEdit(request, id_etape):
 		etude = request.POST['etude']
 		centre = request.POST['centre']
 
-
 		user_centre = RefInfocentre.objects.filter(user__id__exact=id_etape).filter(id=centre)
 		user_etude = JonctionUtilisateurEtude.objects.filter(user__exact=id_etape).filter(etude__id__exact=etude)
-
 
 		if not user_etude.exists() and int(etude) > 0:
 			date_now = datetime.now()
@@ -486,56 +485,4 @@ def authEdit(request, id_etape):
 	#centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
 		'admin_auth_edit.html',{"form":form, 'etude':user_etude, 'centre':user_centre, 'user':user_info})
-
-def checkmdp(first, second):
-	check = False
-	if len(first) > 0 and len(second) > 0:
-		if first == second:
-			check = True
-
-	return check
-
-def take_data(etude,centre):
-
-	list_response = []
-	if etude != "EMPTY":
-		etude = int(etude) + 1
-		save_etude = RefEtudes.objects.get(pk=etude)
-		list_response.append(save_etude)
-	else:
-		list_response.append("null")
-
-	if centre != "EMPTY":
-		save_centre = RefInfocentre.objects.get(pk=centre)
-		list_response.append(save_centre)
-	else:
-		list_response.append("null")
-
-	return list_response
-
-def choiceEtude(val_zero):
-	liste_etude = []
-	request_etude = RefEtudes.objects.all()
-
-	for util_pro in enumerate(request_etude):
-		collapse = (util_pro[1].id,util_pro[1].nom)
-		liste_etude.append(collapse)
-
-	if val_zero == True:
-		liste_etude.append((0,"Séléctionner une étude"))
-
-	return liste_etude
-
-def choiceCentre(val_zero):
-	liste_centre = []
-	request_centre = RefInfocentre.objects.all().order_by('nom')
-
-	for util_pro in enumerate(request_centre):
-		collapse = (util_pro[1].id,util_pro[1].nom)
-		liste_centre.append(collapse)
-
-	if val_zero == True:
-		liste_centre.append((0,"Sélectionner un centre"))
-	return liste_centre
-
 

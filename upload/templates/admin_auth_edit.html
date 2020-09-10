@@ -2,7 +2,7 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_one %}
-<h4><p class="text-white-75 font-weight-light mb-5">Ajouter un nouveau utilisateur</p></h4>
+<h4><p class="text-white-75 font-weight-light mb-5">Ajouter des autorisations</p></h4>
 <div>
 <form action="" method="post" class="was-validated border border-primary bg-light mb-2 justify-content-center">
   <div class="form-group">
@@ -10,7 +10,7 @@
       {% bootstrap_form form form_group_class='form-group m-2' %}
   </div>
   {% buttons %}
-    <button type="submit" class="btn btn-primary d-flex m-3" name="login" href="/admin_page/etudes/edit/{{item.id}}/">Modifier</button>
+    <button type="submit" class="btn btn-primary d-flex m-3" name="login" href="/admin_page/userAuth/edit/{{user.id}}/">Modifier</button>
   {% endbuttons %}
   <a href="{% url 'admin_etude' %}">Fermer sans modification</a>
 </form>
