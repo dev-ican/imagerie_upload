@@ -21,7 +21,7 @@
           <div class="row text-center">
             <div class="col-xl-9 mx-auto">
               <div class="cta-inner text-center rounded">
-                <form action="" method="post" class="was-validated login100-form validate-form">
+                <form action="" method="post" class="was-validated login100-form validate-form" enctype="multipart/form-data">
                   <div class="wrap-input100 validate-input m-b-26">
                     <ul>
                       {% csrf_token %}
@@ -29,7 +29,7 @@
                     </ul>
                   </div>
                   {% buttons %}
-                    <button type="submit" class="btn btn-primary" name="login">Valider</button>
+                    <button type="submit" class="btn btn-primary" name="login" href="{% url 'formulaire' %}">Valider</button>
                   {% endbuttons %}
                 </form>
               </div>

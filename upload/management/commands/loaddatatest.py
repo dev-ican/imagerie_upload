@@ -10,10 +10,10 @@ class Command(BaseCommand):
      def handle(self, *args, **options):
 
         # Renseigner la base User
-        if User.objects.filter(pk=44).exists():
-            test_user1 = User.objects.get(pk=44)
-            test_user2 = User.objects.get(pk=45)
-            test_user3 = User.objects.get(pk=46)
+        if User.objects.filter(username__exact='user1').exists():
+            test_user1 = User.objects.get(username__exact='user1')
+            test_user2 = User.objects.get(username__exact='user2')
+            test_user3 = User.objects.get(username__exact='user3')
         else:
             test_user1 = User.objects.create_user(username="user1", password='testtest')
             test_user2 = User.objects.create_user(username="user2", password='testtest')
@@ -146,7 +146,7 @@ class Command(BaseCommand):
                 numero="002",
                 date_ajout="2020-08-20")
             info.save()
-            nw_centre.user.add(test_user3)
+            info.user.add(test_user3)
             
         #Renseigne les controles qualités
 

@@ -3,11 +3,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # Create your models here.
 
 def user_directory_path(instance, filename):
 	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
-	return '{0}/'.format(instance.user.centre)
+	print(instance.user.id)
+	id_centre = RefInfocentre.objects.get(user__exact=instance.user.id)
+	return '{0}/{1}'.format(id_centre, filename)
 
 
 class SuiviUpload(models.Model):
@@ -16,19 +19,14 @@ class SuiviUpload(models.Model):
 	id_patient = models.CharField(max_length=5000)
 	date_upload = models.DateTimeField("Date d'envois")
 	date_examen = models.DateTimeField("Date examen")
-	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE)
+	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
 	fichiers = models.FileField(upload_to=user_directory_path, null=True)
 
-	def __str__(self):
-		return self.nom
 
 class JonctionUtilisateurEtude(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	etude = models.ForeignKey('RefEtudes', on_delete=models.CASCADE)
 	date_autorisation = models.DateTimeField("Date d'autorisation")
-
-	def __str__(self):
-		return self.nom
 
 class RefControleQualite(models.Model):
 	'''Création du modèle de base de donnée pour les protocoles'''

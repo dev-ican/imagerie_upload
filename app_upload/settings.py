@@ -132,3 +132,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "staticfiles/app_upload/"),
 )
+
+# MEDIA Django
+MEDIA_URL = '/data/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "data/")
+
