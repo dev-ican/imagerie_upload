@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 
 def user_directory_path(instance, filename):
 	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
-	print(instance.user.id)
+	print(instance.fichiers)
 	id_centre = RefInfocentre.objects.get(user__exact=instance.user.id)
-	return '{0}/{1}'.format(id_centre, filename)
+	return '{0}/{1}/{2}/{3}'.format(instance.etude.etude.nom, id_centre, instance.id_patient, filename)
 
 
 class SuiviUpload(models.Model):
@@ -19,7 +19,7 @@ class SuiviUpload(models.Model):
 	id_patient = models.CharField(max_length=5000)
 	date_upload = models.DateTimeField("Date d'envois")
 	date_examen = models.DateTimeField("Date examen")
-	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
+	dossier = models.ForeignKey("DossierUpload", on_delete=models.CASCADE, blank=True, null=True)
 	fichiers = models.FileField(upload_to=user_directory_path, null=True)
 
 
@@ -65,7 +65,12 @@ class RefEtatEtape(models.Model):
 		return self.nom
 
 class JonctionEtapeSuivi(models.Model):
-	upload = models.ForeignKey("SuiviUpload", on_delete=models.CASCADE)
+	upload = models.ForeignKey("DossierUpload", on_delete=models.CASCADE, blank=True)
 	etape = models.ForeignKey("RefEtapeEtude", on_delete=models.CASCADE)
 	etat = models.ForeignKey("RefEtatEtape", on_delete=models.CASCADE)
-	date = models.DateTimeField("Date de l'étape")
+	date = models.DateTimeField("Date de l'étape", blank=True, null=True)
+
+class DossierUpload(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
+	date = models.DateTimeField("Date de création")

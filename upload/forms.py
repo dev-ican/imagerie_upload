@@ -16,7 +16,7 @@ class UploadForm(forms.Form):
     nip = forms.CharField(label='Numéro patient', max_length=100)
     etudes = forms.ChoiceField(widget=forms.Select(), choices=(['liste de vos études']), initial='0', required=True,)
     date_irm = forms.DateField()
-    upload = forms.FileField()
+    upload = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
 
 
 

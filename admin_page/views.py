@@ -6,18 +6,42 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
+from django.db.models import Count, Q
+import json
+
 from datetime import date, time, datetime
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload,DossierUpload
 
 # Create your views here.
 @login_required(login_url="/auth/auth_in/")
 def adminpage(request):
+	label_etude = []
+	data_etude = []
+	label_etude_final = []
 
+
+	list_etude = RefEtudes.objects.all()
+	for item in list_etude:
+		label_etude.append(str(item.nom))
+		#count_etude = Count('id', filter=Q(suiviupload__etude__exact=item.id))
+		#nbr = DossierUpload.objects.annotate(count_etude=count_etude).distinct()
+		nbr_img = SuiviUpload.objects.filter(etude__etude__exact=item.id)
+		list_dossier = []
+		x = 0
+		for img in nbr_img:
+			if not type(img.dossier.id) == None:
+				if img.dossier.id not in list_dossier:
+					list_dossier.append(img.dossier.id)
+					x += 1
+		data_etude.append(x)
+
+	print(data_etude)
+	
 	return render(request,
-		'admin_page.html')
+		'admin_page.html', {"label_etude":json.dumps(label_etude), "data_etude":json.dumps(data_etude)})
 
 # Gère la partie Admin Etudes
 #--------------------------------------------------------------------------------------
