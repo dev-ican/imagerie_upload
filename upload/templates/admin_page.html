@@ -1,10 +1,73 @@
-{% extends "base_admin.html" %}
+{% extends "base_admin_stat.html" %}
 {% load static %}
 {% load bootstrap4 %}
-{% block section_one %}
-<h2><p class="text-white-75 font-weight-light mb-5">PARTIE GRAPHIQUE</p></h2>
-<canvas id="myChart" value="{{data_etude}}" width="400" height="400"></canvas>
-{% endblock %}
 {% block section_two %}
 <h2><p class="text-white-75 font-weight-light mb-5">SECONDE PARTIE GRAPHIQUE</p></h2>
+<div class="row col-12">
+{% for key,item in nbr_etat.items %}
+<div class="card bg-light mb-2 ml-1 col-5">
+  <div class="card-header">Informations sur le projet : {{key}}</div>
+  <div class="card-body">
+    <p class="card-text">
+{% for cle, value in item.items %}
+{% if cle == 'data' %}
+<canvas id="{{key}}" name='graph_{{key}}' width="100" height="80"></canvas>
+<script>
+	var id = $("canvas[name*='graph_{{key}}']").attr('id');
+	var ctx = document.getElementById(id).getContext('2d');
+	var array;
+  	array = {{value|safe}};
+  	var array_nom = [];
+  	array_nom.push(array['nom'][0]);
+  	var array_nbr = [];
+  	array_nbr = [array['nbr'][0]];
+
+  	{% for etape, number in item.items %}
+  		{% if etape != 'data' %}
+  			array_nom.push("{{etape|safe}}");
+  			array_nbr.push({{number|safe}});
+  		{% endif %}
+	{% endfor %}
+
+  var graph = new Chart(ctx, {
+  type: 'horizontalBar',
+  data: {
+  labels: array_nom,
+  datasets: [{
+  label: 'Nombre de patient par étude',
+  data:  array_nbr,
+  backgroundColor: [
+  'rgba(204, 153, 255, 0.6)'
+  ],
+  borderColor: [
+  'rgba(0, 0, 0, 1)'
+  ],
+  borderWidth: 1
+  }],
+  },
+  options: {
+  scales: {
+  yAxes: [{
+  ticks: {
+      beginAtZero: true
+  }
+  }]
+  }
+  }
+  });
+  </script>
+{% endif %}
+{% endfor %}
+<div class="row col-12">
+{% for cle, value in item.items %}
+{% if cle != 'data' %}
+<div class="badge badge-secondary ml-1 align-middle"><p class="text-break">{{cle}} : {{value}}</p></div>
+{% endif %}
+{% endfor %}
+</div>
+</p>
+  </div>
+</div>
+{% endfor %}
+</div>
 {% endblock %}

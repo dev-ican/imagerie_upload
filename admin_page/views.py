@@ -13,35 +13,62 @@ from datetime import date, time, datetime
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload,DossierUpload
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload, DossierUpload, RefEtatEtape
 
 # Create your views here.
 @login_required(login_url="/auth/auth_in/")
 def adminpage(request):
-	label_etude = []
-	data_etude = []
 	label_etude_final = []
-
+	dict_etat = {}
 
 	list_etude = RefEtudes.objects.all()
-	for item in list_etude:
-		label_etude.append(str(item.nom))
-		#count_etude = Count('id', filter=Q(suiviupload__etude__exact=item.id))
-		#nbr = DossierUpload.objects.annotate(count_etude=count_etude).distinct()
-		nbr_img = SuiviUpload.objects.filter(etude__etude__exact=item.id)
-		list_dossier = []
-		x = 0
-		for img in nbr_img:
-			if not type(img.dossier.id) == None:
-				if img.dossier.id not in list_dossier:
-					list_dossier.append(img.dossier.id)
-					x += 1
-		data_etude.append(x)
 
-	print(data_etude)
-	
+	#Nbr de patient dans un état donnée
+	list_etat = RefEtatEtape.objects.all()
+	for etude in list_etude:
+		exist_etude = SuiviUpload.objects.filter(etude__etude__exact=etude.id).distinct('dossier')
+		nbr_inclusion = SuiviUpload.objects.filter(etude__etude__exact=etude.id).distinct('dossier').count()
+		resume_etat = {}
+		resume_etat['data'] = json.dumps({'nbr':[nbr_inclusion],'nom':[etude.nom]})
+		if exist_etude.exists():
+			for etat in list_etat:
+				for dossier in exist_etude:
+					nbr_etat = JonctionEtapeSuivi.objects.filter(upload__exact=dossier.dossier).filter(etat__exact=etat).count()
+					resume_etat[etat.nom] = nbr_etat
+			dict_etat[etude.nom] = resume_etat
+
+	print(dict_etat)
 	return render(request,
-		'admin_page.html', {"label_etude":json.dumps(label_etude), "data_etude":json.dumps(data_etude)})
+		'admin_page.html', {"nbr_etat":dict_etat})
+
+@login_required(login_url="/auth/auth_in/")
+def adminup(request):
+	tab_list = []
+	dict_upload = {}
+
+	etude_recente = SuiviUpload.objects.all().order_by(date_upload)[:0]
+	dossier_all = SuiviUpload.objects.filter(etude__etude__exact=etude_recente.etude.etude.id).distinct('dossier')
+
+	for files in dossier_all:
+		nbr_files = SuiviUpload.objects.filter(dossier__exact=files.id).count()
+		name_etude = SuiviUpload.objects.filter(dossier__exact=files.id)[:0]
+		dict_upload['Etudes'] = name_etude.etude.etude.nom
+		dict_upload['id'] = name_etude.id_patient
+		dict_upload['nbr_upload'] = nbr_files
+
+		etape = JonctionEtapeSuivi.objects.filter(upload__exact=files.dossier.id)
+		dict_etape = {}
+		for item in etape:
+			if item.etat.id == 4:
+				dict_etape[item.etape.nom] = item.date
+			else:
+				dict_etape[item.etape.nom] = item.etat.nom
+		dict_upload['etape_etude'] = dict_etape
+
+
+
+	return render(request,
+		'admin_page_upload.html')
 
 # Gère la partie Admin Etudes
 #--------------------------------------------------------------------------------------

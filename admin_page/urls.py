@@ -22,4 +22,5 @@ urlpatterns = [
 	re_path(r'^centres/delete/([0-9]+)/',views.centreDel, name='centre_suppr'),
 	path('userAuth/', views.adminauth, name='admin_autorisation'),
 	re_path(r'^userAuth/edit/([0-9]+)/',views.authEdit, name='auth_edit'),
+	path('upfiles/', views.adminup, name='admin_upload'),
 ]

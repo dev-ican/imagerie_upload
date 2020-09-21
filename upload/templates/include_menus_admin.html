@@ -4,7 +4,10 @@
 <nav class="nav bg-secondary">
   <ul class="navbar-nav flex-column text-dark m-2">
     <li class="nav-item active">
-      <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Tableau récapitulatif</a>
+      <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>
+    </li>
+    <li class="nav-item active">
+      <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin_upload' %}">Tableau des chargements</a>
     </li>
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuEtudes" href="{% url 'admin_etude' %}">Ajouter des études</a>
