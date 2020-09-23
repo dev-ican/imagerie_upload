@@ -5,6 +5,7 @@ from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.views.decorators.clickjacking import xframe_options_exempt
 
 from django.db.models import Count, Q
 import json
@@ -45,30 +46,179 @@ def adminpage(request):
 def adminup(request):
 	tab_list = []
 	dict_upload = {}
+	dict_nbr = {}
 
-	etude_recente = SuiviUpload.objects.all().order_by(date_upload)[:0]
-	dossier_all = SuiviUpload.objects.filter(etude__etude__exact=etude_recente.etude.etude.id).distinct('dossier')
+	etude_recente = SuiviUpload.objects.all().order_by('date_upload')[:1]
+	dossier_all = SuiviUpload.objects.filter(etude__etude__exact=etude_recente[0].etude.etude.id).distinct('dossier')
 
 	for files in dossier_all:
-		nbr_files = SuiviUpload.objects.filter(dossier__exact=files.id).count()
-		name_etude = SuiviUpload.objects.filter(dossier__exact=files.id)[:0]
-		dict_upload['Etudes'] = name_etude.etude.etude.nom
-		dict_upload['id'] = name_etude.id_patient
+		nbr_files = SuiviUpload.objects.filter(dossier__exact=files.dossier.id).count()
+		name_etude = SuiviUpload.objects.filter(dossier__exact=files.dossier.id)[:1]
+
+		dict_upload['Etudes'] = name_etude[0].etude.etude.nom
+		dict_upload['id'] = name_etude[0].id_patient
 		dict_upload['nbr_upload'] = nbr_files
 
 		etape = JonctionEtapeSuivi.objects.filter(upload__exact=files.dossier.id)
 		dict_etape = {}
+		x = 0
 		for item in etape:
+			x += 1
 			if item.etat.id == 4:
 				dict_etape[item.etape.nom] = item.date
 			else:
 				dict_etape[item.etape.nom] = item.etat.nom
+
+		if len(dict_etape) == 0:
+			dict_etape['Aucune_etape'] = "Aucune étape enregistré dans les bases de données"
+
 		dict_upload['etape_etude'] = dict_etape
+	dict_nbr['nbr_etape'] = x
 
+	tab_list.append(dict_upload)
 
+	list_etude = RefEtudes.objects.all()
+	list_infcentre = RefInfocentre.objects.all()
+	list_centre = []
+
+	for inf in dossier_all:
+		item = RefInfocentre.objects.get(user__exact=inf.user.id)
+		if item not in list_centre:
+			list_centre.append(item)
+
+	str_etude = []
+	str_centre = []
+	str_dict = {}
+
+	for centre in list_centre:
+
+		str_dict_centre = {} 
+		str_dict_centre['id'] = centre.id
+		str_dict_centre['nom'] = str(centre.nom) + str(centre.numero)
+		str_centre.append(str_dict_centre)
+
+	for etude in list_etude:
+		str_dict = {}
+		if etude.id == etude_recente[0].etude.etude.id:
+			str_dict['id'] = str(etude.id)
+			str_dict['option'] = 'selected'
+			str_dict['nom'] = etude.nom
+			str_etude.append(str_dict)
+		else:
+			str_dict['id'] = str(etude.id)
+			str_dict['option'] = ''
+			str_dict['nom'] = etude.nom
+			str_etude.append(str_dict)
 
 	return render(request,
-		'admin_page_upload.html')
+		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':str_etude, 'str_centre':str_centre})
+
+@login_required(login_url="/auth/auth_in/")
+def uploadtris(request, id_tris):
+	tab_list = []
+	dict_upload = {}
+	dict_nbr = {}
+
+	if request.method == 'POST':
+		etude_change = RefEtudes.objects.get(id__exact=id_tris)
+		dossier_all = SuiviUpload.objects.filter(etude__etude__exact=id_tris).distinct('dossier')
+		nbr_etape = RefEtapeEtude.objects.filter(etude__exact=etude_change.id).count()
+		nom_etape = RefEtapeEtude.objects.filter(etude__exact=etude_change.id)
+		dict_etape_nom = []
+
+		for nom in nom_etape:
+			dict_etape_nom.append(nom.nom)
+
+		for files in dossier_all:
+			dict_upload = {}
+			nbr_files = SuiviUpload.objects.filter(dossier__exact=files.dossier.id).count()
+			name_etude = SuiviUpload.objects.filter(dossier__exact=files.dossier.id)[:1]
+
+			dict_upload['id_'] = files.id
+			dict_upload['Etudes'] = name_etude[0].etude.etude.nom
+			dict_upload['id'] = name_etude[0].id_patient
+			dict_upload['nbr_upload'] = nbr_files
+
+			etape = JonctionEtapeSuivi.objects.filter(upload__exact=files.dossier.id)
+			dict_etape_value = []
+			
+			for item in etape:
+				if item.etat.id == 4:
+					dict_etape_value.append({"val_item":item.date, "val_id":item.id})		
+				else:
+					dict_etape_value.append({"val_item":item.etat.nom, "val_id":item.id})
+
+			if len(dict_etape_nom) == 0 or len(dict_etape_value) != nbr_etape:
+				if len(dict_etape_value) != nbr_etape:
+					nw_dict = {'Aucune_etape': "Une erreur sur les étapes lors de l'enregistrement de ces données ont été relevé"}
+					dict_upload['etape_etude'] = nw_dict
+					dict_upload['error'] = True
+				else:
+					nw_dict= {'Aucune_etape': "Aucune étape enregistré dans les bases de données"}
+					dict_upload['etape_etude'] = nw_dict
+					dict_upload['error'] = True
+			else:
+				dict_upload['etape_etude'] = dict_etape_value
+				dict_upload['error'] = False
+
+			tab_list.append(dict_upload)
+		dict_nbr['nbr_etape'] = nbr_etape
+		dict_nbr['nom_etape'] = dict_etape_nom
+
+		list_etude = RefEtudes.objects.all()
+		list_infcentre = RefInfocentre.objects.all()
+		list_centre = []
+
+		for inf in dossier_all:
+			item = RefInfocentre.objects.get(user__exact=inf.user.id)
+			if item not in list_centre:
+				list_centre.append(item)
+
+		str_etude = []
+		str_centre = []
+		str_dict = {}
+
+		for centre in list_centre:
+
+			str_dict_centre = {} 
+			str_dict_centre['id'] = centre.id
+			str_dict_centre['nom'] = str(centre.nom) + str(centre.numero)
+			str_centre.append(str_dict_centre)
+
+		for etude in list_etude:
+			str_dict = {}
+			if etude.id == etude_change.id:
+				str_dict['id'] = str(etude.id)
+				str_dict['option'] = 'selected'
+				str_dict['nom'] = etude.nom
+				str_etude.append(str_dict)
+			else:
+				str_dict['id'] = str(etude.id)
+				str_dict['option'] = ''
+				str_dict['nom'] = etude.nom
+				str_etude.append(str_dict)
+
+	return render(request,
+		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':str_etude, 'str_centre':str_centre})
+
+@xframe_options_exempt
+@login_required(login_url="/auth/auth_in/")
+def uploadmod(request):
+	tab_list = {}
+
+	val_jonction = request.POST.get('val_jonction')
+	val_suivi = request.POST.get('val_suivi')
+	val_etude = request.POST.get('val_etude')
+
+	val_etat = RefEtatEtape.objects.all()
+	x = 0
+	for etat in val_etat:
+		var_str = 'etat_' + str(x)
+		tab_list[var_str] = {'id':etat.id, 'nom':etat.nom}
+		x += 1
+
+	creation_json = json.dumps(tab_list)
+	return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
 # Gère la partie Admin Etudes
 #--------------------------------------------------------------------------------------

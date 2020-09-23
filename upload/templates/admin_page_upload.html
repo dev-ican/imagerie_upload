@@ -2,22 +2,53 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_two %}
-<div class="row col-12"> formulaire de tris ici</div>
+<div class="row col-12">
+  <form>
+  <div class="form-row align-items-center">
+    <div class="col-auto my-1">
+      {% csrf_token %}
+      <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Classer par etude</label>
+      <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+        {% for centre in str_centre %}
+        <option value="{{centre.id}}">{{centre.nom}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-auto my-1">
+      <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Indiquer le centre</label>
+      <select name="select_etude" class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+        {% for etude in str_etude %}
+        <option name="select_{{etude.nom}}" value="{{etude.id}}" {{etude.option}}>{{etude.nom}}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  </form>
+</div>
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
       <th scope="col">Etudes</th>
       <th scope="col">ID patient</th>
       <th scope="col">Nbr de fichiers</th>
-      <th scope="col" colspan="1">Etape</th>
+      {% for item in dict_nbr.nom_etape %}
+      <th scope="col">{{item}}</th>
+      {% endfor %}
     </tr>
   </thead>
   <tbody>
     {% for item in resultat %}
-      <tr>
-        <td>{{ item.nom }}</td>
-        <td>{{ item.date_ouverture }}</td>
-        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/etudes/edit/{{item.id}}/">EDITER</a><div id="supprEtude" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
+      <tr value="{{item.id_}}">
+        <td>{{ item.Etudes }}</td>
+        <td>{{ item.id }}</td>
+        <td>{{ item.nbr_upload }}</td>
+        {% if item.error == True %}
+        <td colspan="{{dict_nbr.nbr_etape}}">{{ item.etape_etude.Aucune_etape }}</td>
+        {% else %}
+        {% for etape in item.etape_etude %}
+        <td class="clickable" value="{{ etape.val_id }}">{{ etape.val_item }}</td>
+        {% endfor %}
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>
