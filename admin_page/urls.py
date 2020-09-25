@@ -25,4 +25,6 @@ urlpatterns = [
 	path('upfiles/', views.adminup, name='admin_upload'),
 	re_path(r'^upfiles/tris/([0-9]+)/',views.uploadtris, name='upload_tris'),
 	re_path(r'^upfiles/mod/',views.uploadmod, name='upload_mod'),
+	re_path(r'^upfiles/maj/',views.uploadmaj, name='upload_maj'),
+	re_path(r'^upfiles/dospat/([0-9]+)/',views.affdossier, name='Aff_dossier'),
 ]

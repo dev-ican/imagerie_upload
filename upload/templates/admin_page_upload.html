@@ -15,8 +15,8 @@
       </select>
     </div>
     <div class="col-auto my-1">
-      <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Indiquer le centre</label>
-      <select name="select_etude" class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+      <label class="mr-sm-2 sr-only" for="FormCustomSelect">Indiquer le centre</label>
+      <select name="select_etude" class="custom-select mr-sm-2" id="FormCustomSelect">
         {% for etude in str_etude %}
         <option name="select_{{etude.nom}}" value="{{etude.id}}" {{etude.option}}>{{etude.nom}}</option>
         {% endfor %}
@@ -40,13 +40,17 @@
     {% for item in resultat %}
       <tr value="{{item.id_}}">
         <td>{{ item.Etudes }}</td>
-        <td>{{ item.id }}</td>
+        <td><a href="/admin_page/upfiles/dospat/{{ item.id_ }}/"<span class="badge badge-secondary">{{ item.id }}</span></td>
         <td>{{ item.nbr_upload }}</td>
         {% if item.error == True %}
         <td colspan="{{dict_nbr.nbr_etape}}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}
         {% for etape in item.etape_etude %}
-        <td class="clickable" value="{{ etape.val_id }}">{{ etape.val_item }}</td>
+        {% if etape.block %}
+        <td name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.val_id }}" value="{{ etape.val_id }}">{{ etape.val_item }}</td>
+        {% else %}
+        <td class="clickable" name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.val_id }}" value="{{ etape.val_id }}">{{ etape.val_item }}</td>
+        {% endif %}
         {% endfor %}
         {% endif %}
       </tr>
