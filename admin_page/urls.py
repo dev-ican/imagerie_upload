@@ -27,4 +27,6 @@ urlpatterns = [
 	re_path(r'^upfiles/mod/',views.uploadmod, name='upload_mod'),
 	re_path(r'^upfiles/maj/',views.uploadmaj, name='upload_maj'),
 	re_path(r'^upfiles/dospat/([0-9]+)/',views.affdossier, name='Aff_dossier'),
+	re_path(r'^upfiles/downOnce/([0-9]+)/',views.downOnce, name='donwnload_once'),
+	re_path(r'^upfiles/downAll/([0-9]+)/',views.downAll, name='donwnload_all'),
 ]

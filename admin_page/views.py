@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, FileResponse
 from django.contrib import messages
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -7,8 +7,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.views.decorators.clickjacking import xframe_options_exempt
 
+from django.conf import settings
+import io
+
 from django.db.models import Count, Q
 import json
+import zipfile
+import os, tempfile
+from wsgiref.util import FileWrapper
 
 from datetime import date, time, datetime
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
@@ -243,10 +249,55 @@ def uploadmaj(request):
 
 @login_required(login_url="/auth/auth_in/")
 def affdossier(request, id_suivi):
+	tab_list = []
 
-	print(id_suivi)
-	var_url = '/admin_page/upfiles/tris/1/'
-	return redirect(var_url)
+	var_suivi = SuiviUpload.objects.get(id__exact=id_suivi)
+	list_lien = SuiviUpload.objects.filter(dossier__id__exact=var_suivi.dossier.id)
+
+	for item in list_lien:
+		dict_list = {}
+		lien = str(item.fichiers)
+		tab_lien = lien.split('/')
+		nom = tab_lien[-1]
+		dict_list = {'nom':nom, 'url':item.id}
+		tab_list.append(dict_list)
+
+	info_dossier = {"id":var_suivi.id_patient, "etude":var_suivi.etude.etude.nom, 'lien':var_suivi.id}
+
+	return render(request,
+		'admin_page_down.html', {'resultat':tab_list, 'tab_dossier':info_dossier})
+
+@login_required(login_url="/auth/auth_in/")
+def downOnce(request, id):
+	obj = SuiviUpload.objects.get(id__exact=id)
+	filename = obj.fichiers.path
+	file_path = os.path.join(settings.MEDIA_ROOT, filename)
+	print(file_path)
+	if os.path.exists(file_path):
+		with open(file_path, 'rb') as fh:
+			response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+			return response
+
+@login_required(login_url="/auth/auth_in/")
+def downAll(request, id):
+	obj = SuiviUpload.objects.get(id__exact=id)
+	list_lien = SuiviUpload.objects.filter(dossier__id__exact=obj.dossier.id)
+
+	zipf = zipfile.ZipFile('temp.zip', "w")
+	for item in list_lien:
+		lien = str(item.fichiers)
+		tab_lien = lien.split('/')
+		nom = tab_lien[-1]
+		del tab_lien[-1]
+		master_path = "/".join(tab_lien)
+		filename = item.fichiers.path
+		file_path = os.path.join(settings.MEDIA_ROOT, filename)
+		zipf.write(file_path, nom)
+	zipf.close()
+	response = HttpResponse(io.open('temp.zip', mode="rb").read(), content_type='application/zip')
+
+	return response
 
 # Gère la partie Admin Etudes
 #--------------------------------------------------------------------------------------
@@ -323,15 +374,15 @@ def etudeDel(request, id_etape):
 			RefEtudes.objects.get(id__exact=id_etape).delete()
 
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression Faite")
+				request,
+				messages.WARNING,
+				"Suppression Faite")
 
 		else:
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression annulée, cette étude est liée à :" + x + " suivi(s)")
+				request,
+				messages.WARNING,
+				"Suppression annulée, cette étude est liée à :" + x + " suivi(s)")
 
 	form = FormsEtude()
 	etude_tab = RefEtudes.objects.all().order_by('nom')
@@ -421,15 +472,15 @@ def etapeDel(request, id_etape):
 			RefEtapeEtude.objects.get(id__exact=id_etape).delete()
 
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression Faite")
+				request,
+				messages.WARNING,
+				"Suppression Faite")
 
 		else:
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
+				request,
+				messages.WARNING,
+				"Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
 
 
 	form = FormsEtape()
@@ -546,9 +597,9 @@ def userDel(request, id_etape):
 
 			User.objects.get(id__exact=id_etape).delete()
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression Faite")
+				request,
+				messages.WARNING,
+				"Suppression Faite")
 
 		else:
 			if x == 0 :
@@ -556,9 +607,9 @@ def userDel(request, id_etape):
 			else:
 				terme = "suivis"
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression annulée, cette étape est liée à : " + str(x) + terme)
+				request,
+				messages.WARNING,
+				"Suppression annulée, cette étape est liée à : " + str(x) + terme)
 
 
 	form = FormsUser()
@@ -646,14 +697,14 @@ def centreDel(request, id_etape):
 			RefInfocentre.objects.get(id__exact=id_etape).delete()
 
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression Faite")
+				request,
+				messages.WARNING,
+				"Suppression Faite")
 		else:
 			message = messages.add_message(
-		        request,
-		        messages.WARNING,
-		        "Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
+				request,
+				messages.WARNING,
+				"Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
 
 	form = FormCentre()
 
