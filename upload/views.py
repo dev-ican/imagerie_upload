@@ -46,18 +46,21 @@ def formulaire(request):
 
 		id_etapes = RefEtapeEtude.objects.filter(etude__exact=etude_id)
 
-		date_now = datetime.now()
+		date_now = datetime.today()
 
 		filez = request.FILES.getlist('upload')
 		create_jonction = DossierUpload(user=user_current, controle_qualite=id_qc, date=date)
 		create_jonction.save()
 
 		for f in filez:
-			create_suivi = SuiviUpload(user=user_current, etude=id_etude, id_patient=nip, date_upload=date_now.date(), date_examen=date, fichiers=f, dossier=create_jonction)
+			create_suivi = SuiviUpload(user=user_current, etude=id_etude, id_patient=nip, date_upload=date_now, date_examen=date, fichiers=f, dossier=create_jonction)
 			create_suivi.save()
 
 		for etape in id_etapes:
 			create_etape = JonctionEtapeSuivi.objects.create(upload=create_jonction, etape=etape, etat=id_etape)
+
+		var_url = '/upload/form/'
+		return redirect(var_url)
 
 
 	form = UploadForm()

@@ -11,6 +11,7 @@
   {% buttons %}
     <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
   {% endbuttons %}
+  <a class="text-white-75 font-weight-light mb-5" href="{% url 'gestion' %}">Revenir sans modification</a>
 </form>
 {% endblock %}
 {% block section_two %}
@@ -30,7 +31,11 @@
         <td>{{ item.titre }}</td>
         <td>{{ item.description }}</td>
         <td>{{ item.date }}</td>
-        <td><div class="row d-inline-flex ml-1 col-12"><div class="col-6"><a role="button" class="btn btn-sm btn-outline-secondary mb-1" href="/doc/downOnce/{{item.id}}/">Télécharger</a></div><div class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" href="/doc/edit/{{item.id}}/">editer</a></div><div id="supprDoc" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="/doc/deleted/{{item.id}}/">suppr.</a></div></div></td>
+        {% if select == item.id %}
+        <td><div class="row justify-content-center"><input role="button" class="btn btn-sm btn-outline-secondary mb-1" value="Document en édition"></input></div></td>
+        {% else %}
+        <td><div class="row justify-content-center ml-1"><div class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary mb-1" href="/doc/downOnce/{{item.id}}/">Télécharger</a></div><div class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" href="/doc/edit/{{item.id}}/">editer</a></div><div id="supprDoc" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="/doc/deleted/{{item.id}}/">SUPPR.</a></div></div></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

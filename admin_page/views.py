@@ -618,8 +618,6 @@ def userEdit(request, id_etape):
 		username = request.POST['username']
 		email = request.POST['email']
 
-		print(type)
-
 		pass_first = request.POST['pass_first']
 		pass_second = request.POST['pass_second']
 
@@ -631,19 +629,19 @@ def userEdit(request, id_etape):
 		if checkmdp:
 			user_info.username = username
 			user_info.email = email
-
 			user_info.set_password(pass_first)
-			if int(type) == 0:
-				user_info.is_staff = True
-			else:
-				if nw_user.is_staff:
-					nw_user.is_staff = False
-					nw_user.save()
 
 			user_info.save()
 		else:
 			user_info.username = username
 			user_info.email = email
+
+		if int(type) == 0:
+			user_info.is_staff = True
+		else:
+			if user_info.is_staff:
+				user_info.is_staff = False
+		user_info.save()
 
 		return HttpResponseRedirect('/admin_page/viewUser/')
 	else:

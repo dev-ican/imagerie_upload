@@ -21,7 +21,7 @@
           <div class="row text-center">
             <div class="col-xl-9 mx-auto">
               <div class="cta-inner text-center rounded">
-                <form action="" method="post" class="was-validated login100-form validate-form" enctype="multipart/form-data">
+                <form action="{% url 'formulaire' %}" method="post" class="was-validated login100-form validate-form" enctype="multipart/form-data" name="form_upload">
                   <div class="wrap-input100 validate-input m-b-26">
                     <ul>
                       {% csrf_token %}
@@ -29,7 +29,7 @@
                     </ul>
                   </div>
                   {% buttons %}
-                    <button type="submit" class="btn btn-primary" name="login" href="{% url 'formulaire' %}">Valider</button>
+                    <input onclick="clicked();" type="button" class="btn btn-primary" name="login" href="" value="Valider"></input>
                   {% endbuttons %}
                 </form>
               </div>
@@ -44,6 +44,17 @@
       </div>
     </footer>
     <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript">
+    function clicked() {
+       if (confirm("La RGPD doit être respecté, en validant l'envois vous certifier que les documents envoyés ne contiennent aucune information prédujiciable.")) {
+           document.forms.form_upload.submit();
+           //e.preventDefault();
+        } else {
+            alert("Cette envois est annulé");
+        }
+    }
+
+</script>
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 

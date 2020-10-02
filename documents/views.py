@@ -68,6 +68,64 @@ def downOnce(request, id):
 			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
 			return response
 
+@login_required(login_url="/auth/auth_in/")
+def docEdit(request, id):
+	liste_protocole = []
+
+	if request.method == 'POST':
+		form = DocumentForm()
+
+		nom = request.POST['nom']
+		date = request.POST['date_ouverture']
+
+		user_info = RefEtudes.objects.get(pk=id_etape)
+
+		user_info.nom = nom
+		user_info.date_ouverture = date
+
+		user_info.save()
+
+		return HttpResponseRedirect('/admin_page/etudes/')
+	else:
+		obj = SuiviDocument.objects.get(id__exact=id)
+		id_etude = RefEtudes.objects.get(nom=obj.etude)
+
+		form = DocumentForm()
+		request_etude = RefEtudes.objects.all()
+		liste_protocole = choiceEtude(False)
+
+		form.fields['etudes'].choices = liste_protocole
+		form.fields['etudes'].initial = [id_etude.id]
+		form.fields['titre'].initial = obj.titre
+		form.fields['description'].initial = obj.description
+		form.fields['document'].initial = obj.fichiers
+
+	doc_tab = SuiviDocument.objects.all()
+	return render(request,
+		'admin_edit_docu.html',{"form":form, 'resultat':doc_tab, 'select':int(id)})
+
+@login_required(login_url="/auth/auth_in/")
+def docDeleted(request, id):
+	obj = SuiviDocument.objects.get(id__exact=id)
+	liste_protocole = []
+	x = 0
+
+	if request.method == 'POST':
+		SuiviDocument.objects.get(id__exact=id).delete()
+		message = messages.add_message(
+			request,
+			messages.WARNING,
+			"Suppression Faite")
+
+	form = DocumentForm()
+
+	liste_protocole = choiceEtude(True)
+	form.fields['etudes'].choices = liste_protocole
+	form.fields['etudes'].initial = [0]
+	doc_tab = SuiviDocument.objects.all()
+	context = {"form":form, 'resultat':doc_tab, 'message':message}
+	return render(request,'admin_etapes.html', context)
+
 def choiceEtude(val_zero):
 	liste_etude = []
 	request_etude = RefEtudes.objects.all()
