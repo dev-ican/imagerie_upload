@@ -19,6 +19,7 @@
 {% block aside_1 %}
 <div class="col-lg-12">
 <h4><p class="text-white-75 font-weight-light mb-5">Les études liées à l'utilisateur : {{user.username}}</p></h4>
+<h6><p class="text-warning font-weight-light mb-5" id="message"></p></h6>
 <table class="table table-info table-responsive-lg">
   <thead class="thead-light">
     <tr>
@@ -27,12 +28,12 @@
       <th scope="col">Actions</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id='etude_tab'>
     {% for item in etude %}
       <tr>
         <td>{{ item.etude.nom }}</td>
         <td>{{ item.etude.date_ouverture }}</td>
-        <td><a role="button" class="btn btn-sm btn-outline-secondary" href="#">Supprimer l'attribution</a></td>
+        <td value="{{user.id}}" name="etude"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="{{item.id}}">Supprimer l'attribution</button></td>
       </tr>
     {% endfor %}
   </tbody>
@@ -51,13 +52,13 @@
       <th scope="col">Actions</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id='centre_tab'>
     {% for item in centre %}
       <tr>
         <td>{{ item.nom }}</td>
         <td>{{ item.numero }}</td>
         <td>{{ item.date_ajout }}</td>
-        <td><a role="button" class="btn btn-sm btn-outline-secondary" href="#">Supprimer l'attribution</a></td>
+        <td value="{{user.id}}" name="centre"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="{{item.id}}">Supprimer l'attribution</button></td>
       </tr>
     {% endfor %}
   </tbody>

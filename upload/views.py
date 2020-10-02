@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files import File
 
 from .forms import UploadForm
-from .models import RefEtudes, JonctionUtilisateurEtude, SuiviUpload, RefControleQualite, JonctionEtapeSuivi, DossierUpload, RefEtatEtape, RefEtapeEtude
+from .models import RefEtudes, JonctionUtilisateurEtude, SuiviUpload, RefControleQualite, JonctionEtapeSuivi, DossierUpload, RefEtatEtape, RefEtapeEtude, SuiviDocument
 
 from datetime import date, time, datetime
 
@@ -16,8 +16,10 @@ from datetime import date, time, datetime
 @login_required(login_url="/auth/auth_in/")
 def index(request):
 
-		return render(request,
-				  'index.html')
+	doc_list = SuiviDocument.objects.all()
+
+	return render(request,
+		'index.html', {'response':doc_list})
 
 @login_required(login_url="/auth/auth_in/")
 def contact(request):

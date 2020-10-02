@@ -6,7 +6,7 @@
 <div class="row col-12">
 {% for key,item in nbr_etat.items %}
 <div class="card bg-light mb-2 ml-1 col-5">
-  <div class="card-header">Informations sur le projet : {{key}}</div>
+  <div class="card-header"><img src="{% static 'images/icons/checkbox-QC.png' %}" width="50" height="auto" alt=""> Informations sur le projet : {{key}}</div>
   <div class="card-body">
     <p class="card-text">
 {% for cle, value in item.items %}
@@ -61,7 +61,7 @@
 <div class="row col-12">
 {% for cle, value in item.items %}
 {% if cle != 'data' %}
-<div class="badge badge-secondary ml-1 align-middle"><p class="text-break">{{cle}} : {{value}}</p></div>
+<div class="badge badge-secondary ml-1 mb-1 align-middle"><p class="text-break">{{cle}} : {{value}}</p></div>
 {% endif %}
 {% endfor %}
 </div>

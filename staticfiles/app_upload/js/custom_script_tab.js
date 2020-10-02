@@ -82,7 +82,6 @@ $('td[class="clickable"]').one("click", function(){
 		document.getElementById(var_modif).className += "_select";
 		$('td[class="clickable_select"]').off('click');
 		document.getElementById('FormCustom').addEventListener("change", change_etat);
-		console.log(str_select);
 	})
 });
 
@@ -95,8 +94,6 @@ function change_etat(event) {
 	var etat_id = $(this).children("option:selected").val();
 	var jonction_id = $(this).parent('td').attr('value');
 	var value_etude = $('select[name="select_etude"]').children("option:selected").val();
-
-	console.log(etat_id,'+++++++++', jonction_id);
 
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 

@@ -4,6 +4,8 @@ from django.http import *
 from datetime import date
 
 from upload.models import *
+
+CHOICES=[(0,'Staff'),(1,'Utilisateur')]
 	
 class FormsEtude(forms.Form):
 	nom = forms.CharField(label="Nom de l'étude", max_length=100)
@@ -26,6 +28,7 @@ class FormCentre(forms.Form):
 
 class FormsUser(forms.Form):
 	username = forms.CharField(label="Identifiant de l'utilisateur", max_length=100)
+	type = forms.ChoiceField(label="", choices=CHOICES, widget=forms.RadioSelect(attrs={'class': 'd-inline-flex'}))
 	email = forms.EmailField(
 		label="Courriel de l'utilisateur",
 		max_length=200,
@@ -38,6 +41,7 @@ class FormsUser(forms.Form):
 
 class FormsUserEdit(forms.Form):
 	username = forms.CharField(label="Identifiant de l'utilisateur", max_length=100)
+	type = forms.ChoiceField(label="", choices=CHOICES, widget=forms.RadioSelect(attrs={'class': 'd-inline-flex'}))
 	email = forms.EmailField(
 		label="Courriel de l'utilisateur",
 		max_length=200,

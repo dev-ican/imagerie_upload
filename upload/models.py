@@ -12,6 +12,10 @@ def user_directory_path(instance, filename):
 	id_centre = RefInfocentre.objects.get(user__exact=instance.user.id)
 	return '{0}/{1}/{2}/{3}'.format(instance.etude.etude.nom, id_centre, instance.id_patient, filename)
 
+def doc_directory_path(instance, filename):
+	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
+	return '{0}/{1}'.format('document',filename)
+
 
 class SuiviUpload(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -74,3 +78,12 @@ class DossierUpload(models.Model):
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
 	date = models.DateTimeField("Date de création")
+
+class SuiviDocument(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	etude = models.ForeignKey('RefEtudes', on_delete=models.CASCADE)
+	titre = models.CharField(max_length=5000)
+	description = models.CharField(max_length=5000)
+	date = models.DateTimeField("Date")
+	fichiers = models.FileField(upload_to=doc_directory_path, null=True)
+	background = models.CharField(max_length=5000, null=True, blank=True)

@@ -8,16 +8,20 @@
 </header>
 {% endblock %}
 {% block cadre_news %}
-<div class="card h-100">
-  <img class="card-img-top" src="http://placehold.it/500x325" alt="">
-  <div class="card-body">
-    <h4 class="card-title">Nouvelle !</h4>
-    <p class="card-text">On peut faire apparaitre une news résumé ici</p>
-  </div>
-  <div class="card-footer">
-    <a href="#" class="btn btn-primary">Se rendre sur la news</a>
+{% for item in response %}
+<div class="col-3 mb-1">
+  <div class="card h-100 ml-1">
+    <img class="card-img-top" src="{% static 'staticfiles/app_upload/images/' %}{{item.background}}" alt="">
+    <div class="card-body">
+      <h4 class="card-title">{{item.titre}}</h4>
+      <p class="card-text">{{item.description}}</p>
+    </div>
+    <div class="card-footer">
+      <a href="/doc/downOnce/{{item.id}}" class="btn btn-primary" >Télécharger le document</a>
+    </div>
   </div>
 </div>
+{% endfor %}
 {% endblock %}
 {% block cadre_footer %}
   <p class="m-0 text-center text-white">Copyright &copy; ICAN 2020</p>
