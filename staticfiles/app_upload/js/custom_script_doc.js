@@ -1,6 +1,6 @@
-$('#supprCentre a[role="button"]').click(function(event) {
-	var url_etude = "/admin_page/centres/delete/"
-	var id_etude = $(this).attr('value');
+$('#supprDoc').click(function(event) {
+	var url_etude = "/doc/deleted/"
+	var id_doc = $(this).attr('value');
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
 	function csrfSafeMethod(method) {
@@ -9,7 +9,7 @@ $('#supprCentre a[role="button"]').click(function(event) {
 	}
 
 
-	if (confirm("Cette entrée sera supprimé définitivement ainsi que tous les enregistrements qui lui sont liés")) {
+	if (confirm("Cette entrée sera supprimé définitivement")) {
 		$.ajaxSetup({
     		beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -19,9 +19,9 @@ $('#supprCentre a[role="button"]').click(function(event) {
 		});
 
 	$.ajax({
-		url : url_etude + id_etude + "/",
+		url : url_etude + id_doc + "/",
 		data : {
-			demande : id_etude
+			demande : id_doc
 		},
 		type : 'POST',
 		success: function(response, status, XHR){

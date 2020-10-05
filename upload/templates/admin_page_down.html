@@ -2,8 +2,14 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_two %}
-<div class="row col-12">
- <p>[{{tab_dossier.etude}}] id_patient : {{tab_dossier.id}}</p><a href="/admin_page/upfiles/downAll/{{ tab_dossier.lien }}" download><span button type="button" class="btn btn-primary">Télécharger le dossier</span></a>
+<div class="row col-12 mt-5 mb-5 d-flex">
+  <table class="table table-responsive-sm ">
+    <tbody>
+      <tr>
+<td><p>[{{tab_dossier.etude}}] id_patient : {{tab_dossier.id}}</p><td><td><a href="/admin_page/upfiles/downAll/{{ tab_dossier.lien }}" download><span button type="button" class="btn btn-primary">Télécharger le dossier</span></a></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">

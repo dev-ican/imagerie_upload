@@ -111,7 +111,11 @@ def docDeleted(request, id):
 	x = 0
 
 	if request.method == 'POST':
-		SuiviDocument.objects.get(id__exact=id).delete()
+		var_suivi = SuiviDocument.objects.get(id__exact=int(id))
+		var_path = var_suivi.fichiers
+		file_path = settings.MEDIA_ROOT + str(var_path)
+		os.remove(file_path)
+		var_suivi.delete()
 		message = messages.add_message(
 			request,
 			messages.WARNING,
@@ -124,7 +128,7 @@ def docDeleted(request, id):
 	form.fields['etudes'].initial = [0]
 	doc_tab = SuiviDocument.objects.all()
 	context = {"form":form, 'resultat':doc_tab, 'message':message}
-	return render(request,'admin_etapes.html', context)
+	return render(request,'admin_docu.html', context)
 
 def choiceEtude(val_zero):
 	liste_etude = []

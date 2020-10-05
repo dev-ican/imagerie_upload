@@ -30,7 +30,7 @@
         <td>{{ item.titre }}</td>
         <td>{{ item.description }}</td>
         <td>{{ item.date }}</td>
-        <td><div class="row d-inline-flex ml-1 col-12"><div class="col-6"><a role="button" class="btn btn-sm btn-outline-secondary mb-1" href="/doc/downOnce/{{item.id}}/">Télécharger</a></div><div class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" href="/doc/edit/{{item.id}}/">editer</a></div><div id="supprDoc" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="/doc/deleted/{{item.id}}/">suppr.</a></div></div></td>
+        <td><div class="row d-inline-flex ml-1 col-12"><div class="col-6"><a role="button" class="btn btn-sm btn-outline-secondary mb-1" href="/doc/downOnce/{{item.id}}/">Télécharger</a></div><div class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" href="/doc/edit/{{item.id}}/">editer</a></div><div class="col-4"><a id="supprDoc" role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">suppr.</a></div></div></td>
       </tr>
     {% endfor %}
   </tbody>
