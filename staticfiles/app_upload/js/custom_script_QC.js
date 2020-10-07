@@ -46,7 +46,7 @@ $('td[class="click_qc"]').one("click", function(){
 		document.getElementById(var_name).innerHTML = str_select;
 		document.getElementById(var_name).className += "_select";
 		$('td[class="clickable_select"]').off('click');
-		document.getElementById('FormQC').addEventListener("change", change_etat);
+		document.getElementById('FormQC').addEventListener("change", change_qc);
 	})
 });
 
@@ -54,7 +54,7 @@ $('td[class="click_qc"]').one("click", function(){
 // Fonction -----------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 
-function change_etat(event) {
+function change_qc(event) {
 	var url_etude = "/admin_page/upfiles/majQC";
 	var etat_id = $(this).children("option:selected").val();
 	var jonction_id = $(this).parent('td').attr('name');

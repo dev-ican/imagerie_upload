@@ -71,7 +71,7 @@ class RefEtatEtape(models.Model):
 class JonctionEtapeSuivi(models.Model):
 	upload = models.ForeignKey("DossierUpload", on_delete=models.CASCADE, blank=True)
 	etape = models.ForeignKey("RefEtapeEtude", on_delete=models.CASCADE)
-	etat = models.ForeignKey("RefEtatEtape", on_delete=models.CASCADE)
+	etat = models.ForeignKey("RefEtatEtape", on_delete=models.CASCADE, blank=True)
 	date = models.DateTimeField("Date de l'étape", blank=True, null=True)
 
 class DossierUpload(models.Model):

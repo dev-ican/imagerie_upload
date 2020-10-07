@@ -15,7 +15,6 @@ import json
 import zipfile
 import os, tempfile
 from wsgiref.util import FileWrapper
-from .module_views import *
 
 from datetime import date, time, datetime
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
@@ -68,58 +67,192 @@ def adminup(request):
 	tab_list = []
 	dict_upload = {}
 	dict_nbr = {}
+
 	etude_recente = SuiviUpload.objects.all().order_by('date_upload')[:1]
+
 	if SuiviUpload.objects.all().order_by('date_upload')[:1].exists():
 		dossier_all = SuiviUpload.objects.filter(etude__etude__exact=etude_recente[0].etude.etude.id).distinct('dossier')
 		nbr_etape = RefEtapeEtude.objects.filter(etude__exact=etude_recente[0].id).count()
-		nom_etape = nomEtape(etude_recente)
+		nom_etape = RefEtapeEtude.objects.filter(etude__exact=etude_recente[0].id)
+		dict_etape_nom = []
+
+		for nom in nom_etape:
+			dict_etape_nom.append(nom.nom)
+
 		for files in dossier_all:
-			dict_upload = dictUpload(dict_upload,files)
-			info_etape = infoEtape(files)
-			var_etape = gestionetape(nom_etape, info_etape,nbr_etape)
-			if len(var_etape) == 2:
-				print(var_etape[1])
-				dict_upload['etape_etude'] = var_etape[1] 
-			dict_upload['error'] = var_etape[0]
+			nbr_files = SuiviUpload.objects.filter(dossier__exact=files.dossier.id).count()
+			name_etude = SuiviUpload.objects.filter(dossier__exact=files.dossier.id)[:1]
+			var_qc = DossierUpload.objects.get(id__exact=name_etude[0].dossier.id)
+
+			dict_upload['id_'] = files.id
+			dict_upload['Etudes'] = var_qc.controle_qualite.nom
+			dict_upload['Etudes_id'] = var_qc.id
+			dict_upload['id'] = name_etude[0].id_patient
+			dict_upload['nbr_upload'] = nbr_files
+
+			etape = JonctionEtapeSuivi.objects.filter(upload__exact=files.dossier.id).order_by('etape')
+			dict_etape_value = []
+
+			for item in etape:
+				if item.etat.id == 4:
+					dict_etape_value.append({"val_item":item.date, "val_id":item.id, 'block':True})		
+				else:
+					dict_etape_value.append({"val_item":item.etat.nom, "val_id":item.id, 'block':False})
+
+			if len(dict_etape_nom) == 0 or len(dict_etape_value) != nbr_etape:
+				if len(dict_etape_value) != nbr_etape:
+					nw_dict = {'Aucune_etape': "Une erreur sur les étapes lors de l'enregistrement de ces données ont été relevé"}
+					dict_upload['etape_etude'] = nw_dict
+					dict_upload['error'] = True
+				else:
+					nw_dict= {'Aucune_etape': "Aucune étape enregistré dans les bases de données"}
+					dict_upload['etape_etude'] = nw_dict
+					dict_upload['error'] = True
+			else:
+				dict_upload['etape_etude'] = dict_etape_value
+				dict_upload['error'] = False
+
 			tab_list.append(dict_upload)
 		dict_nbr['nbr_etape'] = nbr_etape
-		dict_nbr['nom_etape'] = nom_etape
-	list_centre = etudeRecente(etude_recente,dossier_all)
+		dict_nbr['nom_etape'] = dict_etape_nom
+
+	list_etude = RefEtudes.objects.all()
+	list_infcentre = RefInfocentre.objects.all()
+	list_centre = []
+
 	if etude_recente.exists():
-		gestion_info = gestionEtudeRecente(etude_recente, dossier_all,list_centre)
-	else:
-		dossier_all = ""
-		gestion_info = gestionEtudeRecente(etude_recente, dossier_all,list_centre)
+		for inf in dossier_all:
+			item = RefInfocentre.objects.get(user__exact=inf.user.id)
+			if item not in list_centre:
+				list_centre.append(item)		
+
+	str_etude = []
+	str_centre = []
+	str_dict = {}
+
+	for centre in list_centre:
+
+		str_dict_centre = {} 
+		str_dict_centre['id'] = centre.id
+		str_dict_centre['nom'] = str(centre.nom) + str(centre.numero)
+		str_centre.append(str_dict_centre)
+
+	for etude in list_etude:
+		str_dict = {}
+
+		if etude_recente.exists():
+			var_id = etude_recente[0].etude.etude.id
+		else:
+			var_id = -1
+
+		if etude.id == var_id:
+			str_dict['id'] = str(etude.id)
+			str_dict['option'] = 'selected'
+			str_dict['nom'] = etude.nom
+			str_etude.append(str_dict)
+		else:
+			str_dict['id'] = str(etude.id)
+			str_dict['option'] = ''
+			str_dict['nom'] = etude.nom
+			str_etude.append(str_dict)
+
 	nbr_entrée = len(tab_list)
+	print(nbr_entrée)
 	return render(request,
-		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':gestion_info[1], 'str_centre':gestion_info[0], 'taille':nbr_entrée})
+		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':str_etude, 'str_centre':str_centre, 'taille':nbr_entrée})
 
 @login_required(login_url="/auth/auth_in/")
 def uploadtris(request, id_tris):
 	tab_list = []
+	dict_upload = {}
 	dict_nbr = {}
+
+
 	etude_change = RefEtudes.objects.get(id__exact=id_tris)
 	dossier_all = SuiviUpload.objects.filter(etude__etude__exact=id_tris).distinct('dossier')
+
 	if dossier_all.exists():
 		nbr_etape = RefEtapeEtude.objects.filter(etude__exact=etude_change.id).count()
-		nom_etape = nomEtapeTris(etude_change)
+		nom_etape = RefEtapeEtude.objects.filter(etude__exact=etude_change.id)
+		dict_etape_nom = []
+
+		for nom in nom_etape:
+			dict_etape_nom.append(nom.nom)
+
 		for files in dossier_all:
 			dict_upload = {}
-			dict_upload = dictUpload(dict_upload,files)
-			info_etape = infoEtape(files)
-			var_etape = gestionetape(nom_etape, info_etape,nbr_etape)
-			dict_upload['etape_etude'] = var_etape[1] 
-			dict_upload['error'] = var_etape[0]
+			nbr_files = SuiviUpload.objects.filter(dossier__exact=files.dossier.id).count()
+			name_etude = SuiviUpload.objects.filter(dossier__exact=files.dossier.id)[:1]
+			var_qc = DossierUpload.objects.get(id__exact=name_etude[0].dossier.id)
+
+			dict_upload['id_'] = files.id
+			dict_upload['Etudes'] = var_qc.controle_qualite.nom
+			dict_upload['Etudes_id'] = var_qc.id
+			dict_upload['id'] = name_etude[0].id_patient
+			dict_upload['nbr_upload'] = nbr_files
+
+			etape = JonctionEtapeSuivi.objects.filter(upload__exact=files.dossier.id).order_by('etape')
+			dict_etape_value = []
+			
+			for item in etape:
+				if item.etat.id == 4:
+					dict_etape_value.append({"val_item":item.date, "val_id":item.id, 'block':True})		
+				else:
+					dict_etape_value.append({"val_item":item.etat.nom, "val_id":item.id, 'block':False})
+
+			if len(dict_etape_nom) == 0 or len(dict_etape_value) != nbr_etape:
+				if len(dict_etape_value) != nbr_etape:
+					nw_dict = {'Aucune_etape': "Une erreur sur les étapes lors de l'enregistrement de ces données ont été relevé"}
+					dict_upload['etape_etude'] = nw_dict
+					dict_upload['error'] = True
+				else:
+					nw_dict= {'Aucune_etape': "Aucune étape enregistré dans les bases de données"}
+					dict_upload['etape_etude'] = nw_dict
+					dict_upload['error'] = True
+			else:
+				dict_upload['etape_etude'] = dict_etape_value
+				dict_upload['error'] = False
+
 			tab_list.append(dict_upload)
 		dict_nbr['nbr_etape'] = nbr_etape
-		dict_nbr['nom_etape'] = nom_etape
+		dict_nbr['nom_etape'] = dict_etape_nom
 
-	list_centre = etudeTris(dossier_all)
-	gestion_info = gestionEtudeTris(etude_change, dossier_all,list_centre)
+	list_etude = RefEtudes.objects.all()
+	list_infcentre = RefInfocentre.objects.all()
+	list_centre = []
+
+	for inf in dossier_all:
+		item = RefInfocentre.objects.get(user__exact=inf.user.id)
+		if item not in list_centre:
+			list_centre.append(item)
+
+	str_etude = []
+	str_centre = []
+	str_dict = {}
+
+	for centre in list_centre:
+
+		str_dict_centre = {} 
+		str_dict_centre['id'] = centre.id
+		str_dict_centre['nom'] = str(centre.nom) + str(centre.numero)
+		str_centre.append(str_dict_centre)
+
+	for etude in list_etude:
+		str_dict = {}
+		if etude.id == etude_change.id:
+			str_dict['id'] = str(etude.id)
+			str_dict['option'] = 'selected'
+			str_dict['nom'] = etude.nom
+			str_etude.append(str_dict)
+		else:
+			str_dict['id'] = str(etude.id)
+			str_dict['option'] = ''
+			str_dict['nom'] = etude.nom
+			str_etude.append(str_dict)
 
 	nbr_entrée = len(tab_list)
 	return render(request,
-		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':gestion_info[1], 'str_centre':gestion_info[0], 'taille':nbr_entrée})
+		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':str_etude, 'str_centre':str_centre, 'taille':nbr_entrée})
 
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")

@@ -37,17 +37,12 @@ def formulaire(request):
 		etude = request.POST["etudes"]
 		nip = request.POST["nip"]
 		date = request.POST["date_irm"]
-
 		id_etude = JonctionUtilisateurEtude.objects.get(id__exact=etude)
 		etude_id = RefEtudes.objects.get(id__exact=id_etude.etude.id)
-
 		id_qc = RefControleQualite.objects.get(id__exact=1)
 		id_etape = RefEtatEtape.objects.get(id__exact=1)
-
 		id_etapes = RefEtapeEtude.objects.filter(etude__exact=etude_id)
-
 		date_now = datetime.today()
-
 		filez = request.FILES.getlist('upload')
 		create_jonction = DossierUpload(user=user_current, controle_qualite=id_qc, date=date)
 		create_jonction.save()
@@ -57,7 +52,7 @@ def formulaire(request):
 			create_suivi.save()
 
 		for etape in id_etapes:
-			create_etape = JonctionEtapeSuivi.objects.create(upload=create_jonction, etape=etape, etat=id_etape)
+			create_etape = JonctionEtapeSuivi.objects.create(upload=create_jonction, etape=etape, etat="")
 
 		var_url = '/upload/form/'
 		return redirect(var_url)
