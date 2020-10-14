@@ -15,6 +15,7 @@ import json
 import zipfile
 import os, tempfile
 from wsgiref.util import FileWrapper
+from django.utils import timezone
 
 from datetime import date, time, datetime
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
@@ -158,3 +159,72 @@ def nomEtapeTris(etude_change):
 	for nom in nom_etape:
 		dict_etape_nom.append(nom.nom)
 	return dict_etape_nom
+
+def nwPassword(check_mdp, type, nom, numero, username, pass_first, email):
+	if check_mdp :
+		nw_user = User.objects.create_user(
+		username=username, password=pass_first, email=email)
+		nw_user.save()
+		if int(type) == 0:
+			nw_user.is_staff = True
+			nw_user.save()
+		else:
+			if nw_user.is_staff:
+				nw_user.is_staff = False
+				nw_user.save()
+		if len(nom) > 0 and len(numero) > 0:
+			date_now = timezone.now()
+			nw_centre = RefInfocentre(nom=nom, numero=numero, date_ajout=date_now)
+			nw_centre.save()
+			nw_centre.user.add(nw_user)
+
+def editPassword(check_mdp, type, username, pass_first, email, user_info):
+	if checkmdp:
+		user_info.username = username
+		user_info.email = email
+		user_info.set_password(pass_first)
+
+		user_info.save()
+	else:
+		user_info.username = username
+		user_info.email = email
+
+	if int(type) == 0:
+		user_info.is_staff = True
+	else:
+		if user_info.is_staff:
+			user_info.is_staff = False
+	user_info.save()
+
+def joncCentre(user_etude, etude, user_info, user_centre, centre):
+	if not user_etude.exists() and int(etude) > 0:
+		date_now = timezone.now()
+		save_etude = RefEtudes.objects.get(pk=etude)
+		nw_jonction = JonctionUtilisateurEtude.objects.create(user=user_info, etude=save_etude, date_autorisation=date_now)
+	if not user_centre.exists() and int(centre) > 0:
+		date_now = timezone.now()
+		save_centre = RefInfocentre.objects.get(pk=centre)
+		save_centre.user.add(user_info)
+
+def j_serial(o):
+    from datetime import datetime, date
+    return str(o).split('.')[0] if isinstance(o, (datetime, date)) else None
+
+def delAuth(type_tab, id_search):
+	message = ""
+	if type_tab == 'etude':
+		user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search)
+		verif_suivi = SuiviUpload.objects.filter(etude__exact=user_etude)
+		if not verif_suivi.exists():
+			user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search).delete()
+			message = "Suppression des autorisations ont été appliquées"
+		else:
+			message = "Suppression annulée, cet utilisateur à chargé des documents :" + str(len(verif_suivi)) + " document(s) trouvés"
+	elif type_tab == "centre":
+		verif = SuiviUpload.objects.filter(id__exact=id_user)
+		if not verif.exists():
+			save_centre.user.remove(id_user)
+			message = "Le centre n'est plus lié à cet utilisateur"
+		else:
+			message = "Cet utilisateur lié à ce centre a chargé des documents (" + str(len(verif)) + " document(s))"
+	return message

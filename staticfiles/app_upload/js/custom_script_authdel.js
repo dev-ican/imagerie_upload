@@ -61,7 +61,6 @@ function ajax(url_etude,id_,csrftoken,id_parent,type_parent){
 			var str_etude = "";
 			var tab_var = 0;
 			var y = 0;
-
 			var count = Object.keys(val_data).length;
 
 			for (let x=0; x < count; x++){
@@ -72,7 +71,6 @@ function ajax(url_etude,id_,csrftoken,id_parent,type_parent){
 					for (const property in tab_var) {
   						y += 1;
 					}
-					console.log('nbr de tour dans études ---- ', y);
 				for (let i=0;i < y; i++){
 					str_etude = str_etude + '<tr><td>' + Object.values(val_data)[x][i].nom + '</td><td>' + Object.values(val_data)[x][i].date + '</td>'
 					str_etude = str_etude + '<td value="' + Object.values(val_data)[x][i].id_user + '" name="etude"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="' + Object.values(val_data)[x][i].id_jonc + '">'
@@ -84,7 +82,6 @@ function ajax(url_etude,id_,csrftoken,id_parent,type_parent){
 					for (const property in tab_var) {
   						y += 1;
 					}
-					console.log('nbr de tour dans centre -----', y)
 				for (let i=0;i < y; i++){
 					str_centre = '<tr><td>' + Object.values(val_data)[x][i].nom + '</td><td>' + Object.values(val_data)[x][i].num + '</td><td>' + Object.values(val_data)[x][i].date + '</td>'
 					str_centre = str_centre + '<td value="' + Object.values(val_data)[x][i].id_user + '" name="centre"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="' + Object.values(val_data)[x][i].id_jonc + '">'

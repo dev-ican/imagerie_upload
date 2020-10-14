@@ -9,7 +9,7 @@ from .forms import LogIn
 
 
 def get_login(request):
-    ''' Permet de se connecter au: site
+    ''' Permet de se connecter au site
     Allows you to connect to the site '''
 
     if request.method == 'POST':

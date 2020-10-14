@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 
 def user_directory_path(instance, filename):
 	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
-	print(instance.fichiers)
 	id_centre = RefInfocentre.objects.get(user__exact=instance.user.id)
 	return '{0}/{1}/{2}/{3}'.format(instance.etude.etude.nom, id_centre, instance.id_patient, filename)
 
@@ -71,7 +70,7 @@ class RefEtatEtape(models.Model):
 class JonctionEtapeSuivi(models.Model):
 	upload = models.ForeignKey("DossierUpload", on_delete=models.CASCADE, blank=True)
 	etape = models.ForeignKey("RefEtapeEtude", on_delete=models.CASCADE)
-	etat = models.ForeignKey("RefEtatEtape", on_delete=models.CASCADE, blank=True)
+	etat = models.ForeignKey("RefEtatEtape", on_delete=models.CASCADE, blank=True, null=True)
 	date = models.DateTimeField("Date de l'étape", blank=True, null=True)
 
 class DossierUpload(models.Model):

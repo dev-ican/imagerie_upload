@@ -18,27 +18,30 @@ from wsgiref.util import FileWrapper
 from .module_views import *
 
 from datetime import date, time, datetime
+from django.utils import timezone
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
 from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload, DossierUpload, RefEtatEtape, RefControleQualite
 
-# Create your views here.
+# Gère la page statistique
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+
 @login_required(login_url="/auth/auth_in/")
 def adminpage(request):
+	''' Permet d'afficher la page de statistique '''
 	label_etude_final = []
 	dict_etat = {}
 	list_etude = RefEtudes.objects.all()
-	#Nbr de patient dans un état donnée
 	list_etat = RefEtatEtape.objects.all()
 	for etude in list_etude:
 		exist_etude = SuiviUpload.objects.filter(etude__etude__exact=etude.id).distinct('dossier')
 		nbr_inclusion = SuiviUpload.objects.filter(etude__etude__exact=etude.id).distinct('dossier').count()	
-
 		resume_etat = {}
 		resume_etat['data'] = json.dumps({'nbr':[nbr_inclusion],'nom':[etude.nom]})
 		if exist_etude.exists():
-
 			for etat in list_etat:
 				nbr_qc_ok = 0
 				nbr_qc_not = 0
@@ -58,14 +61,19 @@ def adminpage(request):
 			resume_etat['Refused'] = nbr_qc_not
 			resume_etat['Passed'] = nbr_qc_ok
 			dict_etat[etude.nom] = resume_etat
-
 	return render(request,
 		'admin_page.html', {"nbr_etat":dict_etat})
 
+# Permet d'afficher la page des étapes de chaque étude
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
 
 @login_required(login_url="/auth/auth_in/")
 def adminup(request):
+	''' Affiche la page du tableau gérant les différents état des étapes d'une étude. '''
 	tab_list = []
+	list_centre = []
 	dict_upload = {}
 	dict_nbr = {}
 	etude_recente = SuiviUpload.objects.all().order_by('date_upload')[:1]
@@ -84,7 +92,7 @@ def adminup(request):
 			tab_list.append(dict_upload)
 		dict_nbr['nbr_etape'] = nbr_etape
 		dict_nbr['nom_etape'] = nom_etape
-	list_centre = etudeRecente(etude_recente,dossier_all)
+		list_centre = etudeRecente(etude_recente,dossier_all)
 	if etude_recente.exists():
 		gestion_info = gestionEtudeRecente(etude_recente, dossier_all,list_centre)
 	else:
@@ -96,6 +104,7 @@ def adminup(request):
 
 @login_required(login_url="/auth/auth_in/")
 def uploadtris(request, id_tris):
+	''' Cette page est appelé lors du tris du tableau vers une autre étude, cet appel ce fait via ajax '''
 	tab_list = []
 	dict_nbr = {}
 	etude_change = RefEtudes.objects.get(id__exact=id_tris)
@@ -113,10 +122,8 @@ def uploadtris(request, id_tris):
 			tab_list.append(dict_upload)
 		dict_nbr['nbr_etape'] = nbr_etape
 		dict_nbr['nom_etape'] = nom_etape
-
 	list_centre = etudeTris(dossier_all)
 	gestion_info = gestionEtudeTris(etude_change, dossier_all,list_centre)
-
 	nbr_entrée = len(tab_list)
 	return render(request,
 		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':gestion_info[1], 'str_centre':gestion_info[0], 'taille':nbr_entrée})
@@ -124,77 +131,72 @@ def uploadtris(request, id_tris):
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")
 def uploadmod(request):
+	''' Appel ajax lors du double clic sur une case du tableau.
+	Ce module renvois la liste des états d'une étape et l'intégre dans la cellule ou l'utilisateur à cliqué'''
 	tab_list = {}
-
 	val_etat = RefEtatEtape.objects.all()
 	x = 0
 	for etat in val_etat:
 		var_str = 'etat_' + str(x)
 		tab_list[var_str] = {'id':etat.id, 'nom':etat.nom, 'var':var_str}
 		x += 1
-
 	creation_json = json.dumps(tab_list)
 	return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")
 def uploadmodqc(request):
+	''' Appel ajax lors du double clic sur une case du tableau.
+	Ce module renvois la liste des états du controle qualité et l'intégre dans la cellule ou l'utilisateur à cliqué'''
 	tab_list = {}
-
 	val_etat = RefControleQualite.objects.all()
 	x = 0
 	for etat in val_etat:
 		var_str = 'etat_' + str(x)
 		tab_list[var_str] = {'id':etat.id, 'nom':etat.nom}
 		x += 1
-
 	creation_json = json.dumps(tab_list)
 	return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")
 def uploadmaj(request):
+	''' Appel ajax lors du changement d'état d'une étape.
+	Ce module modifie l'état dans la base de donnée puis renvois vers la page pour afficher la modification'''
 	tab_list = {}
-
 	val_jonction = request.GET.get('jonction')
 	val_etat = request.GET.get('etat_id')
 	val_etude = request.GET.get('etude_id')
-
-	print(val_etat)
 	if val_etat == str(4):
 		date_now = datetime.today()
-		print(date_now)
 		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
 		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(date=date_now)
 	else:
 		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
-
 	var_url = '/admin_page/upfiles/tris/' + str(val_etude) + '/'
 	return redirect(var_url)
 
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")
 def uploadmajqc(request):
+	''' Appel ajax lors du changement d'état d'un controle qualité.
+	Ce module modifie l'état dans la base de donnée puis renvois vers la page pour afficher la modification'''
 	tab_list = {}
-
 	val_jonction = request.GET.get('jonction')
 	val_etat = request.GET.get('etat_id')
 	val_etude = request.GET.get('etude_id')
-
 	qc = RefControleQualite.objects.get(id__exact=val_etat)
 	DossierUpload.objects.filter(id__exact=val_jonction).update(controle_qualite=qc)
-
-
 	var_url = '/admin_page/upfiles/tris/' + str(val_etude) + '/'
 	return redirect(var_url)
 
 @login_required(login_url="/auth/auth_in/")
 def affdossier(request, id_suivi):
+	''' Lors du clic sur un dossier chargé dans le tableau des étapes, cela appel le module qui affiche les fichiers
+	chargé pour le patient donné'''
 	tab_list = []
-
 	var_suivi = SuiviUpload.objects.get(id__exact=id_suivi)
 	list_lien = SuiviUpload.objects.filter(dossier__id__exact=var_suivi.dossier.id)
-
 	for item in list_lien:
 		dict_list = {}
 		lien = str(item.fichiers)
@@ -202,14 +204,13 @@ def affdossier(request, id_suivi):
 		nom = tab_lien[-1]
 		dict_list = {'nom':nom, 'url':item.id}
 		tab_list.append(dict_list)
-
 	info_dossier = {"id":var_suivi.id_patient, "etude":var_suivi.etude.etude.nom, 'lien':var_suivi.id}
-
 	return render(request,
 		'admin_page_down.html', {'resultat':tab_list, 'tab_dossier':info_dossier})
 
 @login_required(login_url="/auth/auth_in/")
 def downOnce(request, id):
+	''' Ce module est appelé lors du téléchargement d'un fichier chargé pour le patient donnée '''
 	obj = SuiviUpload.objects.get(id__exact=id)
 	filename = obj.fichiers.path
 	file_path = os.path.join(settings.MEDIA_ROOT, filename)
@@ -221,32 +222,26 @@ def downOnce(request, id):
 
 @login_required(login_url="/auth/auth_in/")
 def downAll(request, id):
+	''' Ce module est appelé lorsque l'utilisateur souhaite téléchargé la totalité des fichiers chargé dans le dossier
+	Ce téléchargement utilise zipfile en mémoir temporaire '''
 	obj = SuiviUpload.objects.get(id__exact=id)
 	list_lien = SuiviUpload.objects.filter(dossier__id__exact=obj.dossier.id)
-
 	in_memory = BytesIO()
 	zip = zipfile.ZipFile(in_memory, "a")
-
 	for item in list_lien:
 		lien = str(item.fichiers)
 		tab_lien = lien.split('/')
 		nom = tab_lien[-1]
 		del tab_lien[-1]
 		file_path = os.path.join(settings.MEDIA_ROOT, lien)
-
 		img = open(file_path, "rb")
 		img_read = img.read()
-
 		zip.writestr(nom, img_read)
-
 	zip.close()
-
 	response = HttpResponse(content_type='application/zip')
 	response["Content-Disposition"] = "attachement;filename=corelab.zip"
-
 	in_memory.seek(0)
 	response.write(in_memory.read())
-
 	return response
 
 # Gère la partie Admin Etudes
@@ -255,14 +250,12 @@ def downAll(request, id):
 #--------------------------------------------------------------------------------------
 @login_required(login_url="/auth/auth_in/")
 def adminetude(request):
+	''' Charge la page index pour l'ajout ou l'édition d'une étude '''
 	if request.method == 'POST':
 		nom = request.POST['nom']
-
 		user_current = request.user
-
-		date_now = datetime.today()
+		date_now = timezone.now()
 		RefEtudes.objects.create(nom=nom, date_ouverture=date_now)
-	
 	form = FormsEtude()
 	etude_tab = RefEtudes.objects.all()
 	return render(request,
@@ -270,21 +263,16 @@ def adminetude(request):
 
 @login_required(login_url="/auth/auth_in/")
 def etudeEdit(request, id_etape):
+	''' Charge la page d'édition des études '''
 	liste_protocole = []
-
 	if request.method == 'POST':
 		form = FormsEtude()
-
 		nom = request.POST['nom']
 		date = request.POST['date_ouverture']
-
 		user_info = RefEtudes.objects.get(pk=id_etape)
-
 		user_info.nom = nom
 		user_info.date_ouverture = date
-
 		user_info.save()
-
 		return HttpResponseRedirect('/admin_page/etudes/')
 	else:
 		user_info = RefEtudes.objects.get(pk=id_etape)
@@ -292,9 +280,7 @@ def etudeEdit(request, id_etape):
 		'nom': user_info.nom,
 		'date': user_info.date_ouverture
 		}
-
 		form = FormsEtude(info)
-
 	etude_tab = RefEtudes.objects.all().order_by('nom')
 	return render(request,
 		'admin_etude_edit.html',{"form":form, 'resultat':etude_tab, 'select':int(id_etape)})
@@ -302,12 +288,11 @@ def etudeEdit(request, id_etape):
 
 @login_required(login_url="/auth/auth_in/")
 def etudeDel(request, id_etape):
+	''' Appel Ajax permettant la supression d'une étude '''
 	liste_protocole = []
 	x = 0
-
 	if request.method == 'POST':
 		info_etape = RefEtapeEtude.objects.filter(etude__id__exact=id_etape)
-
 		if info_etape.exists():
 			for item in info_etape:
 				info_suivi = JonctionEtapeSuivi.objects.filter(etape__exact=item.id)
@@ -318,22 +303,17 @@ def etudeDel(request, id_etape):
 				suppr = True
 		else:
 			suppr = True
-
 		if suppr == True:
-
 			RefEtudes.objects.get(id__exact=id_etape).delete()
-
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression Faite")
-
 		else:
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression annulée, cette étude est liée à :" + x + " suivi(s)")
-
 	form = FormsEtude()
 	etude_tab = RefEtudes.objects.all().order_by('nom')
 	context = {"form":form, 'resultat':etude_tab, 'message':message}
@@ -346,99 +326,76 @@ def etudeDel(request, id_etape):
 
 @login_required(login_url="/auth/auth_in/")
 def adminetape(request):
+	''' Charge la page index pour l'ajout ou l'édition d'une étape '''
 	liste_protocole = []
 	if request.method == 'POST':
 		val_nom = request.POST['nom']
 		val_etude = request.POST['etudes']
-
 		query = RefEtudes.objects.get(id__exact=val_etude)
 		RefEtapeEtude.objects.create(nom=val_nom, etude=query)
-
 	form = FormsEtape()
 	request_etude = RefEtudes.objects.all()
-
 	liste_protocole = choiceEtude(True)
-
 	form.fields['etudes'].choices = liste_protocole
 	form.fields['etudes'].initial = [0]
-
 	etape_tab = RefEtapeEtude.objects.all()
 	return render(request,
 		'admin_etapes.html',{"form":form, 'resultat':etape_tab})
 
 @login_required(login_url="/auth/auth_in/")
 def etapeEdit(request, id_etape):
+	''' Charge la page d'édition des étapes '''
 	liste_protocole = []
-
 	if request.method == 'POST':
 		select_etape = RefEtapeEtude.objects.get(pk=id_etape)
 		nom = request.POST['nom']
 		etudes = request.POST['etudes']
-
-		#nbr = int(etudes) + 1
 		ref_etude = RefEtudes.objects.get(id=etudes)
-
 		select_etape.nom = nom
 		select_etape.etude = ref_etude
-
 		select_etape.save()
-
 		form = FormsEtape()
-
 		return HttpResponseRedirect('/admin_page/etapes/')
 	else:
 		etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
 		id_etude = RefEtudes.objects.get(nom=etape_filtre.etude)
-
 		form = FormsEtape()
 		request_etude = RefEtudes.objects.all()
-
 		liste_protocole = choiceEtude(False)
-
 		form.fields['etudes'].choices = liste_protocole
 		form.fields['etudes'].initial = [id_etude.id]
 		form.fields['nom'].initial = etape_filtre.nom
-
 	etape_tab = RefEtapeEtude.objects.all()
 	return render(request,
 		'admin_etapes_edit.html',{"form":form, 'resultat':etape_tab, 'select':int(id_etape)})
 
 @login_required(login_url="/auth/auth_in/")
 def etapeDel(request, id_etape):
+	''' Appel Ajax permettant la supression d'une étapes '''
 	liste_protocole = []
 	x = 0
-
 	if request.method == 'POST':
 		suppr = True
-
 		info_suivi = JonctionEtapeSuivi.objects.filter(etape__id__exact=id_etape)
 		if info_suivi.exists():
 			for nbr in info_suivi:
 				x += 1
 			suppr = False
-
 		if suppr == True:
-
 			RefEtapeEtude.objects.get(id__exact=id_etape).delete()
-
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression Faite")
-
 		else:
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
-
-
 	form = FormsEtape()
-
 	liste_protocole = choiceEtude(True)
 	form.fields['etudes'].choices = liste_protocole
 	form.fields['etudes'].initial = [0]
-
 	etape_tab = RefEtapeEtude.objects.all()
 	context = {"form":form, 'resultat':etape_tab, 'message':message}
 	return render(request,'admin_etapes.html', context)
@@ -452,6 +409,7 @@ def etapeDel(request, id_etape):
 
 @login_required(login_url="/auth/auth_in/")
 def adminuser(request):
+	''' Charge la page index pour l'ajout ou l'édition d'un utilisateur '''
 	liste_protocole = []
 	if request.method == 'POST':
 		username = request.POST['username']
@@ -461,29 +419,8 @@ def adminuser(request):
 		pass_first = request.POST['pass_first']
 		pass_second = request.POST['pass_second']
 		type = request.POST['type']
-
-
 		check_mdp = checkmdp(pass_first, pass_second)
-
-		if check_mdp :
-			nw_user = User.objects.create_user(
-			username=username, password=pass_first, email=email)
-			nw_user.save()
-
-			if int(type) == 0:
-				nw_user.is_staff = True
-				nw_user.save()
-			else:
-				if nw_user.is_staff:
-					nw_user.is_staff = False
-					nw_user.save()
-			
-			if len(nom) > 0 and len(numero) > 0:
-				date_now = datetime.today()
-				nw_centre = RefInfocentre(nom=nom, numero=numero, date_ajout=date_now)
-				nw_centre.save()
-				nw_centre.user.add(nw_user)
-
+		nwPassword(check_mdp, type, nom, numero, username, pass_first, email)
 	form = FormsUser()
 	user_tab = User.objects.all().order_by('username')
 	return render(request,
@@ -491,39 +428,18 @@ def adminuser(request):
 
 @login_required(login_url="/auth/auth_in/")
 def userEdit(request, id_etape):
+	''' Charge la page d'édition des utilisateurs '''
 	liste_protocole = []
-
 	if request.method == 'POST':
 		form = FormsUserEdit()
 		type = request.POST['type']
 		username = request.POST['username']
 		email = request.POST['email']
-
 		pass_first = request.POST['pass_first']
 		pass_second = request.POST['pass_second']
-
 		user_info = User.objects.get(pk=id_etape)
-
 		check_mdp = checkmdp(pass_first, pass_second)
-
-
-		if checkmdp:
-			user_info.username = username
-			user_info.email = email
-			user_info.set_password(pass_first)
-
-			user_info.save()
-		else:
-			user_info.username = username
-			user_info.email = email
-
-		if int(type) == 0:
-			user_info.is_staff = True
-		else:
-			if user_info.is_staff:
-				user_info.is_staff = False
-		user_info.save()
-
+		editPassword(check_mdp, type, username, pass_first, email, user_info)
 		return HttpResponseRedirect('/admin_page/viewUser/')
 	else:
 		user_info = User.objects.get(pk=id_etape)
@@ -531,42 +447,33 @@ def userEdit(request, id_etape):
 		'username': user_info.username,
 		'email': user_info.email,
 		}
-
 		form = FormsUserEdit(info)
-
 	user_tab = User.objects.all().order_by('username')
-
 	return render(request,
 		'admin_user_edit.html',{"form":form, 'resultat':user_tab, 'select':int(id_etape)})
 
 @login_required(login_url="/auth/auth_in/")
 def userDel(request, id_etape):
+	''' Appel Ajax permettant la supression d'un utilisateur '''
 	liste_protocole = []
 	x = 0
-
 	if request.method == 'POST':
 		suppr = True
-
 		info_suivi = User.objects.get(id__exact=id_etape)
 		info_upload =  SuiviUpload.objects.filter(user__id__exact=info_suivi.id)
-
 		if info_upload.exists():
 			for nbr in info_upload:
 				x += 1
 			suppr = False
-
 		if suppr == True:
-
 			exist_jonction = JonctionUtilisateurEtude.objects.filter(user__id__exact=info_suivi.id)
 			if exist_jonction.exists():
 				JonctionUtilisateurEtude.objects.get(user__exact=info_suivi).delete()
-
 			User.objects.get(id__exact=id_etape).delete()
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression Faite")
-
 		else:
 			if x == 0 :
 				terme = "suivi"
@@ -576,11 +483,8 @@ def userDel(request, id_etape):
 				request,
 				messages.WARNING,
 				"Suppression annulée, cette étape est liée à : " + str(x) + terme)
-
-
 	form = FormsUser()
 	user_tab = User.objects.all().order_by('username')
-
 	context = {"form":form, 'resultat':user_tab, 'message':message}
 	return render(request,'admin_user.html', context)
 
@@ -593,14 +497,13 @@ def userDel(request, id_etape):
 
 @login_required(login_url="/auth/auth_in/")
 def admincentre(request):
+	''' Charge la page index pour l'ajout ou l'édition d'un centre '''
 	liste_protocole = []
 	if request.method == 'POST':
 		nom = request.POST['nom']
 		numero = request.POST['numero']
-	
-		date_now = datetime.today()
+		date_now = timezone.now()
 		nw_centre = RefInfocentre.objects.create(nom=nom, numero=numero, date_ajout=date_now)
-
 	form = FormCentre()
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
@@ -608,21 +511,16 @@ def admincentre(request):
 
 @login_required(login_url="/auth/auth_in/")
 def centreEdit(request, id_etape):
+	''' Charge la page d'édition des centres '''
 	liste_protocole = []
-
 	if request.method == 'POST':
 		form = FormCentre()
-
 		nom = request.POST['nom']
 		numero = request.POST['numero']
-
 		user_info = RefInfocentre.objects.get(pk=id_etape)
-
 		user_info.nom = nom
 		user_info.numero = numero
-
 		user_info.save()
-
 		return HttpResponseRedirect('/admin_page/centre/')
 	else:
 		user_info = RefInfocentre.objects.get(pk=id_etape)
@@ -631,18 +529,16 @@ def centreEdit(request, id_etape):
 		'numero': user_info.numero,
 		'date_ajout': user_info.date_ajout
 		}
-
 		form = FormCentre(info)
-
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
 		'admin_centre_edit.html',{"form":form, 'resultat':centre_tab, 'select':int(id_etape)})
 
 @login_required(login_url="/auth/auth_in/")
 def centreDel(request, id_etape):
+	''' Appel Ajax permettant la supression d'un centre '''
 	liste_protocole = []
 	x = 0
-
 	if request.method == 'POST':
 		suppr = True
 		info_centre = RefInfocentre.objects.get(id__exact=id_etape)
@@ -654,7 +550,6 @@ def centreDel(request, id_etape):
 					for nbr in info_suivi:
 						x += 1
 					suppr = False
-
 		if suppr == True:
 			RefInfocentre.objects.get(id__exact=id_etape).delete()
 			message = messages.add_message(
@@ -666,104 +561,64 @@ def centreDel(request, id_etape):
 				request,
 				messages.WARNING,
 				"Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
-
 	form = FormCentre()
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	context = {"form":form, 'resultat':centre_tab, 'message':message}
 	return render(request,'admin_centre.html', context)
 
+# Gère la partie autorisation
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------
+
 @login_required(login_url="/auth/auth_in/")
 def adminauth(request):
+	''' Charge la page index pour l'autorisation des utilisateurs '''
 	liste_protocole = []
-
 	user_tab = User.objects.all().order_by('username')
 	return render(request,
 		'admin_autorisation.html',{'resultat':user_tab})
 
+
 @login_required(login_url="/auth/auth_in/")
 def authEdit(request, id_etape):
+	''' Charge la page d'édition des autorisations utilisateur '''
 	liste_etude = []
 	liste_centre = []
-
 	user_info = User.objects.get(pk=id_etape)
-
 	if request.method == 'POST':
 		form = FormsAutorisation()
-
 		etude = request.POST['etude']
 		centre = request.POST['centre']
-
 		user_centre = RefInfocentre.objects.filter(user__id__exact=id_etape).filter(id=centre)
 		user_etude = JonctionUtilisateurEtude.objects.filter(user__exact=id_etape).filter(etude__id__exact=etude)
-
-		if not user_etude.exists() and int(etude) > 0:
-			date_now = datetime.today()
-			save_etude = RefEtudes.objects.get(pk=etude)
-			nw_jonction = JonctionUtilisateurEtude.objects.create(user=user_info, etude=save_etude, date_autorisation=date_now)
-
-		if not user_centre.exists() and int(centre) > 0:
-			date_now = datetime.now()
-			save_centre = RefInfocentre.objects.get(pk=centre)
-			save_centre.user.add(user_info)
-		else:
-			print("ne prend pas en compte")
-
-
+		joncCentre(user_etude, etude, user_info, user_centre, centre)
 	liste_etude = choiceEtude(True)
 	liste_centre = choiceCentre(True)
-
 	form = FormsAutorisation()
-
 	form.fields['etude'].choices = liste_etude
 	form.fields['etude'].initial = [0]
 	form.fields['centre'].choices = liste_centre
 	form.fields['centre'].initial = [0]
-
 	user_centre = RefInfocentre.objects.filter(user__id__exact=id_etape)
 	user_etude = JonctionUtilisateurEtude.objects.filter(user__exact=id_etape)
-
-	#centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
 		'admin_auth_edit.html',{"form":form, 'etude':user_etude, 'centre':user_centre, 'user':user_info})
 
 @login_required(login_url="/auth/auth_in/")
 def authDel(request):
+	''' Appel Ajax permettant la supression d'une autorisation '''
 	liste_etude = []
 	liste_centre = []
-
-	message = ""
-
 	id_user = request.POST.get('val_user')
 	id_search = request.POST.get('val_id')
 	type_tab = request.POST.get('type_tab')
-
 	user_info = User.objects.get(pk=id_user)
-
 	if request.method == 'POST':
 		form = FormsAutorisation()
-		if type_tab == 'etude':
-			user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search)
-			verif_suivi = SuiviUpload.objects.filter(etude__exact=user_etude)
-
-			if not verif_suivi.exists():
-				user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search).delete()
-				message = "Suppression des autorisations ont été appliquées"
-			else:
-				message = "Suppression annulée, cet utilisateur à chargé des documents :" + str(len(verif_suivi)) + " document(s) trouvés"
-
-		elif type_tab == "centre":
-			verif = SuiviUpload.objects.filter(id__exact=id_user)
-
-			if not verif.exists():
-				save_centre.user.remove(id_user)
-				message = "Le centre n'est plus lié à cet utilisateur"
-			else:
-				message = "Cet utilisateur lié à ce centre a chargé des documents (" + str(len(verif)) + " document(s))"
-
-
+		message = delAuth(type_tab, id_search)
 	user_centre = RefInfocentre.objects.filter(user__id__exact=user_info.id)
 	user_etude = JonctionUtilisateurEtude.objects.filter(user__exact=user_info.id)
-
 	var_etude = {}
 	var_centre = {}
 	x = 0
@@ -776,13 +631,9 @@ def authDel(request):
 		date_j = j_serial(item.date_ajout)
 		var_centre[x] = {'nom':item.nom, 'num':item.numero, 'date':date_j, 'type':'centre', 'id_jonc':item.id, 'id_user':user_info.id}
 		x += 1
-
-
 	context = {'etude':var_etude, 'centre':var_centre, 'message':message}
 	creation_json = json.dumps(context)
 	return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
-def j_serial(o):     # self contained
-    from datetime import datetime, date
-    return str(o).split('.')[0] if isinstance(o, (datetime, date)) else None
+
 
