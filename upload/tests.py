@@ -66,7 +66,7 @@ class TestApp(TestCase):
 #---------------------------------------------------------------------------------------------
 
 	def test_upload(self):
-		''' Test le module gestion documentaire
+		''' Test le module formulaire d'upload
 		'''
 		date_now = timezone.now()
 		self.client.login(username="testuser1", password='testtest')

@@ -14,7 +14,7 @@
 </form>
 {% endblock %}
 {% block section_two %}
-<h4><p class="text-white-75 font-weight-light mb-5">Les utilisateurs actuellement enregistré</p></h4>
+<h4><p class="text-white-75 font-weight-light mb-5" name="titre_user">Les utilisateurs actuellement enregistrés</p></h4>
 {% if messages %}
         {% for message in messages %}
           <p class="text-warning" id='msgEtape'>{{ message }}</p>

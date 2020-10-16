@@ -16,6 +16,8 @@ import zipfile
 import os, tempfile
 from wsgiref.util import FileWrapper
 from django.utils import timezone
+from .module_log import *
+from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import date, time, datetime
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
@@ -42,11 +44,13 @@ def gestionetape(dict_etape_nom,dict_etape_value,nbr_etape):
 
 def etudeRecente(etude_recente,dossier_all):
 	list_centre = []	
-	if etude_recente.exists():
+	try:
 		for inf in dossier_all:
 			item = RefInfocentre.objects.get(user__exact=inf.user.id)
 			if item not in list_centre:
 				list_centre.append(item)
+	except ObjectDoesNotExist:
+		print('erreur')
 	return list_centre
 
 def etudeTris(dossier_all):
@@ -75,9 +79,9 @@ def gestionEtudeRecente(etude_recente,dossier_all,list_centre):
 	for etude in list_etude:
 		str_dict = {}
 
-		if etude_recente.exists():
-			var_id = etude_recente[0].etude.etude.id
-		else:
+		try:
+			var_id = etude_recente.etude.etude.id
+		except:
 			var_id = -1
 
 		if etude.id == var_id:
@@ -145,7 +149,7 @@ def infoEtape(files):
 	return dict_etape_value
 
 def nomEtape(etude_recente):
-	nom_etape = RefEtapeEtude.objects.filter(etude__exact=etude_recente[0].id)
+	nom_etape = RefEtapeEtude.objects.filter(etude__exact=etude_recente.id)
 	dict_etape_nom = []
 
 	for nom in nom_etape:
@@ -210,20 +214,33 @@ def j_serial(o):
     from datetime import datetime, date
     return str(o).split('.')[0] if isinstance(o, (datetime, date)) else None
 
-def delAuth(type_tab, id_search):
+def delAuth(type_tab, id_search, req):
+	user_current = req.user
 	message = ""
 	if type_tab == 'etude':
 		user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search)
 		verif_suivi = SuiviUpload.objects.filter(etude__exact=user_etude)
 		if not verif_suivi.exists():
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a supprimé l'autorisation : " + user_etude.etude.nom + " de l'utilisateur " + user_current.username
+			supprLog(req, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search).delete()
 			message = "Suppression des autorisations ont été appliquées"
 		else:
 			message = "Suppression annulée, cet utilisateur à chargé des documents :" + str(len(verif_suivi)) + " document(s) trouvés"
 	elif type_tab == "centre":
-		verif = SuiviUpload.objects.filter(id__exact=id_user)
+		verif = RefInfocentre.objects.filter(id__exact=id_search)
 		if not verif.exists():
-			save_centre.user.remove(id_user)
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a supprimé l'autorisation : " + user_etude.etude.nom + " de l'utilisateur " + user_current.username
+			supprLog(req, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			verif.user.remove(id_search)
 			message = "Le centre n'est plus lié à cet utilisateur"
 		else:
 			message = "Cet utilisateur lié à ce centre a chargé des documents (" + str(len(verif)) + " document(s))"

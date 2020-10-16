@@ -16,13 +16,15 @@ import zipfile
 import os, tempfile
 from wsgiref.util import FileWrapper
 from .module_views import *
+from .module_log import *
+from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import date, time, datetime
 from django.utils import timezone
 from .module_admin import checkmdp, take_data, choiceEtude, choiceCentre
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload, DossierUpload, RefEtatEtape, RefControleQualite
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload, DossierUpload, RefEtatEtape, RefControleQualite, log, RefTypeAction
 
 # Gère la page statistique
 #--------------------------------------------------------------------------------------
@@ -37,30 +39,42 @@ def adminpage(request):
 	list_etude = RefEtudes.objects.all()
 	list_etat = RefEtatEtape.objects.all()
 	for etude in list_etude:
-		exist_etude = SuiviUpload.objects.filter(etude__etude__exact=etude.id).distinct('dossier')
-		nbr_inclusion = SuiviUpload.objects.filter(etude__etude__exact=etude.id).distinct('dossier').count()	
+		exist_etude = SuiviUpload.objects.filter(etude__etude=etude.id).distinct('dossier')
 		resume_etat = {}
-		resume_etat['data'] = json.dumps({'nbr':[nbr_inclusion],'nom':[etude.nom]})
+		resume_etat['data'] = json.dumps({'nbr':[exist_etude.count()],'nom':[etude.nom]})
 		if exist_etude.exists():
 			for etat in list_etat:
 				nbr_qc_ok = 0
 				nbr_qc_not = 0
 				nbr_qc_nw = 0
 				for dossier in exist_etude:
-					qc_dossier = DossierUpload.objects.get(id__exact=dossier.dossier.id)
-					if DossierUpload.objects.filter(id__exact=dossier.dossier.id).exists():
+					try:
+						qc_dossier = DossierUpload.objects.get(id=dossier.dossier.id)
 						if qc_dossier.controle_qualite.id == 1:
 							nbr_qc_nw += 1
 						elif qc_dossier.controle_qualite.id == 2:
 							nbr_qc_ok += 1
 						elif qc_dossier.controle_qualite.id == 3:
 							nbr_qc_not += 1
+					except ObjectDoesNotExist:
+						#Enregistrement du log------------------------------------------------------------------------
+						#---------------------------------------------------------------------------------------------
+						nom_documentaire = " a provoqué une erreur le dossier patient n'existe pas"
+						informationLog(request, nom_documentaire)
+						#----------------------------------------------------------------------------------------------
+						#----------------------------------------------------------------------------------------------
 					nbr_etat = JonctionEtapeSuivi.objects.filter(upload__exact=dossier.dossier).filter(etat__exact=etat).count()
 					resume_etat[etat.nom] = nbr_etat
 			resume_etat['Nouveau'] = nbr_qc_nw
 			resume_etat['Refused'] = nbr_qc_not
 			resume_etat['Passed'] = nbr_qc_ok
 			dict_etat[etude.nom] = resume_etat
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " Affiche la page graphique"
+	informationLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return render(request,
 		'admin_page.html', {"nbr_etat":dict_etat})
 
@@ -76,29 +90,34 @@ def adminup(request):
 	list_centre = []
 	dict_upload = {}
 	dict_nbr = {}
-	etude_recente = SuiviUpload.objects.all().order_by('date_upload')[:1]
-	if SuiviUpload.objects.all().order_by('date_upload')[:1].exists():
-		dossier_all = SuiviUpload.objects.filter(etude__etude__exact=etude_recente[0].etude.etude.id).distinct('dossier')
-		nbr_etape = RefEtapeEtude.objects.filter(etude__exact=etude_recente[0].id).count()
+	etude_recente = SuiviUpload.objects.get(id=SuiviUpload.objects.all().order_by('dossier', 'date_upload')[:1])
+	try:
+		dossier_all = SuiviUpload.objects.filter(etude=etude_recente.etude).distinct('dossier')
+		nbr_etape = RefEtapeEtude.objects.filter(etude=etude_recente.etude.etude).count()
 		nom_etape = nomEtape(etude_recente)
 		for files in dossier_all:
+			dict_upload = {}
 			dict_upload = dictUpload(dict_upload,files)
 			info_etape = infoEtape(files)
 			var_etape = gestionetape(nom_etape, info_etape,nbr_etape)
 			if len(var_etape) == 2:
-				print(var_etape[1])
 				dict_upload['etape_etude'] = var_etape[1] 
 			dict_upload['error'] = var_etape[0]
 			tab_list.append(dict_upload)
 		dict_nbr['nbr_etape'] = nbr_etape
 		dict_nbr['nom_etape'] = nom_etape
 		list_centre = etudeRecente(etude_recente,dossier_all)
-	if etude_recente.exists():
 		gestion_info = gestionEtudeRecente(etude_recente, dossier_all,list_centre)
-	else:
+	except ObjectDoesNotExist:
 		dossier_all = ""
 		gestion_info = gestionEtudeRecente(etude_recente, dossier_all,list_centre)
 	nbr_entrée = len(tab_list)
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " Affiche le tableau des études en cours"
+	informationLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return render(request,
 		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':gestion_info[1], 'str_centre':gestion_info[0], 'taille':nbr_entrée})
 
@@ -107,10 +126,10 @@ def uploadtris(request, id_tris):
 	''' Cette page est appelé lors du tris du tableau vers une autre étude, cet appel ce fait via ajax '''
 	tab_list = []
 	dict_nbr = {}
-	etude_change = RefEtudes.objects.get(id__exact=id_tris)
-	dossier_all = SuiviUpload.objects.filter(etude__etude__exact=id_tris).distinct('dossier')
+	etude_change = RefEtudes.objects.get(id=id_tris)
+	dossier_all = SuiviUpload.objects.filter(etude__etude=id_tris).distinct('dossier')
 	if dossier_all.exists():
-		nbr_etape = RefEtapeEtude.objects.filter(etude__exact=etude_change.id).count()
+		nbr_etape = RefEtapeEtude.objects.filter(etude=etude_change.id).count()
 		nom_etape = nomEtapeTris(etude_change)
 		for files in dossier_all:
 			dict_upload = {}
@@ -125,6 +144,12 @@ def uploadtris(request, id_tris):
 	list_centre = etudeTris(dossier_all)
 	gestion_info = gestionEtudeTris(etude_change, dossier_all,list_centre)
 	nbr_entrée = len(tab_list)
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " a créé un tris vers l'étude : " + etude_change.nom
+	informationLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return render(request,
 		'admin_page_upload.html', {'resultat':tab_list, 'dict_nbr':dict_nbr, 'str_etude':gestion_info[1], 'str_centre':gestion_info[0], 'taille':nbr_entrée})
 
@@ -167,6 +192,7 @@ def uploadmaj(request):
 	val_jonction = request.GET.get('jonction')
 	val_etat = request.GET.get('etat_id')
 	val_etude = request.GET.get('etude_id')
+	id_log = JonctionEtapeSuivi.objects.get(id__exact=val_jonction)
 	if val_etat == str(4):
 		date_now = datetime.today()
 		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
@@ -174,6 +200,12 @@ def uploadmaj(request):
 	else:
 		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
 	var_url = '/admin_page/upfiles/tris/' + str(val_etude) + '/'
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " a modifié l'état de l'étude : " + id_log.etape.etude.nom + " la nouvelle étape est : " + id_log.etat.nom
+	editionLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return redirect(var_url)
 
 @xframe_options_exempt
@@ -185,9 +217,16 @@ def uploadmajqc(request):
 	val_jonction = request.GET.get('jonction')
 	val_etat = request.GET.get('etat_id')
 	val_etude = request.GET.get('etude_id')
+	id_log = SuiviUpload.objects.filter(dossier__id__exact=val_jonction)[:1]
 	qc = RefControleQualite.objects.get(id__exact=val_etat)
 	DossierUpload.objects.filter(id__exact=val_jonction).update(controle_qualite=qc)
 	var_url = '/admin_page/upfiles/tris/' + str(val_etude) + '/'
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " a modifié l'état du controle qualité pour : " + id_log[0].id_patient + " la nouvelle étape est : " + qc.nom
+	editionLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return redirect(var_url)
 
 @login_required(login_url="/auth/auth_in/")
@@ -205,6 +244,12 @@ def affdossier(request, id_suivi):
 		dict_list = {'nom':nom, 'url':item.id}
 		tab_list.append(dict_list)
 	info_dossier = {"id":var_suivi.id_patient, "etude":var_suivi.etude.etude.nom, 'lien':var_suivi.id}
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " a listé les informations du patient : " + var_suivi.id_patient
+	informationLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return render(request,
 		'admin_page_down.html', {'resultat':tab_list, 'tab_dossier':info_dossier})
 
@@ -215,6 +260,12 @@ def downOnce(request, id):
 	filename = obj.fichiers.path
 	file_path = os.path.join(settings.MEDIA_ROOT, filename)
 	if os.path.exists(file_path):
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a téléchargé le document : " + file_path
+		informationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 		with open(file_path, 'rb') as fh:
 			response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
 			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
@@ -234,7 +285,7 @@ def downAll(request, id):
 		nom = tab_lien[-1]
 		del tab_lien[-1]
 		file_path = os.path.join(settings.MEDIA_ROOT, lien)
-		img = open(file_path, "rb")
+		img = open(file_path, "rb") #changer avec with
 		img_read = img.read()
 		zip.writestr(nom, img_read)
 	zip.close()
@@ -242,6 +293,12 @@ def downAll(request, id):
 	response["Content-Disposition"] = "attachement;filename=corelab.zip"
 	in_memory.seek(0)
 	response.write(in_memory.read())
+	#Enregistrement du log------------------------------------------------------------------------
+	#---------------------------------------------------------------------------------------------
+	nom_documentaire = " a téléchargé tous les documents du patient : " + list_lien[0].id_patient
+	informationLog(request, nom_documentaire)
+	#----------------------------------------------------------------------------------------------
+	#----------------------------------------------------------------------------------------------
 	return response
 
 # Gère la partie Admin Etudes
@@ -256,6 +313,12 @@ def adminetude(request):
 		user_current = request.user
 		date_now = timezone.now()
 		RefEtudes.objects.create(nom=nom, date_ouverture=date_now)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a créé l'étude : " + nom
+		creationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	form = FormsEtude()
 	etude_tab = RefEtudes.objects.all()
 	return render(request,
@@ -270,6 +333,12 @@ def etudeEdit(request, id_etape):
 		nom = request.POST['nom']
 		date = request.POST['date_ouverture']
 		user_info = RefEtudes.objects.get(pk=id_etape)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a editer l'étude id/nom/nouveau nom : " + id_etape + "/" + user_info.nom + "/" + nom
+		editionLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 		user_info.nom = nom
 		user_info.date_ouverture = date
 		user_info.save()
@@ -281,6 +350,12 @@ def etudeEdit(request, id_etape):
 		'date': user_info.date_ouverture
 		}
 		form = FormsEtude(info)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a ouvert l'édition pour l'étude id/nouveau nom : " + id_etape + "/" + user_info.nom
+		informationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	etude_tab = RefEtudes.objects.all().order_by('nom')
 	return render(request,
 		'admin_etude_edit.html',{"form":form, 'resultat':etude_tab, 'select':int(id_etape)})
@@ -304,12 +379,26 @@ def etudeDel(request, id_etape):
 		else:
 			suppr = True
 		if suppr == True:
+			id_log = RefEtudes.objects.get(id__exact=id_etape)
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a supprimé l'étude (id/nom) : " + id_log.id + "/" + id_log.nom
+			supprLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			RefEtudes.objects.get(id__exact=id_etape).delete()
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression Faite")
 		else:
+			id_log = RefEtudes.objects.get(id__exact=id_etape)
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a reçu un message d'erreur de suppression pour (id/nom) : " + id_log.id + "/" + id_log.nom
+			informationLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			message = messages.add_message(
 				request,
 				messages.WARNING,
@@ -333,6 +422,12 @@ def adminetape(request):
 		val_etude = request.POST['etudes']
 		query = RefEtudes.objects.get(id__exact=val_etude)
 		RefEtapeEtude.objects.create(nom=val_nom, etude=query)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a créé l'étape : " + nom
+		creationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	form = FormsEtape()
 	request_etude = RefEtudes.objects.all()
 	liste_protocole = choiceEtude(True)
@@ -351,6 +446,12 @@ def etapeEdit(request, id_etape):
 		nom = request.POST['nom']
 		etudes = request.POST['etudes']
 		ref_etude = RefEtudes.objects.get(id=etudes)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a editer l'étape etape/etude - etude édité/etape édité : " + select_etape.etude.nom + "/" + select_etape.nom + " - " + ref_etude.nom + "/" + nom
+		editionLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 		select_etape.nom = nom
 		select_etape.etude = ref_etude
 		select_etape.save()
@@ -365,6 +466,12 @@ def etapeEdit(request, id_etape):
 		form.fields['etudes'].choices = liste_protocole
 		form.fields['etudes'].initial = [id_etude.id]
 		form.fields['nom'].initial = etape_filtre.nom
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a ouvert l'édition pour l'étape etude/etape : " + etape_filtre.etude.nom + "/" + etape_filtre.nom
+		informationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	etape_tab = RefEtapeEtude.objects.all()
 	return render(request,
 		'admin_etapes_edit.html',{"form":form, 'resultat':etape_tab, 'select':int(id_etape)})
@@ -382,12 +489,26 @@ def etapeDel(request, id_etape):
 				x += 1
 			suppr = False
 		if suppr == True:
+			id_log = RefEtapeEtude.objects.get(id__exact=id_etape)
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a supprimé l'étude (etude/etape) : " + id_log.etude.nom + "/" + id_log.nom
+			supprLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			RefEtapeEtude.objects.get(id__exact=id_etape).delete()
 			message = messages.add_message(
 				request,
 				messages.WARNING,
 				"Suppression Faite")
 		else:
+			id_log = RefEtapeEtude.objects.get(id__exact=id_etape)
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " à reçu un message d'erreur de suppression pour (etude/etape) : " + id_log.etude.nom + "/" + id_log.nom
+			informationLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			message = messages.add_message(
 				request,
 				messages.WARNING,
@@ -421,6 +542,12 @@ def adminuser(request):
 		type = request.POST['type']
 		check_mdp = checkmdp(pass_first, pass_second)
 		nwPassword(check_mdp, type, nom, numero, username, pass_first, email)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a créé l'utilisateur : " + username
+		creationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	form = FormsUser()
 	user_tab = User.objects.all().order_by('username')
 	return render(request,
@@ -438,6 +565,12 @@ def userEdit(request, id_etape):
 		pass_first = request.POST['pass_first']
 		pass_second = request.POST['pass_second']
 		user_info = User.objects.get(pk=id_etape)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire =  " a editer l'utilisateur (id): " + user_info.username + ' (' + user_info.id + ')'
+		editionLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 		check_mdp = checkmdp(pass_first, pass_second)
 		editPassword(check_mdp, type, username, pass_first, email, user_info)
 		return HttpResponseRedirect('/admin_page/viewUser/')
@@ -448,6 +581,12 @@ def userEdit(request, id_etape):
 		'email': user_info.email,
 		}
 		form = FormsUserEdit(info)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a ouvert l'édition pour l'utilisateur : " + user_info.username
+		informationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	user_tab = User.objects.all().order_by('username')
 	return render(request,
 		'admin_user_edit.html',{"form":form, 'resultat':user_tab, 'select':int(id_etape)})
@@ -466,6 +605,12 @@ def userDel(request, id_etape):
 				x += 1
 			suppr = False
 		if suppr == True:
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a supprimé l'utilisateur : " + info_suivi.username
+			supprLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			exist_jonction = JonctionUtilisateurEtude.objects.filter(user__id__exact=info_suivi.id)
 			if exist_jonction.exists():
 				JonctionUtilisateurEtude.objects.get(user__exact=info_suivi).delete()
@@ -483,6 +628,12 @@ def userDel(request, id_etape):
 				request,
 				messages.WARNING,
 				"Suppression annulée, cette étape est liée à : " + str(x) + terme)
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " à reçu un message d'erreur de suppression pour l'utilisateur : " + info_suivi.username
+			informationLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 	form = FormsUser()
 	user_tab = User.objects.all().order_by('username')
 	context = {"form":form, 'resultat':user_tab, 'message':message}
@@ -504,6 +655,12 @@ def admincentre(request):
 		numero = request.POST['numero']
 		date_now = timezone.now()
 		nw_centre = RefInfocentre.objects.create(nom=nom, numero=numero, date_ajout=date_now)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a créé le centre : " + nw_centre.nom + nw_centre.numero
+		creationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	form = FormCentre()
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
@@ -518,6 +675,12 @@ def centreEdit(request, id_etape):
 		nom = request.POST['nom']
 		numero = request.POST['numero']
 		user_info = RefInfocentre.objects.get(pk=id_etape)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire =  " a editer le centre : " + user_info.nom + user_info.numero + ' (Nouvelle entrée : ' + nom + numero + ')'
+		editionLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 		user_info.nom = nom
 		user_info.numero = numero
 		user_info.save()
@@ -530,6 +693,12 @@ def centreEdit(request, id_etape):
 		'date_ajout': user_info.date_ajout
 		}
 		form = FormCentre(info)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire = " a ouvert l'édition pour le centre : " + user_info.nom + user_info.numero
+		informationLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	return render(request,
 		'admin_centre_edit.html',{"form":form, 'resultat':centre_tab, 'select':int(id_etape)})
@@ -551,6 +720,12 @@ def centreDel(request, id_etape):
 						x += 1
 					suppr = False
 		if suppr == True:
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " a supprimé le centre : " + info_centre.nom + info_centre.numero
+			supprLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 			RefInfocentre.objects.get(id__exact=id_etape).delete()
 			message = messages.add_message(
 				request,
@@ -561,6 +736,12 @@ def centreDel(request, id_etape):
 				request,
 				messages.WARNING,
 				"Suppression annulée, cette étape est liée à :" + x + " suivi(s)")
+			#Enregistrement du log------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
+			nom_documentaire = " à reçu un message d'erreur de suppression pour le centre : " + info_centre.nom + info_centre.numero
+			informationLog(request, nom_documentaire)
+			#----------------------------------------------------------------------------------------------
+			#---------------------------------------------------------------------------------------------
 	form = FormCentre()
 	centre_tab = RefInfocentre.objects.all().order_by('nom')
 	context = {"form":form, 'resultat':centre_tab, 'message':message}
@@ -592,6 +773,12 @@ def authEdit(request, id_etape):
 		centre = request.POST['centre']
 		user_centre = RefInfocentre.objects.filter(user__id__exact=id_etape).filter(id=centre)
 		user_etude = JonctionUtilisateurEtude.objects.filter(user__exact=id_etape).filter(etude__id__exact=etude)
+		#Enregistrement du log------------------------------------------------------------------------
+		#---------------------------------------------------------------------------------------------
+		nom_documentaire =  " a editer les autorisation de l'utilisateur : " + user_info.username 
+		editionLog(request, nom_documentaire)
+		#----------------------------------------------------------------------------------------------
+		#----------------------------------------------------------------------------------------------
 		joncCentre(user_etude, etude, user_info, user_centre, centre)
 	liste_etude = choiceEtude(True)
 	liste_centre = choiceCentre(True)
@@ -616,7 +803,7 @@ def authDel(request):
 	user_info = User.objects.get(pk=id_user)
 	if request.method == 'POST':
 		form = FormsAutorisation()
-		message = delAuth(type_tab, id_search)
+		message = delAuth(type_tab, id_search, request)
 	user_centre = RefInfocentre.objects.filter(user__id__exact=user_info.id)
 	user_etude = JonctionUtilisateurEtude.objects.filter(user__exact=user_info.id)
 	var_etude = {}

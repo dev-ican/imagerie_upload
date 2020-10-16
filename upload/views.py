@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.files import File
 
 from .forms import UploadForm
-from .models import RefEtudes, JonctionUtilisateurEtude, SuiviUpload, RefControleQualite, JonctionEtapeSuivi, DossierUpload, RefEtatEtape, RefEtapeEtude, SuiviDocument
+from .models import RefEtudes, JonctionUtilisateurEtude, SuiviUpload, RefControleQualite, JonctionEtapeSuivi, DossierUpload, RefEtatEtape, RefEtapeEtude, SuiviDocument, log, RefTypeAction
 
 from datetime import date, time, datetime
 from django.utils import timezone
@@ -16,24 +16,32 @@ from django.utils import timezone
 
 @login_required(login_url="/auth/auth_in/")
 def index(request):
-
+	date_now = timezone.now()
+	user_current = request.user
 	doc_list = SuiviDocument.objects.all()
+	type_action = RefTypeAction.objects.get(pk=4)
+	log.objects.create(user=user_current, action=type_action, date=date_now, info="Visite de l'index")
 
 	return render(request,
-		'index.html', {'response':doc_list})
+		'index.html', {'response':doc_list, 'user':user_current})
 
 @login_required(login_url="/auth/auth_in/")
 def contact(request):
-
-		return render(request,
-				  'contact.html')
+	date_now = timezone.now()
+	user_current = request.user
+	type_action = RefTypeAction.objects.get(pk=4)
+	log.objects.create(user=user_current, action=type_action, date=date_now, info="Visite des contacts")
+	return render(request,'contact.html')
 
 @login_required(login_url="/auth/auth_in/")
 def formulaire(request):
+	date_now = timezone.now()
 	user_current = request.user
 	liste_protocole = []
 
 	if request.method == 'POST':
+		type_action = RefTypeAction.objects.get(pk=4)
+		log.objects.create(user=user_current, action=type_action, date=date_now, info='Utilisation du formulaire pour envois de donnée')
 		form_instance = UploadForm(request.POST,request.FILES)
 		etude = request.POST["etudes"]
 		nip = request.POST["nip"]

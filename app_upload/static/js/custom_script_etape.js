@@ -1,4 +1,4 @@
-$('#supprEtape').on('click', 'button', function(event) {
+$('#supprEtape a[role="button"]').click(function(event) {
 	var url_etude = "/admin_page/etapes/delete/"
 	var id_etude = $(this).attr('value');
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
@@ -33,3 +33,11 @@ $('#supprEtape').on('click', 'button', function(event) {
 		}
 	
 });
+
+$('#msgEtape').change(function(event) {
+	x = setTimeout(effaceinfo, 2000);
+});
+
+function effaceinfo() {
+	$('#msgEtape').text("");
+}

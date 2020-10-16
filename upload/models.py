@@ -86,3 +86,12 @@ class SuiviDocument(models.Model):
 	date = models.DateTimeField("Date")
 	fichiers = models.FileField(upload_to=doc_directory_path, null=True)
 	background = models.CharField(max_length=5000, null=True, blank=True)
+
+class log(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	action = models.ForeignKey('RefTypeAction', on_delete=models.CASCADE)
+	date = models.DateTimeField("Date")
+	info = models.CharField(max_length=5000, null=True, blank=True)
+
+class RefTypeAction(models.Model):
+	nom = models.CharField(max_length=5000)

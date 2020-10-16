@@ -14,11 +14,11 @@
           <a class="nav-link" href="{% url 'index' %}">Accueil</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'formulaire' %}">Formulaire d'upload</a>
+          <a class="nav-link" name="form" href="{% url 'formulaire' %}">Formulaire d'upload</a>
         </li>
         {% if user.is_staff %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'admin' %}">Administration</a>
+          <a class="nav-link" name="administration" href="{% url 'admin' %}">Administration</a>
         </li>
         {% endif %}
         <li class="nav-item">

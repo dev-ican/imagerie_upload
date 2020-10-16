@@ -27,7 +27,8 @@ $('#supprEtude a[role="button"]').click(function(event) {
 		type : 'POST',
 		success: function(response, status, XHR){
 			console.log("SUCCESS");
-			$('#ajax').html(response);}
+			$('#ajax').html(response);
+			x = setTimeout(effaceinfo, 2000);}
 	})
 	} else {
 		  window.alert("La suppréssion est annulé");
@@ -35,4 +36,10 @@ $('#supprEtude a[role="button"]').click(function(event) {
 	
 });
 
+$('#message').change(function(event) {
+	x = setTimeout(effaceinfo, 2000);
+});
 
+function effaceinfo() {
+	$('#message').text("");
+}
