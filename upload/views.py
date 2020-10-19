@@ -11,6 +11,8 @@ from .models import RefEtudes, JonctionUtilisateurEtude, SuiviUpload, RefControl
 
 from datetime import date, time, datetime
 from django.utils import timezone
+import zipfile
+import os
 
 # Create your views here.
 
@@ -38,7 +40,6 @@ def formulaire(request):
 	date_now = timezone.now()
 	user_current = request.user
 	liste_protocole = []
-
 	if request.method == 'POST':
 		type_action = RefTypeAction.objects.get(pk=4)
 		log.objects.create(user=user_current, action=type_action, date=date_now, info='Utilisation du formulaire pour envois de donnée')
@@ -47,17 +48,25 @@ def formulaire(request):
 		nip = request.POST["nip"]
 		date = request.POST["date_irm"]
 		id_etude = JonctionUtilisateurEtude.objects.get(id__exact=etude)
-		etude_id = RefEtudes.objects.get(id__exact=id_etude.etude.id)
+		#etude_id = RefEtudes.objects.get(id__exact=id_etude.etude.id)
 		id_qc = RefControleQualite.objects.get(id__exact=1)
 		id_etape = RefEtatEtape.objects.get(id__exact=1)
-		id_etapes = RefEtapeEtude.objects.filter(etude__exact=etude_id)
+		id_etapes = RefEtapeEtude.objects.filter(etude__exact=id_etude.etude.id)
 		date_now = timezone.now()
 		filez = request.FILES.getlist('upload')
 		create_jonction = DossierUpload(user=user_current, controle_qualite=id_qc, date=date)
 		create_jonction.save()
 		for f in filez:
 			create_suivi = SuiviUpload(user=user_current, etude=id_etude, id_patient=nip, date_upload=date_now, date_examen=date, fichiers=f, dossier=create_jonction)
+			name_file = f.name
 			create_suivi.save()
+			if name_file.find('.zip'):
+				zipfile_save = zipfile.ZipFile(create_suivi.fichiers.path, mode='r')
+				path = os.path.dirname(create_suivi.fichiers.path)
+				zipfile_save.extractall(path)
+				zipfile_save.close()
+				if os.path.exists(create_suivi.fichiers.path):
+					os.remove(create_suivi.fichiers.path)
 		for etape in id_etapes:
 			create_etape = JonctionEtapeSuivi.objects.create(upload=create_jonction, etape=etape, etat=id_etape)
 		var_url = '/upload/form/'

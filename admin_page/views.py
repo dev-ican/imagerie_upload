@@ -234,14 +234,15 @@ def affdossier(request, id_suivi):
 	''' Lors du clic sur un dossier chargé dans le tableau des étapes, cela appel le module qui affiche les fichiers
 	chargé pour le patient donné'''
 	tab_list = []
-	var_suivi = SuiviUpload.objects.get(id__exact=id_suivi)
-	list_lien = SuiviUpload.objects.filter(dossier__id__exact=var_suivi.dossier.id)
-	for item in list_lien:
+	var_suivi = SuiviUpload.objects.get(id=id_suivi)
+	path = os.path.dirname(var_suivi.fichiers.path)
+	print(os.path.abspath(var_suivi.fichiers.path))
+	list_dir = dirs = os.listdir(path)
+	for item in list_dir :
+		lien_id = os.path.join(path, item)
+		#recup_id = SuiviUpload.objects.filter(dossier__id__exact=var_suivi.dossier.id).get(fichiers__contains=item)
 		dict_list = {}
-		lien = str(item.fichiers)
-		tab_lien = lien.split('/')
-		nom = tab_lien[-1]
-		dict_list = {'nom':nom, 'url':item.id}
+		dict_list = {'nom':item, 'url':lien_id}
 		tab_list.append(dict_list)
 	info_dossier = {"id":var_suivi.id_patient, "etude":var_suivi.etude.etude.nom, 'lien':var_suivi.id}
 	#Enregistrement du log------------------------------------------------------------------------
@@ -256,19 +257,19 @@ def affdossier(request, id_suivi):
 @login_required(login_url="/auth/auth_in/")
 def downOnce(request, id):
 	''' Ce module est appelé lors du téléchargement d'un fichier chargé pour le patient donnée '''
-	obj = SuiviUpload.objects.get(id__exact=id)
-	filename = obj.fichiers.path
-	file_path = os.path.join(settings.MEDIA_ROOT, filename)
-	if os.path.exists(file_path):
+	#obj = SuiviUpload.objects.get(id__exact=id)
+	#filename = obj.fichiers.path
+	#file_path = os.path.join(settings.MEDIA_ROOT, filename)
+	if os.path.exists(id):
 		#Enregistrement du log------------------------------------------------------------------------
 		#---------------------------------------------------------------------------------------------
-		nom_documentaire = " a téléchargé le document : " + file_path
+		nom_documentaire = " a téléchargé le document : " + id
 		informationLog(request, nom_documentaire)
 		#----------------------------------------------------------------------------------------------
 		#----------------------------------------------------------------------------------------------
-		with open(file_path, 'rb') as fh:
+		with open(id, 'rb') as fh:
 			response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
-			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+			response['Content-Disposition'] = 'inline; filename=' + os.path.basename(id)
 			return response
 
 @login_required(login_url="/auth/auth_in/")
@@ -276,18 +277,16 @@ def downAll(request, id):
 	''' Ce module est appelé lorsque l'utilisateur souhaite téléchargé la totalité des fichiers chargé dans le dossier
 	Ce téléchargement utilise zipfile en mémoir temporaire '''
 	obj = SuiviUpload.objects.get(id__exact=id)
-	list_lien = SuiviUpload.objects.filter(dossier__id__exact=obj.dossier.id)
+	path = os.path.dirname(obj.fichiers.path)
+	list_dir = os.listdir(path)
 	in_memory = BytesIO()
 	zip = zipfile.ZipFile(in_memory, "a")
-	for item in list_lien:
-		lien = str(item.fichiers)
-		tab_lien = lien.split('/')
-		nom = tab_lien[-1]
-		del tab_lien[-1]
-		file_path = os.path.join(settings.MEDIA_ROOT, lien)
+	for item in list_dir:
+		file_path = os.path.join(path, item)
+		print(file_path)
 		img = open(file_path, "rb") #changer avec with
 		img_read = img.read()
-		zip.writestr(nom, img_read)
+		zip.writestr(item, img_read)
 	zip.close()
 	response = HttpResponse(content_type='application/zip')
 	response["Content-Disposition"] = "attachement;filename=corelab.zip"
