@@ -3,7 +3,7 @@
 """ Ce fichier permet de gérer les modules de l'application
  faisant partie du menus administration"""
 
-from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
+from admin_page.forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
 from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload
 
 def checkmdp(first, second):

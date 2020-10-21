@@ -30,6 +30,8 @@ urlpatterns = [
 	re_path(r'^upfiles/majQC/',views.uploadmajqc, name='upload_majQC'),
 	re_path(r'^upfiles/maj/',views.uploadmaj, name='upload_maj'),
 	re_path(r'^upfiles/dospat/([0-9]+)/',views.affdossier, name='Aff_dossier'),
-	re_path(r'^upfiles/downOnce/([\w\d\D]+)/',views.downOnce, name='donwnload_once'),
+	re_path(r'^upfiles/downOnce/([\w\d\D]+)',views.downOnce, name='donwnload_once'),
 	re_path(r'^upfiles/downAll/([0-9]+)/',views.downAll, name='donwnload_all'),
+	re_path(r'^upfiles/walk_up/',views.walkup, name='walk_up'),
+	re_path(r'^upfiles/walk_return/',views.walkdown, name='walk_return'),
 ]

@@ -11,7 +11,7 @@ from django.core.files import File
 
 from django.conf import settings
 import os, tempfile
-from admin_page.module_admin import *
+from admin_page.views.module_admin import *
 from django.utils import timezone
 
 from .forms import DocumentForm

@@ -1,0 +1,6 @@
+__pycache__
+geckodriver.log
+webdriver/
+data/
+*.sqlite3
+static

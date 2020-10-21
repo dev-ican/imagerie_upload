@@ -1,6 +1,6 @@
-$('#supprEtape a[role="button"]').click(function(event) {
-	var url_etude = "/admin_page/etapes/delete/"
-	var id_etude = $(this).attr('value');
+$('a[id="walk_dir"]').click(function(event) {
+	var url_walk = "/admin_page/walk_up/"
+	var id_etude = $('a[id="id_etude"]').attr('name');
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
 	function csrfSafeMethod(method) {

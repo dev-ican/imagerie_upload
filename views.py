@@ -229,6 +229,74 @@ def uploadmajqc(request):
 	#----------------------------------------------------------------------------------------------
 	return redirect(var_url)
 
+@xframe_options_exempt
+@login_required(login_url="/auth/auth_in/")
+def walkup(request):
+	''' Appel ajax lors du changement d'état d'un controle qualité.
+	Ce module modifie l'état dans la base de donnée puis renvois vers la page pour afficher la modification'''
+	tab_list = {}
+	list_tr = []
+	val_url = request.GET.get('url')
+	val_etude = request.GET.get('etude_id')
+	list_dir = os.listdir(val_url)
+	for item in list_dir:
+		lien_id = os.path.join(val_url, item)
+		dict_list = {}
+		if os.path.isdir(lien_id):
+			for root, dirs, files in os.walk(lien_id, topdown = False):
+				x = 0
+				y = 0
+				for name in files:
+					x += 1
+				for name in dirs:
+					y += 1
+			tab_list = {'nom':item, 'url':lien_id, 'dir': True, 'file':x, 'direct':y}
+		else:
+			dict_list = {'nom':item, 'url':lien_id, 'dir': False}
+		list_tr.append(dict_list)
+
+	creation_json = json.dumps(list_tr)
+	#return render(request, 'admin_page_down.html', { 'value': list_tr, }, content_type='application/xhtml+xml')
+	return HttpResponse(json.dumps(creation_json), content_type="application/json")
+
+@login_required(login_url="/auth/auth_in/")
+def walkdown(request):
+	''' Appel ajax lors du changement d'état d'un controle qualité.
+	Ce module modifie l'état dans la base de donnée puis renvois vers la page pour afficher la modification'''
+	tab_list = {}
+	list_tr = []
+	val_url = request.GET.get('url')
+	val_compare = request.GET.get('val_compare')
+	val_etude_id = request.GET.get('id_etude')
+	path = os.path.dirname(val_url)
+	split_path = path.split('\\')
+	del split_path[-1]
+	path_join = '\\'.join(split_path)
+	nom_folder = split_path[-1]
+	if val_compare in path_join :
+		list_dir = os.listdir(path_join)
+		print(list_dir)
+		for item in list_dir:
+			lien_id = os.path.join(path_join, item)
+			dict_list = {}
+			if os.path.isdir(lien_id):
+				for root, dirs, files in os.walk(lien_id, topdown = False):
+					x = 0
+					y = 0
+					for name in files:
+						x += 1
+					for name in dirs:
+						y += 1
+				dict_list = {'nom':item, 'url':lien_id, 'dir': True, 'file':x, 'direct':y}
+			else:
+				dict_list = {'nom':item, 'url':lien_id, 'dir': False}
+			list_tr.append(dict_list)
+		creation_json = json.dumps(list_tr)
+		return HttpResponse(json.dumps(creation_json), content_type="application/json")
+	else:
+		return HttpResponse()
+
+
 @login_required(login_url="/auth/auth_in/")
 def affdossier(request, id_suivi):
 	''' Lors du clic sur un dossier chargé dans le tableau des étapes, cela appel le module qui affiche les fichiers
@@ -236,15 +304,24 @@ def affdossier(request, id_suivi):
 	tab_list = []
 	var_suivi = SuiviUpload.objects.get(id=id_suivi)
 	path = os.path.dirname(var_suivi.fichiers.path)
-	print(os.path.abspath(var_suivi.fichiers.path))
-	list_dir = dirs = os.listdir(path)
+	list_dir = os.listdir(path)
 	for item in list_dir :
 		lien_id = os.path.join(path, item)
 		#recup_id = SuiviUpload.objects.filter(dossier__id__exact=var_suivi.dossier.id).get(fichiers__contains=item)
 		dict_list = {}
-		dict_list = {'nom':item, 'url':lien_id}
+		if os.path.isdir(lien_id):
+			for root, dirs, files in os.walk(lien_id, topdown = False):
+				x = 0
+				y = 0
+				for name in files:
+					x += 1
+				for name in dirs:
+					y += 1
+			dict_list = {'nom':item, 'url':lien_id, 'dir': True, 'file':x, 'direct':y}
+		else:
+			dict_list = {'nom':item, 'url':lien_id, 'dir': False}
 		tab_list.append(dict_list)
-	info_dossier = {"id":var_suivi.id_patient, "etude":var_suivi.etude.etude.nom, 'lien':var_suivi.id}
+	info_dossier = {"id":var_suivi.id_patient, "etude":var_suivi.etude.etude.nom, 'id_etude':var_suivi.etude.etude.id, 'lien':var_suivi.id, 'path': path}
 	#Enregistrement du log------------------------------------------------------------------------
 	#---------------------------------------------------------------------------------------------
 	nom_documentaire = " a listé les informations du patient : " + var_suivi.id_patient
@@ -257,9 +334,6 @@ def affdossier(request, id_suivi):
 @login_required(login_url="/auth/auth_in/")
 def downOnce(request, id):
 	''' Ce module est appelé lors du téléchargement d'un fichier chargé pour le patient donnée '''
-	#obj = SuiviUpload.objects.get(id__exact=id)
-	#filename = obj.fichiers.path
-	#file_path = os.path.join(settings.MEDIA_ROOT, filename)
 	if os.path.exists(id):
 		#Enregistrement du log------------------------------------------------------------------------
 		#---------------------------------------------------------------------------------------------
