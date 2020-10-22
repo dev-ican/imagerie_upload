@@ -1,4 +1,4 @@
-![logo](https://zupimages.net/up/20/41/b7m2.png) # Projet de partage de fichier de recherche
+![logo](https://zupimages.net/up/20/43/hoes.png) # Projet de partage de fichier de recherche
 
 ## Description du projet
 
