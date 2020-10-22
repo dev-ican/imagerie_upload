@@ -3,6 +3,7 @@ from django.urls import reverse
 
 from django.contrib.auth.models import User
 from datetime import date, time, datetime
+from upload.models import RefTypeAction
 from django.utils import timezone
 
 import json
@@ -22,6 +23,21 @@ class TestApp(TestCase):
 
 			test_user1.save()
 			test_user2.save()
+
+			test_typeaction = RefTypeAction.objects.create(id=1, nom="Action_1")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=2, nom="Action_2")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=3, nom="Action_3")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=4, nom="Action_4")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=5, nom="Action_5")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=6, nom="Action_6")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=7, nom="Action_7")
+			test_typeaction.save()
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------

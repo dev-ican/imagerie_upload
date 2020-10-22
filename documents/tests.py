@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.conf import settings
 
 from .forms import DocumentForm
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, RefEtatEtape, SuiviDocument
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, RefEtatEtape, SuiviDocument, RefControleQualite, log, RefTypeAction
 
 from django.contrib.auth.models import User
 from datetime import date, time, datetime
@@ -55,6 +55,21 @@ class TestApp(TestCase):
 
 			doc_1 = SuiviDocument.objects.create(user=test_user1, etude=test_etude2, titre="Test_doc", description="Desc_Test_Doc", date=date_now, fichiers='', background='bg-nw-protocole.jpg')
 			doc_1.save()
+
+			test_typeaction = RefTypeAction.objects.create(id=1, nom="Action_1")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=2, nom="Action_2")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=3, nom="Action_3")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=4, nom="Action_4")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=5, nom="Action_5")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=6, nom="Action_6")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=7, nom="Action_7")
+			test_typeaction.save()
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------

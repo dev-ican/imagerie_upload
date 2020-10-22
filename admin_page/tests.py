@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .forms import FormsEtude, FormsEtape, FormsAutorisation, FormsUser, FormsUserEdit, FormCentre
-from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload, RefEtatEtape
+from upload.models import RefEtudes, JonctionUtilisateurEtude, RefEtapeEtude, RefInfocentre, JonctionEtapeSuivi, SuiviUpload, RefEtatEtape, RefControleQualite, log, RefTypeAction, DossierUpload
 
 from django.contrib.auth.models import User
 from datetime import date, time, datetime
@@ -57,6 +57,30 @@ class TestApp(TestCase):
 			test_centre.save()
 			test_centre = RefInfocentre.objects.create(nom="Centre_test2", numero="12587", date_ajout=date_now)
 			test_centre.save()
+
+			test_typeaction = RefTypeAction.objects.create(id=1, nom="Action_1")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=2, nom="Action_2")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=3, nom="Action_3")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=4, nom="Action_4")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=5, nom="Action_5")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=6, nom="Action_6")
+			test_typeaction.save()
+			test_typeaction = RefTypeAction.objects.create(id=7, nom="Action_7")
+			test_typeaction.save()
+
+			test_cq = RefControleQualite.objects.create(id=1, nom='QC_1' )
+			test_cq.save()
+
+			test_dossier = DossierUpload.objects.create(id=1, user=test_user1, controle_qualite=test_cq, date="2020-10-22" )
+			test_dossier.save()
+
+			test_suivi = SuiviUpload.objects.create(id=1, user=test_user1, etude=jonction_etude1, id_patient='Suivi_test', date_upload="2020-10-22", date_examen="2020-10-22", dossier=test_dossier, fichiers='')
+			test_suivi.save()
 
 #---------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------

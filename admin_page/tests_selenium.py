@@ -176,7 +176,7 @@ class AccountTestCase(LiveServerTestCase):
 		menu_form = selenium.find_element_by_id("menuUser")
 		menu_form.click()
 		selenium.implicitly_wait(10)
-		name_index = "Vos utilisateurs actuellement enregistrés"
+		name_index = "Les utilisateurs actuellement enregistrés"
 		self.assertEqual(selenium.find_element_by_name("titre_user").get_attribute("innerHTML").splitlines()[0], name_index)
 
 	def test_page_admin_doc(self):
