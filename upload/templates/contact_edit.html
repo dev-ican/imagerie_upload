@@ -6,25 +6,22 @@
         <div class="row text-center">
           <div class="container">
             <h5 class="display-3">Contacts</h5>
-            {% if user.is_staff %}
-            <div class="row justify-content-center"><button onclick="formContact()" class="btn btn-sm btn-outline-secondary">Créer un contact</button></div>
-            {% endif %}
           </div>
-        </div>
-        <div  id="formContact" style='display:none;'>
-        <form action="/contact/new/" method="post" class="was-validated border border-primary bg-light mb-2 mt-2 justify-content-center">
-          <div class="form-group">
-              {% csrf_token %}
-              {% bootstrap_form form form_group_class='form-group m-2' %}
-          </div>
-          {% buttons %}
-            <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
-          {% endbuttons %}
-        </form>
         </div>
         <div class="container-fluid">
-          <div class="row-fluid text-center">
-            <div class="mx-auto">
+          <div class="row text-center">
+            <div class="col-4 mx-auto">
+              <form action="/contact/edit/{{select}}/" method="post" class="was-validated border border-primary bg-light mb-2 mt-2 justify-content-center">
+                <div class="form-group">
+                  {% csrf_token %}
+                  {% bootstrap_form form form_group_class='form-group m-2' %}
+                </div>
+                {% buttons %}
+                  <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
+                {% endbuttons %}
+              </form>
+            </div>  
+            <div class="col-7 mx-auto">
               <div class="cta-inner text-center rounded">
                 <table class="table mt-5">
                   <thead>
@@ -49,7 +46,13 @@
                       <td>{{ item.telephone }}</td>
                       <td>{{ item.poste }}</td>
                       {% if user.is_staff %}
-                      <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/contact/edit/{{item.id}}/">EDITER</a><div id="supprContact" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
+                      <td><div class="row justify-content-center">
+                        {% if item.id == select %}
+                        <a role="button" class="btn btn-sm btn-outline-secondary">En cours d'édition...</a>
+                        {% else %}
+                        <a role="button" class="btn btn-sm btn-outline-secondary" href="/contact/edit/{{item.id}}/">EDITER</a>
+                        {% endif %}
+                        <div id="supprCentre" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" href="/contact/deleted/{{item.id}}/">SUPPR.</a></div></div></td>
                       {% endif %}
                     </tr>
                     {% endfor %}

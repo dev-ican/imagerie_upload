@@ -59,7 +59,7 @@ def etudeEdit(request, id_etape):
         # ----------------------------------------------------
         nom_documentaire = (
             " a editer l'étude id/nom/nouveau nom : "
-            + id_etape
+            + str(id_etape)
             + "/"
             + user_info.nom
             + "/"
@@ -83,7 +83,7 @@ def etudeEdit(request, id_etape):
         # ---------------------------------------------------------------------------------------------
         nom_documentaire = (
             " a ouvert l'édition pour l'étude id/nouveau nom : "
-            + id_etape
+            + str(id_etape)
             + "/"
             + user_info.nom
         )
@@ -143,7 +143,7 @@ def etudeDel(request, id_etape):
             # ---------------------------------------------------------------------------------------------
             nom_documentaire = (
                 " a reçu un message d'erreur de suppression pour (id/nom) : "
-                + id_log.id
+                + str(id_log.id)
                 + "/"
                 + id_log.nom
             )

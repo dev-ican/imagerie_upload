@@ -95,3 +95,10 @@ class log(models.Model):
 
 class RefTypeAction(models.Model):
 	nom = models.CharField(max_length=5000)
+
+class Contact(models.Model):
+	nom = models.CharField(max_length=3000)
+	prenom = models.CharField(max_length=3000)
+	courriel = models.CharField(max_length=3000)
+	telephone = models.IntegerField(blank=True, null=True)
+	poste = models.CharField(max_length=3000)
