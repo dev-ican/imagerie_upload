@@ -2,12 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.conf import settings
 from upload.models import (
-    RefEtudes,
-    JonctionUtilisateurEtude,
-    RefEtapeEtude,
-    RefInfocentre,
-    RefEtatEtape,
-    SuiviDocument,
+    Contact,
     RefTypeAction,
 )
 
@@ -32,60 +27,16 @@ class TestApp(TestCase):
         test_user1.save()
         test_user2.save()
 
-        test_etude1 = RefEtudes.objects.create(
-            nom="test_etude1", date_ouverture=date_now
+        test_contact1 = Contact.objects.create(
+            nom="Nom_contact1", prenom="Prenom_contact1", courriel="test@test.com", telephone="0147896523", poste="Test contact"
         )
-        test_etude2 = RefEtudes.objects.create(
-            nom="test_etude2", date_ouverture=date_now
+        test_contact2 = Contact.objects.create(
+            nom="Nom_contact2", prenom="Prenom_contact2", courriel="test@test.com", telephone="0147896523", poste="Test contact_2"
         )
 
-        test_etude1.save()
-        test_etude2.save()
+        test_contact1.save()
+        test_contact2.save()
 
-        etat_1 = RefEtatEtape.objects.create(nom="test")
-        etat_1.save()
-
-        jonction_etude1 = JonctionUtilisateurEtude.objects.create(
-            user=test_user1,
-            etude=test_etude2,
-            date_autorisation=date_now,
-        )
-        jonction_etude1.save()
-        jonction_etude2 = JonctionUtilisateurEtude.objects.create(
-            user=test_user2,
-            etude=test_etude1,
-            date_autorisation=date_now,
-        )
-        jonction_etude2.save()
-
-        etape_etude = RefEtapeEtude.objects.create(
-            nom="Etape_test1", etude=test_etude1
-        )
-        etape_etude.save()
-        etape_etude = RefEtapeEtude.objects.create(
-            nom="Etape_test2", etude=test_etude2
-        )
-        etape_etude.save()
-
-        test_centre = RefInfocentre.objects.create(
-            nom="Centre_test1", numero="1258", date_ajout=date_now
-        )
-        test_centre.save()
-        test_centre = RefInfocentre.objects.create(
-            nom="Centre_test2", numero="12587", date_ajout=date_now
-        )
-        test_centre.save()
-
-        doc_1 = SuiviDocument.objects.create(
-            user=test_user1,
-            etude=test_etude2,
-            titre="Test_doc",
-            description="Desc_Test_Doc",
-            date=date_now,
-            fichiers="",
-            background="bg-nw-protocole.jpg",
-        )
-        doc_1.save()
 
         test_typeaction = RefTypeAction.objects.create(
             id=1, nom="Action_1"
@@ -122,34 +73,32 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
     # ---------------------------------------------------------------------------------------------
 
-    def test_gestion_doc(self):
-        """Test le module gestion documentaire"""
+    def test_gestion_contact(self):
+        """Test le module gestion de contact"""
         self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
         self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
-        id_etude = RefEtudes.objects.all()
-        files = settings.BASE_DIR + "\\documents\\test_img.png"
-        myfile = open(files, "rb")
+        id_contact = Contact.objects.all()
         val_dict = {
-            "user_current": id_user[0],
-            "etudes": id_etude[0].id,
-            "titre": "Test_doc_ajout",
-            "description": "Desc_Test_Doc_ajout",
-            "type": 1,
-            "document": myfile,
+            'nom':"Nom_contact1_ajout",
+            'prenom':"Prenom_contact1",
+            'email':"test@test.com",
+            'telephone':"0147896523",
+            'poste':"Test contact",
         }
         post_document = self.client.post(
-            reverse("gestion"), data=val_dict
+            reverse("new_contact"), data=val_dict
         )
-        self.assertEqual(post_document.status_code, 200)
-        result = post_document.context["resultat"]
+        self.assertEqual(post_document.status_code, 302)
+        get_document = self.client.get(reverse("contact_gestion"))
+        result = get_document.context["resultat"]
         for item in result:
-            self.assertIn(item.titre, ["Test_doc_ajout", "Test_doc"])
+            self.assertIn(item.nom, ["Nom_contact1_ajout", "Nom_contact1", "Nom_contact2"])
 
-    def test_doc_edit(self):
+    def test_contact_edit(self):
         """Test le module d'édition documentaire"""
         self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
@@ -157,41 +106,40 @@ class TestApp(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
-        id_etude = RefEtudes.objects.all()
-        files = settings.BASE_DIR + "\\documents\\test_img.png"
-        myfile = open(files, "rb")
+        id_etude = Contact.objects.all()
         val_dict = {
-            "user_current": id_user[0],
-            "etudes": id_etude[0].id,
-            "titre": "Test_doc_edition",
-            "description": "Desc_Test_Doc_edition",
-            "type": 1,
-            "document": myfile,
+            'nom':"Nom_contact1_edition",
+            'prenom':"Prenom_contact1",
+            'email':"test@test.com",
+            'telephone':"0147896523",
+            'poste':"Test contact",
         }
         post_document = self.client.post(
-            reverse("gestion"), data=val_dict
+            reverse("new_contact"), data=val_dict
         )
-        result = post_document.context["resultat"]
+        get_contact = self.client.get(reverse("contact_gestion"))
+        result = get_contact.context["resultat"]
         for item in result:
-            if item.titre == "Test_doc_edition":
+            if item.nom == "Nom_contact1_edition":
                 id_item = item.id
         edit_document = self.client.post(
-            reverse("doc_edit", args=(id_item,)),
+            reverse("contact_edit", args=(id_item,)),
             {
-                "etudes": id_etude[0].id,
-                "titre": "Test_doc_EDITER",
-                "description": "Desc_Test_EDITER",
-                "type": 1,
+            'nom':"Nom_contact1_EDITE",
+            'prenom':"Prenom_contact1_EDITE",
+            'email':"test@edition.com",
+            'telephone':"0147896523",
+            'poste':"EDITER",
             },
         )
         self.assertEqual(edit_document.status_code, 302)
-        get_document = self.client.get(reverse("gestion"))
-        self.assertEqual(post_document.status_code, 200)
+        get_document = self.client.get(reverse("contact_gestion"))
+        self.assertEqual(post_document.status_code, 302)
         result = get_document.context["resultat"]
         for item in result:
-            self.assertIn(item.titre, ["Test_doc_EDITER", "Test_doc"])
+            self.assertIn(item.nom, ["Nom_contact1_EDITE", "Nom_contact1", "Nom_contact2"])
 
-    def test_doc_deleted(self):
+    def test_contact_deleted(self):
         """Test le module de suppression documentaire"""
         self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
@@ -199,30 +147,28 @@ class TestApp(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
-        id_etude = RefEtudes.objects.all()
-        files = settings.BASE_DIR + "\\documents\\test_img.png"
-        myfile = open(files, "rb")
+        id_etude = Contact.objects.all()
         val_dict = {
-            "user_current": id_user[0],
-            "etudes": id_etude[0].id,
-            "titre": "Test_doc_deleted",
-            "description": "Desc_Test_Doc_deleted",
-            "type": 1,
-            "document": myfile,
+            'nom':"Nom_contact1_del",
+            'prenom':"Prenom_contact1",
+            'email':"test@test.com",
+            'telephone':"0147896523",
+            'poste':"Test contact",
         }
         post_document = self.client.post(
-            reverse("gestion"), data=val_dict
+            reverse("new_contact"), data=val_dict
         )
-        result = post_document.context["resultat"]
+        get_contact = self.client.get(reverse("contact_gestion"))
+        result = get_contact.context["resultat"]
         for item in result:
-            if item.titre == "Test_doc_deleted":
+            if item.nom == "Nom_contact1_del":
                 id_item = item.id
         edit_document = self.client.post(
-            reverse("doc_deleted", args=(id_item,))
+            reverse("contact_deleted", args=(id_item,))
         )
         self.assertEqual(edit_document.status_code, 200)
-        get_document = self.client.get(reverse("gestion"))
-        self.assertEqual(post_document.status_code, 200)
+        get_document = self.client.get(reverse("contact_gestion"))
+        self.assertEqual(post_document.status_code, 302)
         result = get_document.context["resultat"]
         for item in result:
-            self.assertIn(item.titre, ["Test_doc"])
+            self.assertIn(item.nom, ["Nom_contact1", "Nom_contact2"])

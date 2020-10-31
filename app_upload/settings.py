@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['ican-upload.herokuapp.com', '127.0.0.1']
 
 INSTALLED_APPS = [
     'bootstrap4',
+    'phonenumber_field',
     'upload.apps.UploadConfig',
     'auth_app.apps.AuthAppConfig',
     'documents.apps.DocumentsConfig',

@@ -24,9 +24,13 @@ import os
 
 @login_required(login_url="/auth/auth_in/")
 def index(request):
+    tab_etude = [] 
     date_now = timezone.now()
     user_current = request.user
-    doc_list = SuiviDocument.objects.all()
+    list_etude = JonctionUtilisateurEtude.objects.filter(user=user_current)
+    for item in list_etude:
+        tab_etude.append(item.etude.id)
+    doc_list = SuiviDocument.objects.filter(etude__id__in=tab_etude)
     type_action = RefTypeAction.objects.get(pk=4)
     log.objects.create(
         user=user_current,
@@ -98,7 +102,7 @@ def formulaire(request):
             )
             name_file = f.name
             create_suivi.save()
-            if name_file.find(".zip"):
+            if name_file.find(".zip") != -1:
                 zipfile_save = zipfile.ZipFile(
                     create_suivi.fichiers.path, mode="r"
                 )

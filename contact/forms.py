@@ -14,7 +14,7 @@ class ContactForm(forms.Form):
 		max_length=1000,
 		validators=[
 			EmailValidator()])
-	telephone = forms.IntegerField(label="Numéro de téléphone")
+	telephone = forms.CharField(label="Numéro de téléphone", max_length=12, validators=[RegexValidator(regex="([0-9])+",message="Numero de téléphone valide")])
 	poste = forms.CharField(label='Nom du poste', max_length=3000)
 
 

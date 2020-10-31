@@ -4,3 +4,4 @@ webdriver/
 data/
 *.sqlite3
 static
+htmlcov

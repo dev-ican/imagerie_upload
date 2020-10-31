@@ -1,4 +1,5 @@
-![logo](https://zupimages.net/up/20/43/hoes.png) # Projet de partage de fichier de recherche
+![logo](https://zupimages.net/up/20/43/hoes.png) 
+# Projet de partage de fichier de recherche
 
 ## Description du projet
 
@@ -7,7 +8,7 @@ Les applications de chargement de fichiers sont monnaies courantes sur internet,
 ..* Tout d’abord, le manque de financement. Quand ces plateformes doivent fournir un service aux systèmes et aux équipes de recherches, les prix sont bien trop élevés et souvent la mise en place sans ces outils sont dangereux d’un point de vue des normes de la RGPD et très contraignantes pour les services et les utilisateurs.
 ..* Les contraintes des normes de la recherche et des normes hospitalières forcent les équipes à mettre en place des système « maison » qui essayent de vérifier et contraindre à bien travailler. Mais, sur des sites distants où les utilisateurs peuvent être nombreux et parfois appartenir à l’équipe d’un service soignant, ces bonnes pratiques ne sont souvent pas mises en œuvre et deviennent très difficiles à tenir pour les utilisateurs des services de recherche.
 
-Cette application permet la gestion de comptes, d’études et de la possibilité de chargement de fichier liée à ces dernières avec une vue statique des différents fichiers et étapes.
+Cette application permet la gestion de comptes, d’études et de la possibilité de chargement de fichiers liés à ces études avec une vue statique des différents fichiers et étapes.
 La force de cette application réside dans un paramétrage fin des études suivi par les équipes, d’une possibilité de création simplifiée de compte utilisateur et d’offrir à moindre frais une plateforme de gestion de fichiers simplifiée et dynamique à un secteur manquant de moyens financiers ou de recul sur les possibilités technologiques offertes.
 
 ## Périmètre fonctionnel
@@ -19,7 +20,7 @@ Cette application doit permettre de :
 ..* Créer des étapes liées aux études
 ..* Gérer un QC simple (conforme/non conforme)
 ..* Donner des droits spécifiques aux utilisateurs vis-à-vis des études
-..* Gérer les utilisateurs en les liants à des centres
+..* Gérer les utilisateurs en les liant à des centres
 ..* Permettre de charger les documents selon un rangement centre / étude / patient 
 ..* Permettre d’affilier des étapes aux fichiers 
 ..* Permettre d’afficher les statiques liées aux données récupérées
@@ -50,9 +51,9 @@ Utiliser la commande personnel django :
 
 ## Paramétrage du chemin de chargement
 
-L'application permet de charger des documents et d'arranger le chemin de sauvegarde pour classer les fichiers tous le temps de la même manière.
+L'application permet de charger des documents et d'arranger le chemin de sauvegarde pour classer les fichiers tout le temps de la même manière.
 Ce chemin peut être modifié via le module *"user_directory_path"* que vous trouverez dans l'application *"upload"* et dans le __fichier models__.
-Les paramètres de base enregistre les données dans : __DATA/NOM_ETUDE/NOM_CENTRE/ID_PATIENT/NOM_FICHIER__
+Les paramètres de base enregistrent les données dans : __DATA/NOM_ETUDE/NOM_CENTRE/ID_PATIENT/NOM_FICHIER__
 
 Référez-vous au module *"doc_directory_path"* pour modifier les chemins de sauvegarde des documents. 
 Les paramètres de base enregistre les documents dans : __DATA/documents/NOM_DOCUMENT__
@@ -65,19 +66,19 @@ Utiliser la commande django :
 
 ## Gestion des groupes
 
-Il éxiste deux groupes : Utilisateur ou Administrateur
+Il existe deux groupes : Utilisateur ou Administrateur
 ..* Utilisateur : Peuvent voir l'index, la partie chargement de document et la partie contact
-..* Administrateur : Possède les mêmes droits que le groupe utilisateur, mais on accès aussi à la partie administrateur 
+..* Administrateurs : Possèdent les mêmes droits que le groupe utilisateur, mais ont accès aussi à la partie administrateur 
 
 ## Créer votre premier utilisateur
 
 En vous connectant avec votre compte super utilisateur, vous avez accès à la partie __"Administration"__ .
 Dans le menu à gauche vous trouvez une section __"Ajouter un utilisateur"__ 
-Dans cette partie vous pouvez indiquer si c'est un utilisateur standard ou un administrateur.
+Dans cette partie, vous pouvez indiquer si c'est un utilisateur standard ou un administrateur.
 
-## Envois de fichier
+## Envoi de fichier
 
-L'envois de fichier est géré par le formulaire d'upload qui se trouve dans la partie __"Formulaire d'upload"__ .
+L'envoi de fichier est géré par le formulaire d'upload qui se trouve dans la partie __"Formulaire d'upload"__ .
 Les points à renseigner sont :
 
 ..* Numero de patient : Déterminer par les équipes et l'étude
@@ -91,14 +92,14 @@ L'application est paramétrable pour permettre un meilleur suivi, cela se retrou
 
 ..* __"Ajouter des études"__ : Cette partie permet d'ajouter des études à la base de donnée
 ..* __"Création des étapes"__ : Permet de lier des étapes aux études
-..* __"Ajouter un centre"__ : Permet de créer des centres composé d'un nom et d'un numéro
-..* __"Ajouter un utilisateur"__ : Permet de créer de nouveau utilisateur de l'application
-..* __"Gestion documentaire"__ : Permet de partager des notes avec certain utilisateur selon l'études
+..* __"Ajouter un centre"__ : Permet de créer des centres composés d'un nom et d'un numéro
+..* __"Ajouter un utilisateur"__ : Permet de créer de nouveaux utilisateurs de l'application
+..* __"Gestion documentaire"__ : Permet de partager des notes avec certains utilisateurs selon l'étude
 ..* __"Autorisation des utilisateurs"__ : Permet d'octroyer un centre et des études à un utilisateur
 ..* __"Gestion documentaire"__ : Permet de partager des documents avec les autres utilisateurs
 
 ## Gestion documentaire
 
 L'application possède une partie de gestion documentaire.
-Il est possible de créer des notes avec un document attaché, ces notes sont liée à des études et ne seront disponible unquement aux utilisateurs possédant le droit sur cette études. 
+Il est possible de créer des notes avec un document attaché, ces notes sont liées à des études et ne seront disponibles unquement aux utilisateurs possédant le droit sur cette étude. 
 
