@@ -43,11 +43,6 @@ Utiliser la commande personnel django :
 
 ... `python manage.py loaddataref`
 
-## Chargement des données tests
-
-Utiliser la commande personnel django :
-
-... `python manage.py loaddatatest`
 
 ## Paramétrage du chemin de chargement
 
