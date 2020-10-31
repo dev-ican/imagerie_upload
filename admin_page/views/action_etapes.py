@@ -188,8 +188,9 @@ def walkup(request):
     """Appel ajax lors du changement d'état d'un controle qualité.
     Ce module modifie l'état dans la base de donnée
     puis renvois vers la page pour afficher la modification"""
-    list_tr = []
     val_url = request.GET.get("url")
+    path = os.path.dirname(val_url)
+    list_tr = [{"url":path}]
     list_dir = os.listdir(val_url)
     for item in list_dir:
         lien_id = os.path.join(val_url, item)
@@ -226,11 +227,14 @@ def walkdown(request):
     list_tr = []
     val_url = request.GET.get("url")
     val_compare = request.GET.get("val_compare")
-    path = os.path.dirname(val_url)
-    split_path = path.split("\\")
-    del split_path[-1]
-    path_join = "\\".join(split_path)
-    if val_compare in path_join:
+    if val_compare in val_url:
+        path = os.path.dirname(val_url)
+        if val_compare in path:
+            list_tr = [{"url":path}]
+            path_join = path
+        else:
+            list_tr = [{"url":val_url}]
+            path_join = val_url
         list_dir = os.listdir(path_join)
         for item in list_dir:
             lien_id = os.path.join(path_join, item)
