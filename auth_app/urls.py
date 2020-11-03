@@ -1,6 +1,6 @@
 # -*-coding:Utf-8 -*
 
-"""Chemin de l'application principal"""
+"""Chemin de l'application auth_app"""
 
 from django.urls import path
 

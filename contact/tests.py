@@ -1,20 +1,19 @@
+# -*- coding: utf-8 -*-
+
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-from django.conf import settings
-from upload.models import (
-    Contact,
-    RefTypeAction,
-)
-
-from django.contrib.auth.models import User
 from django.utils import timezone
+
+from upload.models import Contact, RefTypeAction
 
 
 class TestApp(TestCase):
-    """ Mise en place des tests """
+    """Mise en place des tests."""
 
     def setUp(self):
-        """ Mise en place des bases de données """
+        """Mise en place des bases de données."""
         date_now = timezone.now()
 
         test_user1 = User.objects.create_user(
@@ -28,15 +27,22 @@ class TestApp(TestCase):
         test_user2.save()
 
         test_contact1 = Contact.objects.create(
-            nom="Nom_contact1", prenom="Prenom_contact1", courriel="test@test.com", telephone="0147896523", poste="Test contact"
+            nom="Nom_contact1",
+            prenom="Prenom_contact1",
+            courriel="test@test.com",
+            telephone="0147896523",
+            poste="Test contact",
         )
         test_contact2 = Contact.objects.create(
-            nom="Nom_contact2", prenom="Prenom_contact2", courriel="test@test.com", telephone="0147896523", poste="Test contact_2"
+            nom="Nom_contact2",
+            prenom="Prenom_contact2",
+            courriel="test@test.com",
+            telephone="0147896523",
+            poste="Test contact_2",
         )
 
         test_contact1.save()
         test_contact2.save()
-
 
         test_typeaction = RefTypeAction.objects.create(
             id=1, nom="Action_1"
@@ -74,45 +80,62 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_gestion_contact(self):
-        """Test le module gestion de contact"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module gestion de contact."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
         id_contact = Contact.objects.all()
         val_dict = {
-            'nom':"Nom_contact1_ajout",
-            'prenom':"Prenom_contact1",
-            'email':"test@test.com",
-            'telephone':"0147896523",
-            'poste':"Test contact",
+            "nom": "Nom_contact1_ajout",
+            "prenom": "Prenom_contact1",
+            "email": "test@test.com",
+            "telephone": "0147896523",
+            "poste": "Test contact",
         }
         post_document = self.client.post(
             reverse("new_contact"), data=val_dict
         )
         self.assertEqual(post_document.status_code, 302)
-        get_document = self.client.get(reverse("contact_gestion"))
+        get_document = self.client.get(
+            reverse("contact_gestion")
+        )
         result = get_document.context["resultat"]
         for item in result:
-            self.assertIn(item.nom, ["Nom_contact1_ajout", "Nom_contact1", "Nom_contact2"])
+            self.assertIn(
+                item.nom,
+                [
+                    "Nom_contact1_ajout",
+                    "Nom_contact1",
+                    "Nom_contact2",
+                ],
+            )
 
     def test_contact_edit(self):
-        """Test le module d'édition documentaire"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module d'édition documentaire."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
         id_etude = Contact.objects.all()
         val_dict = {
-            'nom':"Nom_contact1_edition",
-            'prenom':"Prenom_contact1",
-            'email':"test@test.com",
-            'telephone':"0147896523",
-            'poste':"Test contact",
+            "nom": "Nom_contact1_edition",
+            "prenom": "Prenom_contact1",
+            "email": "test@test.com",
+            "telephone": "0147896523",
+            "poste": "Test contact",
         }
         post_document = self.client.post(
             reverse("new_contact"), data=val_dict
@@ -125,35 +148,48 @@ class TestApp(TestCase):
         edit_document = self.client.post(
             reverse("contact_edit", args=(id_item,)),
             {
-            'nom':"Nom_contact1_EDITE",
-            'prenom':"Prenom_contact1_EDITE",
-            'email':"test@edition.com",
-            'telephone':"0147896523",
-            'poste':"EDITER",
+                "nom": "Nom_contact1_EDITE",
+                "prenom": "Prenom_contact1_EDITE",
+                "email": "test@edition.com",
+                "telephone": "0147896523",
+                "poste": "EDITER",
             },
         )
         self.assertEqual(edit_document.status_code, 302)
-        get_document = self.client.get(reverse("contact_gestion"))
+        get_document = self.client.get(
+            reverse("contact_gestion")
+        )
         self.assertEqual(post_document.status_code, 302)
         result = get_document.context["resultat"]
         for item in result:
-            self.assertIn(item.nom, ["Nom_contact1_EDITE", "Nom_contact1", "Nom_contact2"])
+            self.assertIn(
+                item.nom,
+                [
+                    "Nom_contact1_EDITE",
+                    "Nom_contact1",
+                    "Nom_contact2",
+                ],
+            )
 
     def test_contact_deleted(self):
-        """Test le module de suppression documentaire"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module de suppression documentaire."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
         id_etude = Contact.objects.all()
         val_dict = {
-            'nom':"Nom_contact1_del",
-            'prenom':"Prenom_contact1",
-            'email':"test@test.com",
-            'telephone':"0147896523",
-            'poste':"Test contact",
+            "nom": "Nom_contact1_del",
+            "prenom": "Prenom_contact1",
+            "email": "test@test.com",
+            "telephone": "0147896523",
+            "poste": "Test contact",
         }
         post_document = self.client.post(
             reverse("new_contact"), data=val_dict
@@ -167,8 +203,12 @@ class TestApp(TestCase):
             reverse("contact_deleted", args=(id_item,))
         )
         self.assertEqual(edit_document.status_code, 200)
-        get_document = self.client.get(reverse("contact_gestion"))
+        get_document = self.client.get(
+            reverse("contact_gestion")
+        )
         self.assertEqual(post_document.status_code, 302)
         result = get_document.context["resultat"]
         for item in result:
-            self.assertIn(item.nom, ["Nom_contact1", "Nom_contact2"])
+            self.assertIn(
+                item.nom, ["Nom_contact1", "Nom_contact2"]
+            )

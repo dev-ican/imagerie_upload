@@ -1,16 +1,18 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+# -*- coding: utf-8 -*-
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.utils import timezone
+
+from upload.models import RefTypeAction, log
 
 from .forms import LogIn
-from upload.models import log, RefTypeAction
-from django.utils import timezone
 
 
 def get_login(request):
-    """Permet de se connecter au site
-    Allows you to connect to the site"""
+    """Permet de se connecter au site Allows you to connect to the site."""
 
     if request.method == "POST":
         form = LogIn(request.POST)
@@ -47,8 +49,7 @@ def get_login(request):
 
 
 def log_out(request):
-    """Permet de se déconnecter
-    Allows to disconnect"""
+    """Permet de se déconnecter Allows to disconnect."""
     # Enregistrement du log------------------------------------
     # ---------------------------------------------------------
     date_now = timezone.now()
@@ -67,6 +68,8 @@ def log_out(request):
     # ---------------------------------------------------------
     logout(request)
     messages.add_message(
-        request, messages.WARNING, "Vous êtes maintenant déconnecté"
+        request,
+        messages.WARNING,
+        "Vous êtes maintenant déconnecté",
     )
     return redirect("/upload/")

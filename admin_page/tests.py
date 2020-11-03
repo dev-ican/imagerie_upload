@@ -1,28 +1,28 @@
+import json
+
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-
-from upload.models import (
-    RefEtudes,
-    JonctionUtilisateurEtude,
-    RefEtapeEtude,
-    RefInfocentre,
-    SuiviUpload,
-    RefEtatEtape,
-    RefControleQualite,
-    RefTypeAction,
-    DossierUpload,
-)
-from django.contrib.auth.models import User
 from django.utils import timezone
 
-import json
+from upload.models import (
+    DossierUpload,
+    JonctionUtilisateurEtude,
+    RefControleQualite,
+    RefEtapeEtude,
+    RefEtatEtape,
+    RefEtudes,
+    RefInfocentre,
+    RefTypeAction,
+    SuiviUpload,
+)
 
 
 class TestApp(TestCase):
-    """ Mise en place des tests """
+    """Mise en place des tests."""
 
     def setUp(self):
-        """ Mise en place des bases de données """
+        """Mise en place des bases de données."""
         date_now = timezone.now()
         test_user1 = User.objects.create_user(
             username="testuser1", password="testtest"
@@ -49,22 +49,28 @@ class TestApp(TestCase):
         etat_1 = RefEtatEtape.objects.create(nom="test")
         etat_1.save()
 
-        jonction_etude1 = JonctionUtilisateurEtude.objects.create(
-            user=test_user1,
-            etude=test_etude2,
-            date_autorisation=date_now,
+        jonction_etude1 = (
+            JonctionUtilisateurEtude.objects.create(
+                user=test_user1,
+                etude=test_etude2,
+                date_autorisation=date_now,
+            )
         )
         jonction_etude1.save()
-        jonction_etude2 = JonctionUtilisateurEtude.objects.create(
-            user=test_user2,
-            etude=test_etude1,
-            date_autorisation=date_now,
+        jonction_etude2 = (
+            JonctionUtilisateurEtude.objects.create(
+                user=test_user2,
+                etude=test_etude1,
+                date_autorisation=date_now,
+            )
         )
         jonction_etude2.save()
-        jonction_etude3 = JonctionUtilisateurEtude.objects.create(
-            user=test_user3,
-            etude=test_etude1,
-            date_autorisation=date_now,
+        jonction_etude3 = (
+            JonctionUtilisateurEtude.objects.create(
+                user=test_user3,
+                etude=test_etude1,
+                date_autorisation=date_now,
+            )
         )
         jonction_etude3.save()
 
@@ -78,11 +84,15 @@ class TestApp(TestCase):
         etape_etude.save()
 
         test_centre = RefInfocentre.objects.create(
-            nom="Centre_test1", numero="1258", date_ajout=date_now
+            nom="Centre_test1",
+            numero="1258",
+            date_ajout=date_now,
         )
         test_centre.save()
         test_centre = RefInfocentre.objects.create(
-            nom="Centre_test2", numero="12587", date_ajout=date_now
+            nom="Centre_test2",
+            numero="12587",
+            date_ajout=date_now,
         )
         test_centre.save()
 
@@ -115,7 +125,9 @@ class TestApp(TestCase):
         )
         test_typeaction.save()
 
-        test_cq = RefControleQualite.objects.create(id=1, nom="QC_1")
+        test_cq = RefControleQualite.objects.create(
+            id=1, nom="QC_1"
+        )
         test_cq.save()
 
         test_dossier = DossierUpload.objects.create(
@@ -145,17 +157,23 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_admin_etude(self):
-        """Test le module admin etude"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin etude."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         check_etude = self.client.get(reverse("admin_etude"))
         self.assertTemplateUsed(check_etude, "admin_etude.html")
         var_etude = check_etude.context["resultat"]
         for item in var_etude:
-            self.assertIn(item.nom, ["test_etude1", "test_etude2"])
+            self.assertIn(
+                item.nom, ["test_etude1", "test_etude2"]
+            )
         post_etude = self.client.post(
             reverse("admin_etude"), {"nom": "test_case_etude"}
         )
@@ -167,11 +185,15 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_etude_edit(self):
-        """Test le module admin etude edition"""
+        """Test le module admin etude edition."""
         date_now = timezone.now()
-        self.client.login(username="testuser1", password="testtest")
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {"nom": "test_etude_edit"}
@@ -197,10 +219,14 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_etude_del(self):
-        """Test le module admin etude suppr"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin etude suppr."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {"nom": "test_etude_del"}
@@ -220,7 +246,9 @@ class TestApp(TestCase):
         )
         select_del = RefEtudes.objects.all()
         nbr_etude_del = len(select_del)
-        self.assertTemplateUsed(post_edit_etude, "admin_etude.html")
+        self.assertTemplateUsed(
+            post_edit_etude, "admin_etude.html"
+        )
         self.assertNotEqual(nbr_etude, nbr_etude_del)
 
     # ---------------------------------------------------------------------------------------------
@@ -230,18 +258,26 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_admin_etape(self):
-        """Test le module admin etape"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin etape."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         check_etude = self.client.get(reverse("admin_etape"))
         self.assertTemplateUsed(check_etude, "admin_etapes.html")
         var_etude = check_etude.context["resultat"]
         for item in var_etude:
-            self.assertIn(item.nom, ["Etape_test1", "Etape_test2"])
-        id_etude = RefEtudes.objects.get(nom__exact="test_etude1")
+            self.assertIn(
+                item.nom, ["Etape_test1", "Etape_test2"]
+            )
+        id_etude = RefEtudes.objects.get(
+            nom__exact="test_etude1"
+        )
         post_etape = self.client.post(
             reverse("admin_etape"),
             {"nom": "test_case_etape", "etudes": id_etude.id},
@@ -254,14 +290,23 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_admin_etape_edit(self):
-        """Test le module admin etape edition"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin etape edition."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
-        id_etude = RefEtudes.objects.get(nom__exact="test_etude1")
-        val_dict = {"nom": "test_etape_edit", "etudes": id_etude.id}
+        id_etude = RefEtudes.objects.get(
+            nom__exact="test_etude1"
+        )
+        val_dict = {
+            "nom": "test_etape_edit",
+            "etudes": id_etude.id,
+        }
         post_etape = self.client.post(
             reverse("admin_etape"), data=val_dict
         )
@@ -276,12 +321,18 @@ class TestApp(TestCase):
             reverse("etape_edit", args=(id_projet,))
         )
         self.assertEqual(check_etude.status_code, 200)
-        self.assertTemplateUsed(check_etude, "admin_etapes_edit.html")
+        self.assertTemplateUsed(
+            check_etude, "admin_etapes_edit.html"
+        )
         var_etude = check_etude.context["resultat"]
         for item in var_etude:
             self.assertIn(
                 item.nom,
-                ["Etape_test1", "Etape_test2", "test_etape_edit"],
+                [
+                    "Etape_test1",
+                    "Etape_test2",
+                    "test_etape_edit",
+                ],
             )
         post_etape = self.client.post(
             reverse("etape_edit", args=(id_etape.id,)),
@@ -299,14 +350,23 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_admin_etape_del(self):
-        """Test le module admin etape suppr"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin etape suppr."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
-        id_etude = RefEtudes.objects.get(nom__exact="test_etude1")
-        val_dict = {"nom": "test_etape_del", "etudes": id_etude.id}
+        id_etude = RefEtudes.objects.get(
+            nom__exact="test_etude1"
+        )
+        val_dict = {
+            "nom": "test_etape_del",
+            "etudes": id_etude.id,
+        }
         post_etape = self.client.post(
             reverse("admin_etape"), data=val_dict
         )
@@ -323,7 +383,9 @@ class TestApp(TestCase):
         )
         select_del = RefEtudes.objects.all()
         nbr_etape_del = len(select_del)
-        self.assertTemplateUsed(post_edit_etape, "admin_etapes.html")
+        self.assertTemplateUsed(
+            post_edit_etape, "admin_etapes.html"
+        )
         self.assertNotEqual(nbr_etape, nbr_etape_del)
 
     # ---------------------------------------------------------------------------------------------
@@ -333,19 +395,30 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_admin_user(self):
-        """Test le module admin user"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin user."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
-        check_user = self.client.get(reverse("admin_utilisateur"))
+        check_user = self.client.get(
+            reverse("admin_utilisateur")
+        )
         self.assertTemplateUsed(check_user, "admin_user.html")
         var_user = check_user.context["resultat"]
         for item in var_user:
             self.assertIn(
                 item.username,
-                ["testuser1", "testuser2", "testuser3", "testuser4"],
+                [
+                    "testuser1",
+                    "testuser2",
+                    "testuser3",
+                    "testuser4",
+                ],
             )
         dict_user = {
             "username": "test_user_create",
@@ -367,10 +440,14 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_admin_user_edit(self):
-        """Test le module admin user edition"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin user edition."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {
@@ -396,7 +473,9 @@ class TestApp(TestCase):
             reverse("user_edit", args=(id_projet,))
         )
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(check_user, "admin_user_edit.html")
+        self.assertTemplateUsed(
+            check_user, "admin_user_edit.html"
+        )
         var_etude = check_user.context["resultat"]
         for item in var_etude:
             self.assertIn(
@@ -428,10 +507,14 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_admin_user_del(self):
-        """Test le module admin user suppr"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin user suppr."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {
@@ -469,18 +552,24 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_admin_centre(self):
-        """Test le module admin centre"""
+        """Test le module admin centre."""
         date_now = timezone.now()
-        self.client.login(username="testuser1", password="testtest")
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         check_user = self.client.get(reverse("admin_centre"))
         self.assertTemplateUsed(check_user, "admin_centre.html")
         var_user = check_user.context["resultat"]
         for item in var_user:
-            self.assertIn(item.nom, ["Centre_test1", "Centre_test2"])
+            self.assertIn(
+                item.nom, ["Centre_test1", "Centre_test2"]
+            )
         dict_centre = {
             "nom": "test_centre_create",
             "numero": "569",
@@ -497,11 +586,15 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_admin_centre_edit(self):
-        """Test le module admin centre edition"""
+        """Test le module admin centre edition."""
         date_now = timezone.now()
-        self.client.login(username="testuser1", password="testtest")
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {
@@ -518,17 +611,25 @@ class TestApp(TestCase):
             if item.nom == "test_centre_edit":
                 id_projet = item.id
                 break
-        id_centre = RefInfocentre.objects.get(id__exact=id_projet)
+        id_centre = RefInfocentre.objects.get(
+            id__exact=id_projet
+        )
         check_user = self.client.get(
             reverse("centre_edit", args=(id_projet,))
         )
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(check_user, "admin_centre_edit.html")
+        self.assertTemplateUsed(
+            check_user, "admin_centre_edit.html"
+        )
         var_etude = check_user.context["resultat"]
         for item in var_etude:
             self.assertIn(
                 item.nom,
-                ["Centre_test1", "Centre_test2", "test_centre_edit"],
+                [
+                    "Centre_test1",
+                    "Centre_test2",
+                    "test_centre_edit",
+                ],
             )
         post_centre = self.client.post(
             reverse("centre_edit", args=(id_centre.id,)),
@@ -547,11 +648,15 @@ class TestApp(TestCase):
         self.assertTrue(reponse)
 
     def test_admin_centre_del(self):
-        """Test le module admin centre suppr"""
+        """Test le module admin centre suppr."""
         date_now = timezone.now()
-        self.client.login(username="testuser1", password="testtest")
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {
@@ -585,27 +690,44 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_admin_auth(self):
-        """Test le module admin autorisation"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin autorisation."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
-        check_user = self.client.get(reverse("admin_autorisation"))
+        check_user = self.client.get(
+            reverse("admin_autorisation")
+        )
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(check_user, "admin_autorisation.html")
+        self.assertTemplateUsed(
+            check_user, "admin_autorisation.html"
+        )
         var_user = check_user.context["resultat"]
         for item in var_user:
             self.assertIn(
                 item.username,
-                ["testuser1", "testuser2", "testuser3", "testuser4"],
+                [
+                    "testuser1",
+                    "testuser2",
+                    "testuser3",
+                    "testuser4",
+                ],
             )
 
     def test_admin_auth_edit(self):
-        """Test le module admin autorisation edition"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module admin autorisation edition."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         val_dict = {
@@ -630,13 +752,19 @@ class TestApp(TestCase):
             reverse("auth_edit", args=(id_projet,))
         )
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(check_user, "admin_auth_edit.html")
+        self.assertTemplateUsed(
+            check_user, "admin_auth_edit.html"
+        )
         var_etude = check_user.context["etude"]
         var_centre = check_user.context["centre"]
         for item in var_etude:
-            self.assertIn(item.nom, ["test_etude1", "test_etude2"])
+            self.assertIn(
+                item.nom, ["test_etude1", "test_etude2"]
+            )
         for item in var_centre:
-            self.assertIn(item.nom, ["Centre_test1", "Centre_test2"])
+            self.assertIn(
+                item.nom, ["Centre_test1", "Centre_test2"]
+            )
         etude_all = RefEtudes.objects.all()
         centre_all = RefInfocentre.objects.all()
         for item in etude_all:
@@ -655,10 +783,14 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
     # ---------------------------------------------------------------------------------------------
     def test_stat_page(self):
-        """Test le module d'affichage de la page de stat"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module d'affichage de la page de stat."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         check_user = self.client.get(reverse("admin"))
@@ -672,37 +804,53 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_page_etat(self):
-        """Test le module d'affichage pour la page état étapes"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module d'affichage pour la page état étapes."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         check_user = self.client.get(reverse("admin_upload"))
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(check_user, "admin_page_upload.html")
+        self.assertTemplateUsed(
+            check_user, "admin_page_upload.html"
+        )
 
     def test_page_etat_tris(self):
-        """Test le module tris pour la page état étapes"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module tris pour la page état étapes."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_etude = RefEtudes.objects.filter(id__gte=0)[:1]
         get_tris = self.client.get(
             reverse("upload_tris", args=(id_etude[0].id,))
         )
-        self.assertTemplateUsed(get_tris, "admin_page_upload.html")
+        self.assertTemplateUsed(
+            get_tris, "admin_page_upload.html"
+        )
         self.assertEqual(get_tris.status_code, 200)
         self.assertEqual(len(get_tris.context["resultat"]), 0)
 
     def test_page_etat_mod(self):
-        """Test le module modification qui ramène la liste déroulante
-        pour la page état étapes"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module modification qui ramène la liste déroulante pour la
+        page état étapes."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         get_mod = self.client.get(reverse("upload_mod"))

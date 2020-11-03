@@ -1,15 +1,23 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
+# -*- coding: utf-8 -*-
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .module_views import *
-from .module_log import *
-from .module_admin import choiceEtude
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
 from admin_page.forms import FormsEtape
 from upload.models import (
-    RefEtudes,
+    JonctionEtapeSuivi,
     RefEtapeEtude,
-    JonctionEtapeSuivi
+    RefEtudes,
+)
+
+from .module_admin import choice_etude
+from .module_log import (
+    creation_log,
+    edition_log,
+    information_log,
+    suppr_log,
 )
 
 # Gère la partie Admin Etapes
@@ -19,8 +27,8 @@ from upload.models import (
 
 
 @login_required(login_url="/auth/auth_in/")
-def adminetape(request):
-    """ Charge la page index pour l'ajout ou l'édition d'une étape """
+def admin_etape(request):
+    """Charge la page index pour l'ajout ou l'édition d'une étape."""
     liste_protocole = []
     if request.method == "POST":
         val_nom = request.POST["nom"]
@@ -30,7 +38,7 @@ def adminetape(request):
         # Enregistrement du log--------------------------------
         # -----------------------------------------------------
         nom_documentaire = " a créé l'étape : " + val_nom
-        creationLog(request, nom_documentaire)
+        creation_log(request, nom_documentaire)
         # -----------------------------------------------------
         # -----------------------------------------------------
     form = FormsEtape()
@@ -46,8 +54,8 @@ def adminetape(request):
 
 
 @login_required(login_url="/auth/auth_in/")
-def etapeEdit(request, id_etape):
-    """ Charge la page d'édition des étapes """
+def etape_edit(request, id_etape):
+    """Charge la page d'édition des étapes."""
     liste_protocole = []
     if request.method == "POST":
         select_etape = RefEtapeEtude.objects.get(pk=id_etape)
@@ -66,7 +74,7 @@ def etapeEdit(request, id_etape):
             + "/"
             + nom
         )
-        editionLog(request, nom_documentaire)
+        edition_log(request, nom_documentaire)
         # ------------------------------------------------------
         # ------------------------------------------------------
         select_etape.nom = nom
@@ -90,7 +98,7 @@ def etapeEdit(request, id_etape):
             + "/"
             + etape_filtre.nom
         )
-        informationLog(request, nom_documentaire)
+        information_log(request, nom_documentaire)
         # --------------------------------------------------
         # --------------------------------------------------
     etape_tab = RefEtapeEtude.objects.all()
@@ -106,8 +114,8 @@ def etapeEdit(request, id_etape):
 
 
 @login_required(login_url="/auth/auth_in/")
-def etapeDel(request, id_etape):
-    """ Appel Ajax permettant la supression d'une étapes """
+def etape_del(request, id_etape):
+    """Appel Ajax permettant la supression d'une étapes."""
     liste_protocole = []
     x = 0
     if request.method == "POST":
@@ -120,7 +128,9 @@ def etapeDel(request, id_etape):
                 x += 1
             suppr = False
         if suppr:
-            id_log = RefEtapeEtude.objects.get(id__exact=id_etape)
+            id_log = RefEtapeEtude.objects.get(
+                id__exact=id_etape
+            )
             # Enregistrement du log------------------------------
             # ---------------------------------------------------
             nom_documentaire = (
@@ -129,15 +139,19 @@ def etapeDel(request, id_etape):
                 + "/"
                 + id_log.nom
             )
-            supprLog(request, nom_documentaire)
+            suppr_log(request, nom_documentaire)
             # ---------------------------------------------------
             # ---------------------------------------------------
-            RefEtapeEtude.objects.get(id__exact=id_etape).delete()
+            RefEtapeEtude.objects.get(
+                id__exact=id_etape
+            ).delete()
             message = messages.add_message(
                 request, messages.WARNING, "Suppression Faite"
             )
         else:
-            id_log = RefEtapeEtude.objects.get(id__exact=id_etape)
+            id_log = RefEtapeEtude.objects.get(
+                id__exact=id_etape
+            )
             # Enregistrement du log------------------------------
             # ---------------------------------------------------
             nom_documentaire = (
@@ -146,7 +160,7 @@ def etapeDel(request, id_etape):
                 + "/"
                 + id_log.nom
             )
-            informationLog(request, nom_documentaire)
+            information_log(request, nom_documentaire)
             # ----------------------------------------------
             # ----------------------------------------------
             message = messages.add_message(

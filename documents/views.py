@@ -1,27 +1,25 @@
-from django.shortcuts import render
-from django.http import (
-    HttpResponse,
-    HttpResponseRedirect
-)
+# -*- coding: utf-8 -*-
+
+import os
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
-import os
-from admin_page.views.module_admin import *
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.utils import timezone
 
+from admin_page.views.module_admin import choice_etude
+from upload.models import RefEtudes, RefTypeAction, SuiviDocument, log
+
 from .forms import DocumentForm
-from upload.models import (
-    RefEtudes,
-    SuiviDocument,
-    log,
-    RefTypeAction,
-)
 
 
 @login_required(login_url="/auth/auth_in/")
-def gestiondoc(request):
-
+def gestion_documentaire(request):
+    ''' Charge la page de la gestion documentaire
+    Si le formulaire est renvoyé enregistre le document
+    '''
     if request.method == "POST":
         date_now = timezone.now()
         titre = request.POST["titre"]
@@ -41,6 +39,7 @@ def gestiondoc(request):
         )
         # --------------------------------------------
         # --------------------------------------------
+        # Permet de sélectionner la bonne image de fond
         if type == str(0):
             url_img = "bg-nw-info.jpg"
         elif type == str(1):
@@ -61,7 +60,7 @@ def gestiondoc(request):
             )
             create_suivi.save()
     form = DocumentForm()
-    liste_protocole = choiceEtude(True)
+    liste_protocole = choice_Etude(True)
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
     doc_tab = SuiviDocument.objects.all()
@@ -73,7 +72,8 @@ def gestiondoc(request):
 
 
 @login_required(login_url="/auth/auth_in/")
-def downOnce(request, id):
+def down_once(request, id):
+    ''' Permet le téléchargement du document '''
     obj = SuiviDocument.objects.get(id=id)
     filename = obj.fichiers.path
     # Enregistrement du log----------------------------------
@@ -103,9 +103,11 @@ def downOnce(request, id):
 
 
 @login_required(login_url="/auth/auth_in/")
-def docEdit(request, id):
+def doc_edit(request, id):
+    ''' Permet l'édition d'un document '''
     liste_protocole = []
     if request.method == "POST":
+        # Récupération des données du formulaire
         form = DocumentForm()
         titre = request.POST["titre"]
         desc = request.POST["description"]
@@ -125,6 +127,7 @@ def docEdit(request, id):
         )
         # ------------------------------------------------
         # ------------------------------------------------
+        # Permet le choix de l'image de fond
         if type == str(0):
             url_img = "bg-nw-info.jpg"
         elif type == str(1):
@@ -135,6 +138,7 @@ def docEdit(request, id):
             description=desc,
             background=url_img,
         )
+        # Modification du document à charger
         filez = request.FILES.getlist("document")
         for f in filez:
             SuiviDocument.objects.filter(id=id).update(
@@ -161,7 +165,8 @@ def docEdit(request, id):
         # -----------------------------------------------
         id_etude = RefEtudes.objects.get(nom=obj.etude)
         form = DocumentForm()
-        liste_protocole = choiceEtude(False)
+        # Charge le formulaire avec les listes déroulantes
+        liste_protocole = choice_Etude(False)
         form.fields["etudes"].choices = liste_protocole
         form.fields["etudes"].initial = [id_etude.id]
         form.fields["titre"].initial = obj.titre
@@ -176,7 +181,9 @@ def docEdit(request, id):
 
 
 @login_required(login_url="/auth/auth_in/")
-def docDeleted(request, id):
+def doc_deleted(request, id):
+    ''' Permet de supprimer un document géré par
+    appel ajax '''
     liste_protocole = []
     if request.method == "POST":
         var_suivi = SuiviDocument.objects.get(id=int(id))
@@ -204,7 +211,7 @@ def docDeleted(request, id):
             request, messages.WARNING, "Suppression Faite"
         )
     form = DocumentForm()
-    liste_protocole = choiceEtude(True)
+    liste_protocole = choice_Etude(True)
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
     doc_tab = SuiviDocument.objects.all()

@@ -5,6 +5,8 @@ from selenium.webdriver.support.ui import Select
 
 
 class AccountTestCase(LiveServerTestCase):
+    ''' Test sélénium pour la page d'upload '''
+
     def setUp(self):
 
         self.selenium = webdriver.Firefox(

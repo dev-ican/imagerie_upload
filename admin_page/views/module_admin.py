@@ -9,7 +9,8 @@ from upload.models import (
 )
 
 
-def checkmdp(first, second):
+def check_mdp(first, second):
+    ''' Vérifie la concordance du mot de passe '''
     check = False
     if len(first) > 0 and len(second) > 0:
         if first == second:
@@ -19,7 +20,7 @@ def checkmdp(first, second):
 
 
 def take_data(etude, centre):
-
+    ''' Ce module vérifie si les études ou les centres sont renseigné '''
     list_response = []
     if etude != "EMPTY":
         etude = int(etude) + 1
@@ -37,7 +38,8 @@ def take_data(etude, centre):
     return list_response
 
 
-def choiceEtude(val_zero):
+def choice_etude(val_zero):
+    ''' Génère les listes déroulante des études '''
     liste_etude = []
     request_etude = RefEtudes.objects.all()
 
@@ -51,7 +53,8 @@ def choiceEtude(val_zero):
     return liste_etude
 
 
-def choiceCentre(val_zero):
+def choice_centre(val_zero):
+    ''' Génère les listes déroulante des centres '''
     liste_centre = []
     request_centre = RefInfocentre.objects.all().order_by("nom")
 

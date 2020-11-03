@@ -1,19 +1,11 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-
-from .models import (
-    RefEtudes,
-    JonctionUtilisateurEtude,
-    RefControleQualite,
-    DossierUpload,
-    RefEtatEtape,
-    RefEtapeEtude,
-    SuiviDocument,
-    RefInfocentre,
-    RefTypeAction,
-)
-from django.contrib.auth.models import User
 from django.utils import timezone
+
+from .models import (DossierUpload, JonctionUtilisateurEtude,
+                     RefControleQualite, RefEtapeEtude, RefEtatEtape,
+                     RefEtudes, RefInfocentre, RefTypeAction, SuiviDocument)
 
 
 class TestApp(TestCase):

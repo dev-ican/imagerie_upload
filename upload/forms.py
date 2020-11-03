@@ -6,6 +6,7 @@ from datetime import date
 from .models import *
     
 class LogIn(forms.Form):
+	''' Formulaire pour se loguer '''
     log_id = forms.CharField(label='Identifiant', max_length=100)
     pwd = forms.CharField(
         label='Mot de passe',
@@ -13,6 +14,7 @@ class LogIn(forms.Form):
         max_length=100)
 
 class UploadForm(forms.Form):
+	''' Formulaire de chargement de fichier '''
     nip = forms.CharField(label='Numéro patient', max_length=100)
     etudes = forms.ChoiceField(widget=forms.Select(), choices=(['liste de vos études']), initial='0', required=True,)
     date_irm = forms.DateField()

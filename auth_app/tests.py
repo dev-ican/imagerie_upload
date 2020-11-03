@@ -1,14 +1,15 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
-from django.contrib.auth.models import User
 from upload.models import RefTypeAction
 
 
 class TestApp(TestCase):
-    """ Mise en place des tests """
+    """Mise en place des tests."""
+
     def setUp(self):
-        """ Mise en place des bases de données """
+        """Mise en place des bases de données."""
 
         test_user1 = User.objects.create_user(
             username="testuser1", password="testtest"
@@ -56,18 +57,26 @@ class TestApp(TestCase):
     # ---------------------------------------------------------------------------------------------
 
     def test_login(self):
-        """Test le module login"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module login."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
 
     def test_logout(self):
-        """Test le module logout"""
-        self.client.login(username="testuser1", password="testtest")
+        """Test le module logout."""
+        self.client.login(
+            username="testuser1", password="testtest"
+        )
         response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
+        self.assertEqual(
+            str(response.context["user"]), "testuser1"
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         self.client.get(reverse("logout"))

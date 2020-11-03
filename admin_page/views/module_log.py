@@ -1,3 +1,5 @@
+# -*-coding:Utf-8 -*
+
 from django.utils import timezone
 from upload.models import log, RefTypeAction
 
@@ -8,7 +10,7 @@ from upload.models import log, RefTypeAction
 # --------------------------------------------------------------------------------------
 
 
-def informationLog(req, info):
+def information_log(req, info):
     """ Gère le log Informations """
     date_now = timezone.now()
     user_current = req.user
@@ -22,7 +24,7 @@ def informationLog(req, info):
     )
 
 
-def creationLog(req, info):
+def creation_log(req, info):
     """ Gère le log création """
     date_now = timezone.now()
     user_current = req.user
@@ -36,7 +38,7 @@ def creationLog(req, info):
     )
 
 
-def editionLog(req, info):
+def edition_log(req, info):
     """ Gère le log création """
     date_now = timezone.now()
     user_current = req.user
@@ -50,7 +52,7 @@ def editionLog(req, info):
     )
 
 
-def supprLog(req, info):
+def suppr_log(req, info):
     """ Gère le log création """
     date_now = timezone.now()
     user_current = req.user

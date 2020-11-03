@@ -1,13 +1,21 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import os
-from .module_views import *
-from .module_log import *
-from django.core.exceptions import ObjectDoesNotExist
+# -*- coding: utf-8 -*-
 
-from upload.models import (
-    RefEtapeEtude,
-    SuiviUpload
+import os
+
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
+
+from upload.models import RefEtapeEtude, SuiviUpload
+
+from .module_log import information_log
+from .module_views import (
+    dict_upload,
+    etude_recente,
+    gestion_etape,
+    gestion_etude_recente,
+    info_etape,
+    nom_etape,
 )
 
 # Permet d'afficher la page des étapes de chaque étude
@@ -17,9 +25,9 @@ from upload.models import (
 
 
 @login_required(login_url="/auth/auth_in/")
-def adminup(request):
-    """ Affiche la page du tableau gérant
-    les différents état des étapes d'une étude. """
+def admin_up(request):
+    """Affiche la page du tableau gérant les différents état des étapes d'une
+    étude."""
     tab_list = []
     list_centre = []
     dict_upload = {}
@@ -36,32 +44,34 @@ def adminup(request):
         nbr_etape = RefEtapeEtude.objects.filter(
             etude=etude_recente.etude.etude
         ).count()
-        nom_etape = nomEtape(etude_recente)
+        nom_etape = nom_etape(etude_recente)
         for files in dossier_all:
             dict_upload = {}
-            dict_upload = dictUpload(dict_upload, files)
-            info_etape = infoEtape(files)
-            var_etape = gestionetape(nom_etape, info_etape, nbr_etape)
+            dict_upload = dict_upload(dict_upload, files)
+            info_etape = info_etape(files)
+            var_etape = gestion_etape(
+                nom_etape, info_etape, nbr_etape
+            )
             if len(var_etape) == 2:
                 dict_upload["etape_etude"] = var_etape[1]
             dict_upload["error"] = var_etape[0]
             tab_list.append(dict_upload)
         dict_nbr["nbr_etape"] = nbr_etape
         dict_nbr["nom_etape"] = nom_etape
-        list_centre = etudeRecente(etude_recente, dossier_all)
-        gestion_info = gestionEtudeRecente(
+        list_centre = etude_recente(etude_recente, dossier_all)
+        gestion_info = gestion_etude_recente(
             etude_recente, dossier_all, list_centre
         )
     except ObjectDoesNotExist:
         dossier_all = ""
-        gestion_info = gestionEtudeRecente(
+        gestion_info = gestion_etude_recente(
             etude_recente, dossier_all, list_centre
         )
     nbr_entrée = len(tab_list)
     # Enregistrement du log-----------------------------
     # --------------------------------------------------
     nom_documentaire = " Affiche le tableau des études en cours"
-    informationLog(request, nom_documentaire)
+    information_log(request, nom_documentaire)
     # --------------------------------------------------
     # --------------------------------------------------
     return render(
@@ -78,10 +88,9 @@ def adminup(request):
 
 
 @login_required(login_url="/auth/auth_in/")
-def affdossier(request, id_suivi):
-    """Lors du clic sur un dossier chargé dans le tableau des étapes,
-    cela appel le module qui affiche les fichiers
-    chargé pour le patient donné"""
+def aff_dossier(request, id_suivi):
+    """Lors du clic sur un dossier chargé dans le tableau des étapes, cela
+    appel le module qui affiche les fichiers chargé pour le patient donné."""
     tab_list = []
     var_suivi = SuiviUpload.objects.get(id=id_suivi)
     path = os.path.dirname(var_suivi.fichiers.path)
@@ -90,7 +99,9 @@ def affdossier(request, id_suivi):
         lien_id = os.path.join(path, item)
         dict_list = {}
         if os.path.isdir(lien_id):
-            for root, dirs, files in os.walk(lien_id, topdown=False):
+            for root, dirs, files in os.walk(
+                lien_id, topdown=False
+            ):
                 x = 0
                 y = 0
                 for name in files:
@@ -105,7 +116,11 @@ def affdossier(request, id_suivi):
                 "direct": y,
             }
         else:
-            dict_list = {"nom": item, "url": lien_id, "dir": False}
+            dict_list = {
+                "nom": item,
+                "url": lien_id,
+                "dir": False,
+            }
         tab_list.append(dict_list)
     info_dossier = {
         "id": var_suivi.id_patient,
@@ -120,7 +135,7 @@ def affdossier(request, id_suivi):
         " a listé les informations du patient : "
         + var_suivi.id_patient
     )
-    informationLog(request, nom_documentaire)
+    information_log(request, nom_documentaire)
     # -------------------------------------------------------
     # -------------------------------------------------------
     return render(

@@ -1,15 +1,20 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
+# -*- coding: utf-8 -*-
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from .module_views import *
-from .module_log import *
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils import timezone
+
 from admin_page.forms import FormCentre
-from upload.models import (
-    RefInfocentre,
-    SuiviUpload
+from upload.models import RefInfocentre, SuiviUpload
+
+from .module_log import (
+    creation_log,
+    edition_log,
+    information_log,
+    suppr_log,
 )
 
 # Gère la partie Admin Centres
@@ -19,8 +24,8 @@ from upload.models import (
 
 
 @login_required(login_url="/auth/auth_in/")
-def admincentre(request):
-    """ Charge la page index pour l'ajout ou l'édition d'un centre """
+def admin_centre(request):
+    """Charge la page index pour l'ajout ou l'édition d'un centre."""
     if request.method == "POST":
         nom = request.POST["nom"]
         numero = request.POST["numero"]
@@ -31,9 +36,11 @@ def admincentre(request):
         # Enregistrement du log---------------------------------------
         # ------------------------------------------------------------
         nom_documentaire = (
-            " a créé le centre : " + nw_centre.nom + nw_centre.numero
+            " a créé le centre : "
+            + nw_centre.nom
+            + nw_centre.numero
         )
-        creationLog(request, nom_documentaire)
+        creation_log(request, nom_documentaire)
         # ------------------------------------------------------------
         # ------------------------------------------------------------
     form = FormCentre()
@@ -46,8 +53,8 @@ def admincentre(request):
 
 
 @login_required(login_url="/auth/auth_in/")
-def centreEdit(request, id_etape):
-    """ Charge la page d'édition des centres """
+def centre_edit(request, id_etape):
+    """Charge la page d'édition des centres."""
     if request.method == "POST":
         form = FormCentre()
         nom = request.POST["nom"]
@@ -64,7 +71,7 @@ def centreEdit(request, id_etape):
             + str(numero)
             + ")"
         )
-        editionLog(request, nom_documentaire)
+        edition_log(request, nom_documentaire)
         # ----------------------------------------------------
         # ----------------------------------------------------
         user_info.nom = nom
@@ -86,7 +93,7 @@ def centreEdit(request, id_etape):
             + str(user_info.nom)
             + str(user_info.numero)
         )
-        informationLog(request, nom_documentaire)
+        information_log(request, nom_documentaire)
         # ----------------------------------------------------------------------------------------------
         # ----------------------------------------------------------------------------------------------
     centre_tab = RefInfocentre.objects.all().order_by("nom")
@@ -102,12 +109,14 @@ def centreEdit(request, id_etape):
 
 
 @login_required(login_url="/auth/auth_in/")
-def centreDel(request, id_etape):
-    """ Appel Ajax permettant la supression d'un centre """
+def centre_del(request, id_etape):
+    """Appel Ajax permettant la supression d'un centre."""
     x = 0
     if request.method == "POST":
         suppr = True
-        info_centre = RefInfocentre.objects.get(id__exact=id_etape)
+        info_centre = RefInfocentre.objects.get(
+            id__exact=id_etape
+        )
         info_user = User.objects.filter(
             refinfocentre__id__exact=info_centre.id
         )
@@ -128,10 +137,12 @@ def centreDel(request, id_etape):
                 + str(info_centre.nom)
                 + str(info_centre.numero)
             )
-            supprLog(request, nom_documentaire)
+            suppr_log(request, nom_documentaire)
             # -------------------------------------------------------
             # -------------------------------------------------------
-            RefInfocentre.objects.get(id__exact=id_etape).delete()
+            RefInfocentre.objects.get(
+                id__exact=id_etape
+            ).delete()
             message = messages.add_message(
                 request, messages.WARNING, "Suppression Faite"
             )
@@ -150,7 +161,7 @@ def centreDel(request, id_etape):
                 + info_centre.nom
                 + info_centre.numero
             )
-            informationLog(request, nom_documentaire)
+            information_log(request, nom_documentaire)
             # --------------------------------------------------------
             # --------------------------------------------------------
     form = FormCentre()

@@ -1,18 +1,20 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+# -*- coding: utf-8 -*-
 
 import json
-from .module_views import *
-from .module_log import *
+
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
+from django.shortcuts import render
 
 from upload.models import (
-    RefEtudes,
-    JonctionEtapeSuivi,
-    SuiviUpload,
     DossierUpload,
+    JonctionEtapeSuivi,
     RefEtatEtape,
+    RefEtudes,
+    SuiviUpload,
 )
+
+from .module_log import information_log
 
 # Gère la page statistique
 # --------------------------------------------------------------------------------------
@@ -21,8 +23,8 @@ from upload.models import (
 
 
 @login_required(login_url="/auth/auth_in/")
-def adminpage(request):
-    """ Permet d'afficher la page de statistique """
+def admin_page(request):
+    """Permet d'afficher la page de statistique."""
     dict_etat = {}
     list_etude = RefEtudes.objects.all()
     list_etat = RefEtatEtape.objects.all()
@@ -35,6 +37,7 @@ def adminpage(request):
             {"nbr": [exist_etude.count()], "nom": [etude.nom]}
         )
         if exist_etude.exists():
+            # Réalise certain calcul à ramener dans le graph
             for etat in list_etat:
                 nbr_qc_ok = 0
                 nbr_qc_not = 0
@@ -54,7 +57,7 @@ def adminpage(request):
                         # Enregistrement du log-------------------
                         # ----------------------------------------
                         nom_documentaire = " a provoqué une erreur le dossier patient n'existe pas"
-                        informationLog(request, nom_documentaire)
+                        information_log(request, nom_documentaire)
                         # ----------------------------------------
                         # ----------------------------------------
                     nbr_etat = (
@@ -72,7 +75,9 @@ def adminpage(request):
     # Enregistrement du log-----------------------------------
     # --------------------------------------------------------
     nom_documentaire = " Affiche la page graphique"
-    informationLog(request, nom_documentaire)
+    information_log(request, nom_documentaire)
     # --------------------------------------------------------
     # --------------------------------------------------------
-    return render(request, "admin_page.html", {"nbr_etat": dict_etat})
+    return render(
+        request, "admin_page.html", {"nbr_etat": dict_etat}
+    )

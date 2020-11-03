@@ -1,22 +1,23 @@
-from django.shortcuts import render
-from django.http import (
-    HttpResponseRedirect
-)
+# -*- coding: utf-8 -*-
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
-from .module_views import *
-from .module_log import *
-
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils import timezone
 
-from admin_page.forms import (
-    FormsEtude
-)
+from admin_page.forms import FormsEtude
 from upload.models import (
-    RefEtudes,
+    JonctionEtapeSuivi,
     RefEtapeEtude,
-    JonctionEtapeSuivi
+    RefEtudes,
+)
+
+from .module_log import (
+    creation_log,
+    edition_log,
+    information_log,
+    suppr_log,
 )
 
 # Gère la partie Admin Etudes
@@ -26,16 +27,18 @@ from upload.models import (
 
 
 @login_required(login_url="/auth/auth_in/")
-def adminetude(request):
-    """ Charge la page index pour l'ajout ou l'édition d'une étude """
+def admin_etude(request):
+    """Charge la page index pour l'ajout ou l'édition d'une étude."""
     if request.method == "POST":
         nom = request.POST["nom"]
         date_now = timezone.now()
-        RefEtudes.objects.create(nom=nom, date_ouverture=date_now)
+        RefEtudes.objects.create(
+            nom=nom, date_ouverture=date_now
+        )
         # Enregistrement du log------------------------------------
         # ---------------------------------------------------------
         nom_documentaire = " a créé l'étude : " + nom
-        creationLog(request, nom_documentaire)
+        creation_log(request, nom_documentaire)
         # ---------------------------------------------------------
         # ---------------------------------------------------------
     form = FormsEtude()
@@ -48,8 +51,8 @@ def adminetude(request):
 
 
 @login_required(login_url="/auth/auth_in/")
-def etudeEdit(request, id_etape):
-    """ Charge la page d'édition des études """
+def etude_edit(request, id_etape):
+    """Charge la page d'édition des études."""
     if request.method == "POST":
         form = FormsEtude()
         nom = request.POST["nom"]
@@ -65,7 +68,7 @@ def etudeEdit(request, id_etape):
             + "/"
             + nom
         )
-        editionLog(request, nom_documentaire)
+        edition_log(request, nom_documentaire)
         # ----------------------------------------------------
         # ----------------------------------------------------
         user_info.nom = nom
@@ -79,17 +82,17 @@ def etudeEdit(request, id_etape):
             "date": user_info.date_ouverture,
         }
         form = FormsEtude(info)
-        # Enregistrement du log------------------------------------------------------------------------
-        # ---------------------------------------------------------------------------------------------
+        # Enregistrement du log----------
+        # -------------------------------
         nom_documentaire = (
             " a ouvert l'édition pour l'étude id/nouveau nom : "
             + str(id_etape)
             + "/"
             + user_info.nom
         )
-        informationLog(request, nom_documentaire)
-        # ----------------------------------------------------------------------------------------------
-        # ----------------------------------------------------------------------------------------------
+        information_log(request, nom_documentaire)
+        # ------------------------------
+        # ------------------------------
     etude_tab = RefEtudes.objects.all().order_by("nom")
     return render(
         request,
@@ -103,11 +106,13 @@ def etudeEdit(request, id_etape):
 
 
 @login_required(login_url="/auth/auth_in/")
-def etudeDel(request, id_etape):
-    """ Appel Ajax permettant la supression d'une étude """
+def etude_del(request, id_etape):
+    """Appel Ajax permettant la supression d'une étude."""
     x = 0
     if request.method == "POST":
-        info_etape = RefEtapeEtude.objects.filter(etude__id=id_etape)
+        info_etape = RefEtapeEtude.objects.filter(
+            etude__id=id_etape
+        )
         if info_etape.exists():
             for item in info_etape:
                 info_suivi = JonctionEtapeSuivi.objects.filter(
@@ -120,36 +125,36 @@ def etudeDel(request, id_etape):
                 suppr = True
         else:
             suppr = True
-        if suppr == True:
+        if suppr:
             id_log = RefEtudes.objects.get(id=id_etape)
-            # Enregistrement du log------------------------------------------------------------------------
-            # ---------------------------------------------------------------------------------------------
+            # Enregistrement du log-----------
+            # --------------------------------
             nom_documentaire = (
                 " a supprimé l'étude (id/nom) : "
                 + str(id_log.id)
                 + "/"
                 + str(id_log.nom)
             )
-            supprLog(request, nom_documentaire)
-            # ----------------------------------------------------------------------------------------------
-            # ---------------------------------------------------------------------------------------------
+            suppr_log(request, nom_documentaire)
+            # --------------------------------
+            # --------------------------------
             RefEtudes.objects.get(id=id_etape).delete()
             message = messages.add_message(
                 request, messages.WARNING, "Suppression Faite"
             )
         else:
             id_log = RefEtudes.objects.get(id=id_etape)
-            # Enregistrement du log------------------------------------------------------------------------
-            # ---------------------------------------------------------------------------------------------
+            # Enregistrement du log-----------
+            # --------------------------------
             nom_documentaire = (
                 " a reçu un message d'erreur de suppression pour (id/nom) : "
                 + str(id_log.id)
                 + "/"
                 + id_log.nom
             )
-            informationLog(request, nom_documentaire)
-            # ----------------------------------------------------------------------------------------------
-            # ---------------------------------------------------------------------------------------------
+            information_log(request, nom_documentaire)
+            # --------------------------------
+            # --------------------------------
             message = messages.add_message(
                 request,
                 messages.WARNING,

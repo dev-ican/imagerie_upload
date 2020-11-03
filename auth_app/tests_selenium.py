@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from django.contrib.auth.models import User
 from django.test import LiveServerTestCase
 from selenium import webdriver
@@ -26,6 +28,7 @@ class AccountTestCase(LiveServerTestCase):
         super(AccountTestCase, self).tearDown()
 
     def test_auth_log_InOut(self):
+        """Test la fonctionnalité de se connecter ou non."""
         selenium = self.selenium
         # Opening the link we want to test
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
@@ -54,7 +57,9 @@ class AccountTestCase(LiveServerTestCase):
         name_index = "Vous êtes maintenant déconnecté"
         # check the returned result
         self.assertEqual(
-            selenium.find_element_by_css_selector("p.text-warning")
+            selenium.find_element_by_css_selector(
+                "p.text-warning"
+            )
             .get_attribute("innerHTML")
             .splitlines()[0],
             name_index,

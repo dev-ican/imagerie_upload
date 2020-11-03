@@ -1,18 +1,12 @@
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-from django.conf import settings
-from upload.models import (
-    RefEtudes,
-    JonctionUtilisateurEtude,
-    RefEtapeEtude,
-    RefInfocentre,
-    RefEtatEtape,
-    SuiviDocument,
-    RefTypeAction,
-)
-
-from django.contrib.auth.models import User
 from django.utils import timezone
+
+from upload.models import (JonctionUtilisateurEtude, RefEtapeEtude,
+                           RefEtatEtape, RefEtudes, RefInfocentre,
+                           RefTypeAction, SuiviDocument)
 
 
 class TestApp(TestCase):

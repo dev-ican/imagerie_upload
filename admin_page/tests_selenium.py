@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+"""Permet de tester les pages de la partie admin de l'application."""
+
 from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -16,7 +20,8 @@ class AccountTestCase(LiveServerTestCase):
         super(AccountTestCase, self).tearDown()
 
     def test_page_graphique(self):
-        """Affiche la page résumant en graphique l'utilisation des fichiers chargés"""
+        """Affiche la page résumant en graphique l'utilisation des fichiers
+        chargés."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -28,10 +33,14 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
-        name_index = "Graphique d'utilisation et de suivi des étapes"
+        name_index = (
+            "Graphique d'utilisation et de suivi des étapes"
+        )
         self.assertEqual(
             selenium.find_element_by_name("titre_graphique")
             .get_attribute("innerHTML")
@@ -40,7 +49,7 @@ class AccountTestCase(LiveServerTestCase):
         )
 
     def test_page_etude(self):
-        """Affiche la page des études"""
+        """Affiche la page des études."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -52,7 +61,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuSuiviEtude")
@@ -60,14 +71,16 @@ class AccountTestCase(LiveServerTestCase):
         selenium.implicitly_wait(10)
         name_index = "Suivi des études"
         self.assertEqual(
-            selenium.find_element_by_css_selector("h3.titre_etude")
+            selenium.find_element_by_css_selector(
+                "h3.titre_etude"
+            )
             .get_attribute("innerHTML")
             .splitlines()[0],
             name_index,
         )
 
     def test_page_admin_etude(self):
-        """Affiche la page d'ajout/edition/suppression d'études"""
+        """Affiche la page d'ajout/edition/suppression d'études."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -79,7 +92,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuEtudes")
@@ -94,7 +109,7 @@ class AccountTestCase(LiveServerTestCase):
         )
 
     def test_page_admin_etape(self):
-        """Affiche la page d'ajout/edition/suppression d'étapes"""
+        """Affiche la page d'ajout/edition/suppression d'étapes."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -106,7 +121,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuEtapes")
@@ -121,7 +138,7 @@ class AccountTestCase(LiveServerTestCase):
         )
 
     def test_page_admin_centre(self):
-        """Affiche la page d'ajout/edition/suppression de centre"""
+        """Affiche la page d'ajout/edition/suppression de centre."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -133,7 +150,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuCentres")
@@ -148,7 +167,7 @@ class AccountTestCase(LiveServerTestCase):
         )
 
     def test_page_admin_auth(self):
-        """Affiche la page de paramétrage des droits"""
+        """Affiche la page de paramétrage des droits."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -160,7 +179,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuUserAuth")
@@ -175,7 +196,7 @@ class AccountTestCase(LiveServerTestCase):
         )
 
     def test_page_admin_user(self):
-        """Affiche la page d'ajout/edition/suppression d'utilisateur"""
+        """Affiche la page d'ajout/edition/suppression d'utilisateur."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -187,7 +208,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuUser")
@@ -202,7 +225,7 @@ class AccountTestCase(LiveServerTestCase):
         )
 
     def test_page_admin_doc(self):
-        """Affiche la page d'ajout/edition/suppression des documents"""
+        """Affiche la page d'ajout/edition/suppression des documents."""
         selenium = self.selenium
         selenium.get("http://127.0.0.1:8000/auth/auth_in/")
         username = selenium.find_element_by_name("log_id")
@@ -214,7 +237,9 @@ class AccountTestCase(LiveServerTestCase):
         password.send_keys("testtest12345")
         submit.send_keys(Keys.RETURN)
         selenium.implicitly_wait(10)
-        menu_form = selenium.find_element_by_name("administration")
+        menu_form = selenium.find_element_by_name(
+            "administration"
+        )
         menu_form.click()
         selenium.implicitly_wait(10)
         menu_form = selenium.find_element_by_id("menuDoc")
