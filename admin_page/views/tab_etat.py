@@ -30,43 +30,61 @@ def admin_up(request):
     étude."""
     tab_list = []
     list_centre = []
-    dict_upload = {}
+    dictupload = {}
     dict_nbr = {}
-    etude_recente = SuiviUpload.objects.get(
-        id=SuiviUpload.objects.all().order_by(
-            "dossier", "date_upload"
-        )[:1]
-    )
+
+    try:
+        etuderecente = SuiviUpload.objects.get(
+            id=SuiviUpload.objects.all().order_by(
+                "dossier", "date_upload"
+            )[:1]
+        )
+    except ObjectDoesNotExist:
+        return render(request, "admin_page_upload.html")
+
     try:
         dossier_all = SuiviUpload.objects.filter(
-            etude=etude_recente.etude
+            etude=etuderecente.etude
         ).distinct("dossier")
         nbr_etape = RefEtapeEtude.objects.filter(
-            etude=etude_recente.etude.etude
+            etude=etuderecente.etude.etude
         ).count()
-        nom_etape = nom_etape(etude_recente)
+        nometape = nom_etape(etuderecente.etude.id)
         for files in dossier_all:
-            dict_upload = {}
-            dict_upload = dict_upload(dict_upload, files)
-            info_etape = info_etape(files)
+            dictupload = {}
+            dictupload = dict_upload(dictupload, files)
+            infoetape = info_etape(files)
             var_etape = gestion_etape(
-                nom_etape, info_etape, nbr_etape
+                nometape, infoetape, nbr_etape
             )
             if len(var_etape) == 2:
-                dict_upload["etape_etude"] = var_etape[1]
-            dict_upload["error"] = var_etape[0]
-            tab_list.append(dict_upload)
+                dictupload["etape_etude"] = var_etape[1]
+            dictupload["error"] = var_etape[0]
+            tab_list.append(dictupload)
         dict_nbr["nbr_etape"] = nbr_etape
-        dict_nbr["nom_etape"] = nom_etape
-        list_centre = etude_recente(etude_recente, dossier_all)
+        dict_nbr["nom_etape"] = nometape
+        list_centre = etude_recente(etuderecente, dossier_all)
         gestion_info = gestion_etude_recente(
-            etude_recente, dossier_all, list_centre
+            etuderecente, dossier_all, list_centre
         )
     except ObjectDoesNotExist:
         dossier_all = ""
         gestion_info = gestion_etude_recente(
-            etude_recente, dossier_all, list_centre
+            etuderecente, dossier_all, list_centre
         )
+        '''return render(
+                request,
+                "admin_page_upload.html",
+                {
+                    "resultat": tab_list,
+                    "dict_nbr": dict_nbr,
+                    "str_etude": gestion_info[1],
+                    "str_centre": gestion_info[0],
+                    "taille": 0,
+                    "debug": infoetape,
+                },
+        )'''
+
     nbr_entrée = len(tab_list)
     # Enregistrement du log-----------------------------
     # --------------------------------------------------
@@ -83,6 +101,7 @@ def admin_up(request):
             "str_etude": gestion_info[1],
             "str_centre": gestion_info[0],
             "taille": nbr_entrée,
+            "debug" : dict_nbr,
         },
     )
 

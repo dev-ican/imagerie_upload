@@ -25,12 +25,13 @@ SECRET_KEY = '3@bx3hwi)0=4rzp@_h5kq02!8bd9&)-b^#0g81xghe@+tjlzy7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ican-upload.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = ['134.157.204.80', '127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'sslserver',
     'bootstrap4',
     'phonenumber_field',
     'upload.apps.UploadConfig',
@@ -56,7 +57,15 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+SECURE_SSL_REDIRECT = False
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ROOT_URLCONF = 'app_upload.urls'
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = True
+SERVER_TYPE = "DEV"
+CSRF_COOKIE_SECURE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 TEMPLATES = [
     {
@@ -85,9 +94,9 @@ WSGI_APPLICATION = 'app_upload.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'icanupload',
-        'USER': 'postgres',
-        'PASSWORD': 'postgresql-mdp-all*', #'ican+user*projet+upload/+',
+        'NAME': 'upload',
+        'USER': 'upload_user',
+        'PASSWORD': 'upload_MDP_user*',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -130,7 +139,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, "app_upload/static")
+STATIC_ROOT = os.path.join(BASE_DIR, "app_upload/static/")
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "staticfiles/app_upload/"),

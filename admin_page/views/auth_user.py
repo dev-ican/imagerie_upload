@@ -59,8 +59,8 @@ def auth_edit(request, id_etape):
         jonc_centre(
             user_etude, etude, user_info, user_centre, centre
         )
-    liste_etude = choiceEtude(True)
-    liste_centre = choiceCentre(True)
+    liste_etude = choice_etude(True)
+    liste_centre = choice_centre(True)
     form = FormsAutorisation()
     form.fields["etude"].choices = liste_etude
     form.fields["etude"].initial = [0]

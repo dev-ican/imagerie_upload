@@ -6,7 +6,7 @@ from .models import *
 
 
 class LogIn(forms.Form):
-	''' Formulaire de connexion à l'application '''
+    ''' Formulaire de connexion à l'application '''
     log_id = forms.CharField(label="Identifiant", max_length=100)
     pwd = forms.CharField(
         label="Mot de passe",

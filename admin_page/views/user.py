@@ -35,9 +35,9 @@ def admin_user(request):
         pass_first = request.POST["pass_first"]
         pass_second = request.POST["pass_second"]
         type = request.POST["type"]
-        check_mdp = checkmdp(pass_first, pass_second)
+        checkmdp = check_mdp(pass_first, pass_second)
         nw_password(
-            check_mdp,
+            checkmdp,
             type,
             nom,
             numero,
@@ -83,9 +83,9 @@ def user_edit(request, id_etape):
         edition_log(request, nom_documentaire)
         # ----------------------------------------
         # ----------------------------------------
-        check_mdp = checkmdp(pass_first, pass_second)
+        checkmdp = check_mdp(pass_first, pass_second)
         edit_password(
-            check_mdp,
+            checkmdp,
             type,
             username,
             pass_first,

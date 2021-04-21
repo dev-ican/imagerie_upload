@@ -42,7 +42,7 @@ def admin_etape(request):
         # -----------------------------------------------------
         # -----------------------------------------------------
     form = FormsEtape()
-    liste_protocole = choiceEtude(True)
+    liste_protocole = choice_etude(True)
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
     etape_tab = RefEtapeEtude.objects.all()
@@ -86,7 +86,7 @@ def etape_edit(request, id_etape):
         etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
         id_etude = RefEtudes.objects.get(nom=etape_filtre.etude)
         form = FormsEtape()
-        liste_protocole = choiceEtude(False)
+        liste_protocole = choice_etude(False)
         form.fields["etudes"].choices = liste_protocole
         form.fields["etudes"].initial = [id_etude.id]
         form.fields["nom"].initial = etape_filtre.nom
@@ -171,7 +171,7 @@ def etape_del(request, id_etape):
                 + " suivi(s)",
             )
     form = FormsEtape()
-    liste_protocole = choiceEtude(True)
+    liste_protocole = choice_etude(True)
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
     etape_tab = RefEtapeEtude.objects.all()

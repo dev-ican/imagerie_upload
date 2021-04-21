@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
-
+from datetime import datetime
 from admin_page.forms import FormsEtude
 from upload.models import (
     JonctionEtapeSuivi,
@@ -56,7 +56,7 @@ def etude_edit(request, id_etape):
     if request.method == "POST":
         form = FormsEtude()
         nom = request.POST["nom"]
-        date = request.POST["date_ouverture"]
+        date = request.POST["date"]
         user_info = RefEtudes.objects.get(pk=id_etape)
         # Enregistrement du log-------------------------------
         # ----------------------------------------------------
@@ -77,9 +77,10 @@ def etude_edit(request, id_etape):
         return HttpResponseRedirect("/admin_page/etudes/")
     else:
         user_info = RefEtudes.objects.get(pk=id_etape)
+        format_date = user_info.date_ouverture.strftime('%Y-%m-%d')
         info = {
             "nom": user_info.nom,
-            "date": user_info.date_ouverture,
+            "date": format_date,
         }
         form = FormsEtude(info)
         # Enregistrement du log----------

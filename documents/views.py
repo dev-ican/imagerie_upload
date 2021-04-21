@@ -60,7 +60,7 @@ def gestion_documentaire(request):
             )
             create_suivi.save()
     form = DocumentForm()
-    liste_protocole = choice_Etude(True)
+    liste_protocole = choice_etude(True)
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
     doc_tab = SuiviDocument.objects.all()

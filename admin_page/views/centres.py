@@ -59,6 +59,7 @@ def centre_edit(request, id_etape):
         form = FormCentre()
         nom = request.POST["nom"]
         numero = request.POST["numero"]
+        date = request.POST["date_ajout"]
         user_info = RefInfocentre.objects.get(pk=id_etape)
         # Enregistrement du log------------------------------
         # ---------------------------------------------------
@@ -76,14 +77,16 @@ def centre_edit(request, id_etape):
         # ----------------------------------------------------
         user_info.nom = nom
         user_info.numero = numero
+        user_info.date_ajout = date
         user_info.save()
         return HttpResponseRedirect("/admin_page/centre/")
     else:
         user_info = RefInfocentre.objects.get(pk=id_etape)
+        format_date = user_info.date_ajout.strftime('%Y-%m-%d')
         info = {
             "nom": user_info.nom,
             "numero": user_info.numero,
-            "date_ajout": user_info.date_ajout,
+            "date_ajout": format_date,
         }
         form = FormCentre(info)
         # Enregistrement du log------------------------------------------------------------------------

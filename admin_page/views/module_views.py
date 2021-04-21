@@ -185,7 +185,7 @@ def info_etape(files):
 def nom_etape(etude_recente):
     """ce module donne le nom de l'étape récente."""
     nom_etape = RefEtapeEtude.objects.filter(
-        etude=etude_recente.id
+        etude=etude_recente
     )
     dict_etape_nom = []
 
@@ -231,7 +231,7 @@ def nw_password(
             nw_centre.user.add(nw_user)
 
 
-def edit_eassword(
+def edit_password(
     check_mdp, type, username, pass_first, email, user_info
 ):
     """Ce module gère l'édition du mot de passe."""
@@ -253,7 +253,7 @@ def edit_eassword(
     user_info.save()
 
 
-def jonc_Centre(
+def jonc_centre(
     user_etude, etude, user_info, user_centre, centre
 ):
     """Crée l'autorisation pour l'utilisateur vis à vis d'un centre."""

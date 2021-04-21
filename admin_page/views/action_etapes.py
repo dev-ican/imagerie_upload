@@ -50,14 +50,14 @@ def upload_tris(request, id_tris):
         ).count()
         nom_etape = nom_etape_tris(etude_change)
         for files in dossier_all:
-            dict_upload = {}
-            dict_upload = dict_upload(dict_upload, files)
-            info_etape = info_etape(files)
+            dictupload = {}
+            dictupload = dict_upload(dictupload, files)
+            infoetape = info_etape(files)
             var_etape = gestion_etape(
-                nom_etape, info_etape, nbr_etape
+                nom_etape, infoetape, nbr_etape
             )
-            dict_upload["etape_etude"] = var_etape[1]
-            dict_upload["error"] = var_etape[0]
+            dictupload["etape_etude"] = var_etape[1]
+            dictupload["error"] = var_etape[0]
             tab_list.append(dict_upload)
         dict_nbr["nbr_etape"] = nbr_etape
         dict_nbr["nom_etape"] = nom_etape
