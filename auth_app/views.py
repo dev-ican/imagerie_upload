@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils import timezone
-
+from django.contrib.auth.models import User
 from upload.models import RefTypeAction, log
 
 from .forms import LogIn
@@ -41,6 +41,12 @@ def get_login(request):
                 )
                 # ---------------------------------------------
                 # ---------------------------------------------
+                user_groups = request.user.groups.values_list('name', flat=True)
+                list_group = []
+                for item in user_groups:
+                    list_group.append(item)
+                request.session['groups'] = list_group
+
                 return HttpResponseRedirect("/upload/")
     else:
         form = LogIn()
