@@ -1,18 +1,11 @@
 # -*-coding:Utf-8 -*
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-
-from upload.models import (
-    DossierUpload,
-    JonctionEtapeSuivi,
-    JonctionUtilisateurEtude,
-    RefEtapeEtude,
-    RefEtudes,
-    RefInfocentre,
-    SuiviUpload,
-)
+from upload.models import (DossierUpload, JonctionEtapeSuivi,
+                           JonctionUtilisateurEtude, RefEtapeEtude, RefEtudes,
+                           RefInfocentre, SuiviUpload)
 
 from .module_log import suppr_log
 
@@ -209,19 +202,23 @@ def nom_etape_tris(etude_change):
 def nw_password(
     check_mdp, type, nom, numero, username, pass_first, email
 ):
-    """Créé un password."""
+    """Créé un password & un utilisateur"""
     if check_mdp:
         nw_user = User.objects.create_user(
             username=username, password=pass_first, email=email
         )
         nw_user.save()
         if int(type) == 0:
-            nw_user.is_staff = True
-            nw_user.save()
-        else:
-            if nw_user.is_staff:
-                nw_user.is_staff = False
-                nw_user.save()
+            my_group = Group.objects.get(name='Collaborateurs')
+            my_group.user_set.add(nw_user)
+        elif int(type) == 1:
+            my_group = Group.objects.get(name='Utilisateurs')
+            my_group.user_set.add(nw_user)
+        elif int(type) == 2:
+            my_group = Group.objects.get(name='Administrateur service')
+            my_group.user_set.add(nw_user)
+
+        nw_user.save()
         if len(nom) > 0 and len(numero) > 0:
             date_now = timezone.now()
             nw_centre = RefInfocentre(
@@ -273,7 +270,7 @@ def jonc_centre(
 
 def j_serial(o):
     """permet de sérialiser une date."""
-    from datetime import datetime, date
+    from datetime import date, datetime
 
     return (
         str(o).split(".")[0]
