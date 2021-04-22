@@ -14,6 +14,17 @@ def doc_directory_path(instance, filename):
 	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
 	return '{0}/{1}'.format('document',filename)
 
+class ValideCompte(models.Model):
+	'''Modèle gérant le suivi des demandes de validation'''
+	demandeur = models.ForeignKey(User, on_delete=models.CASCADE)
+	compte_valide = models.ForeignKey(User, db_column='Compte_Valider', related_name='Compte_Valider', on_delete=models.CASCADE)
+	date_demande = models.DateTimeField("Date de la demande")
+	date_validation = models.DateTimeField("Date de validation")
+	etat = models.ForeignKey("RefEtatValideCompte", on_delete=models.CASCADE)
+
+class RefEtatValideCompte(models.Model):
+	'''modèle de reference pour les états des suivi de demande de validation'''
+	nom = models.CharField(max_length=5000)	
 
 class SuiviUpload(models.Model):
 	'''Modèle gérant le chargement de fichier'''
