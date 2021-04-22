@@ -6,7 +6,7 @@ from django.http import *
 
 from upload.models import *
 
-CHOICES = [(0, "Staff"), (1, "Utilisateur")]
+CHOICES = [(0, "Collaborateurs"), (1, "Utilisateurs"), (2,"Administrateur service")]
 
 
 class FormsEtude(forms.Form):
