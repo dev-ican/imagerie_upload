@@ -205,7 +205,7 @@ def nw_password(
     """Créé un password & un utilisateur"""
     if check_mdp:
         nw_user = User.objects.create_user(
-            username=username, password=pass_first, email=email
+            username=username, password=pass_first, email=email, is_active=False,
         )
         nw_user.save()
         if int(type) == 0:

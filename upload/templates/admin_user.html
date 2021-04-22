@@ -25,6 +25,7 @@
     <tr>
       <th scope="col">Identifiant</th>
       <th scope="col">Courriel</th>
+      <th scope="col">Actif ?</th>
       <th scope="col">Actions</th>
     </tr>
   </thead>
@@ -34,6 +35,11 @@
       <tr>
         <td>{{ item.username }}</td>
         <td>{{ item.email }}</td>
+        {% if item.is_active %}
+        <td class="text-success"><b>OUI</b></td>
+        {% else %}
+        <td class="text-danger"><b>NON</b></td>
+        {% endif %}
         <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/viewUser/edit/{{item.id}}/">EDITER</a><div id="supprUser" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
       </tr>
       {% endif %}

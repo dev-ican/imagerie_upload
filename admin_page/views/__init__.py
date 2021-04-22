@@ -6,3 +6,4 @@ from .etudes import *
 from .stat import *
 from .tab_etat import *
 from .user import *
+from .valide_compte import *

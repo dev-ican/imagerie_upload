@@ -3,12 +3,17 @@
 
 <nav class="nav bg-secondary" style="min-height: 100vh;position: fixed;">
   <ul class="navbar-nav flex-column text-dark ml-1 mr-1">
-    <li class="nav-item active">
-      <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>
+    {% if user.is_staff or "Administrateur service" in request.session.groups %}
+    <li class="nav-item">
+      <a class="nav-link text-warning" id="menuUser" href="{% url 'admin_utilisateur' %}">Ajouter un utilisateur</a>
     </li>
-    <li class="nav-item active">
-      <a class="nav-link text-warning" id="menuSuiviEtude" href="{% url 'admin_upload' %}">Suivi des études</a>
+    <li class="nav-item">
+      <a class="nav-link text-warning" id="menuUserAuth" href="{% url 'admin_autorisation' %}">Droits des utilisateurs</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link text-warning" id="menuAuthCompte" href="{% url 'auth_compte' %}">Validation des comptes</a>
+    </li>
+    <li class="nav-item"><p>--------------------------</p></li>
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuEtudes" href="{% url 'admin_etude' %}">Ajouter des études</a>
     </li>
@@ -18,11 +23,13 @@
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuCentres" href="{% url 'admin_centre' %}">Ajouter un centre</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link text-warning" id="menuUserAuth" href="{% url 'admin_autorisation' %}">Autorisation des utilisateurs</a>
+    <li class="nav-item"><p>--------------------------</p></li>
+    {% endif %}
+    <li class="nav-item active">
+      <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link text-warning" id="menuUser" href="{% url 'admin_utilisateur' %}">Ajouter un utilisateur</a>
+    <li class="nav-item active">
+      <a class="nav-link text-warning" id="menuSuiviEtude" href="{% url 'admin_upload' %}">Suivi des études</a>
     </li>
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuDoc" href="{% url 'gestion' %}">Gestion documentaire</a>
