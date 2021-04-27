@@ -19,9 +19,11 @@ class ValideCompte(models.Model):
 	demandeur = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
 	create_user = models.OneToOneField(User, db_column='Compte_Valider', related_name='Compte_Valider', on_delete=models.CASCADE)
 	validateur = models.ForeignKey(User, db_column='validateur', related_name='validateur', on_delete=models.CASCADE, blank=True, null=True)
+	demandeur_edit = models.ForeignKey(User, db_column='editeur', related_name='editeur', on_delete=models.CASCADE, blank=True, null=True)
 	date_crea =  models.DateTimeField("Date de la creation",null=True)
 	date_demande = models.DateTimeField("Date de la demande",blank=True, null=True)
 	date_validation = models.DateTimeField("Date de validation",blank=True, null=True)
+	date_edit = models.DateTimeField("Date d'une édition",blank=True, null=True)
 	etat = models.ForeignKey("RefEtatValideCompte", on_delete=models.CASCADE, blank=True, null=True)
 
 class RefEtatValideCompte(models.Model):

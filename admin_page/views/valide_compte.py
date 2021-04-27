@@ -108,3 +108,27 @@ def compte_verif(request, id_user):
     check_user.save()
     return redirect('/admin_page/authacc/', {"message" : message })
 
+@login_required(login_url="/auth/auth_in/")
+def compte_edit(request, id_user):
+
+    check_user = ValideCompte.objects.get(create_user=id_user)
+    check_user.date_edit = timezone.now()
+    check_user.demandeur_edit = request.user
+    check_user.etat = None
+
+    # Désactivation du compte
+    activate_user = User.objects.get(pk=id_user)
+    activate_user.is_active = False
+
+    #origin = 'editer'
+    #check = ['support_si@ican-institute.org']
+    #send_mail(request.user,User.objects.get(pk=id_user),check,origin)
+
+    message = messages.add_message(
+        request, messages.WARNING, "Le compte est désactivé et peut être édité"
+    )
+
+    activate_user.save()
+    check_user.save()
+    return redirect('/admin_page/authacc/', {"edition_check" : message })
+

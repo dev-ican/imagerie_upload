@@ -52,7 +52,7 @@ def admin_user(request):
         # --------------------------------------------------------
         # --------------------------------------------------------
     form = FormsUser()
-    user_tab = User.objects.all().order_by("username")
+    user_tab = User.objects.all().order_by("username").select_related('Compte_Valider')
     return render(
         request,
         "admin_user.html",

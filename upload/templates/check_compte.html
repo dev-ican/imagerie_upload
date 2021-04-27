@@ -61,6 +61,7 @@
       <th scope="col">Date de demande</th>
       <th scope="col">Validateur</th>
       <th scope="col">Date de validation</th>
+      <th scope="col">Action</th>
     </tr>
   </thead>
   <tbody>
@@ -73,6 +74,7 @@
         <td><b>{{ item.Compte_Valider.date_demande }}</b></td>
         <td><b>{{ item.Compte_Valider.validateur.username }}</b></td>
         <td><b>{{ item.Compte_Valider.date_validation }}</b></td>
+        <td><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/open_edit/{{item.id}}/">Ouvrir à l'édition</a></td>
       </tr>
       {% endif %}
     {% endfor %}

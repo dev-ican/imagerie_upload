@@ -3,7 +3,6 @@
 """Chemin de l'application principal"""
 
 from django.urls import path, re_path
-
 from . import views
 
 urlpatterns = [
@@ -27,6 +26,7 @@ urlpatterns = [
 	re_path(r'^authacc/verif/([0-9]+)/',views.compte_verif, name='verif_compte'),
 	re_path(r'^authacc/valide/([0-9]+)/',views.compte_valide, name='valide_compte'),
 	re_path(r'^authacc/refus/([0-9]+)/',views.compte_refus, name='refus_compte'),
+	re_path(r'^authacc/open_edit/([0-9]+)/',views.compte_edit, name='edit_compte'),
 	path('upfiles/', views.admin_up, name='admin_upload'),
 	re_path(r'^upfiles/tris/([0-9]+)/',views.upload_tris, name='upload_tris'),
 	re_path(r'^upfiles/mod/',views.upload_mod, name='upload_mod'),
