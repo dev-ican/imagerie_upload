@@ -7,15 +7,17 @@
   <body id="ajax" style="min-height: 100vh;">
     {% include "include_menus.html" %}
 
-    <div class="container col-11" style="padding:0px;margin:0px;min-height: 100vh;">
+    <div class="container col-12" style="padding:0px;margin:0px;min-height: 100vh;">
       <div class="row d-flex">
-        <div class="col-2">
+        <div class="col-1">
         {% include "include_menus_admin.html" %}
         </div>
-        <div class="col-10">
+        <div class="col-11">
           <div class="row-fluid d-flex">
             <div class="col-12">
               {% block section_two %}
+              {% endblock %}
+              {% block section_three %}
               {% endblock %}
             </div>
           </div>

@@ -5,10 +5,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from upload.models import (DossierUpload, JonctionEtapeSuivi,
                            JonctionUtilisateurEtude, RefEtapeEtude, RefEtudes,
-                           RefInfocentre, SuiviUpload)
+                           RefInfocentre, SuiviUpload, ValideCompte)
 
 from .module_log import suppr_log
-
+from datetime import datetime
+from django.utils import timezone
+from django.core.mail import EmailMessage
 
 def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape):
     """Ce module permet de ramener le nom de l'étape Si il y a une erreur,
@@ -198,16 +200,53 @@ def nom_etape_tris(etude_change):
         dict_etape_nom.append(nom.nom)
     return dict_etape_nom
 
+def send_mail(user_send, compte, to_mail, origin):
+    ''' Gère l'envois de courriel lors du processus de validation d'un compte'''
+    # origin représente l'origine de la demande : Vérification pour une demande d'ouverture de compte venant d'un admin service
+    # valider pour un compte validé par un admin SI
+    # refus pour un compte refusé par un admin SI
+    if origin == 'verification':
+        title = str(user_send) + " demande la validation du compte " + str(compte.username)
+        corps = "Bonjour, \n\n Une demande de validation de compte sur l'application d'upload est demandé par : " + str(user_send)
+        corps += "\n\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.80/admin_page/authacc \n"
+        corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
+        corps += "\n Système app upload"
+    elif origin == 'valider':
+        title = str(user_send) + " vient de valider le compte : " + str(compte.username)
+        corps = "Bonjour, \n\n Le compte en attente de validation " + str(compte.username) + " vient d'être validé par : " + str(user_send)
+        corps += "\n\n Si vous avez une question sur cette validation, vous pouvez joindre le service SI par ce courriel : support_si@ican-institute.org \n"
+        corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.80/admin_page/authacc \n"
+        corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
+        corps += "\n Système app upload"
+    elif origin == 'refus':
+        title = str(user_send) + " vient de REFUSER le compte : " + str(compte.username)
+        corps = "Bonjour, \n\n Le compte en attente de validation " + str(compte.username) + " vient d'être refusé par : " + str(user_send)
+        corps += "\n\n Si vous avez une question sur cette validation, vous pouvez joindre le service SI par ce courriel : support_si@ican-institute.org \n"
+        corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.80/admin_page/authacc \n"
+        corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
+        corps += "\n Système app upload"
+    email = EmailMessage(title, corps, 'si_ican@ihuican.onmicrosoft.com', to=to_mail)
+    email.send()
 
 def nw_password(
     check_mdp, type, nom, numero, username, pass_first, email
 ):
     """Créé un password & un utilisateur"""
     if check_mdp:
+        # Création de l'utilisateur après vérification de son mot de passe
+        #__________________________________________________________________
         nw_user = User.objects.create_user(
             username=username, password=pass_first, email=email, is_active=False,
         )
+        # Sauvegarde du compte
+        #_____________________
         nw_user.save()
+        # Création du suivi du compte
+        #___________________________
+        nw_valide = ValideCompte.objects.create(create_user=nw_user,date_crea=timezone.now())
+        # Sauvegarde de la création
+        #_________________________
+        nw_valide.save()
         if int(type) == 0:
             my_group = Group.objects.get(name='Collaborateurs')
             my_group.user_set.add(nw_user)

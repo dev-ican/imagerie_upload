@@ -13,7 +13,7 @@
     <tr>
       <th scope="col">Identifiant</th>
       <th scope="col">Courriel</th>
-      <th scope="col">Actif ?</th>
+      <th scope="col">Etat</th>
       <th scope="col">Actions</th>
     </tr>
   </thead>
@@ -23,15 +23,60 @@
       <tr>
         <td>{{ item.username }}</td>
         <td>{{ item.email }}</td>
-        {% if item.is_active %}
-        <td class="text-success"><b>OUI</b></td>
-        {% else %}
-        <td class="text-danger"><b>NON</b></td>
-        {% endif %}
-        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/valide/{{item.id}}/">Demande d'approbation</a>{% if not "Administrateur service" in request.session.groups or user.is_staff %}&nbsp;<div role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/valide/{{item.id}}/">Valider le compte</a></div>{% endif %}</div></td>
+        <td><b>{{ item.Compte_Valider.etat.nom }}</b></td>
+        <td><div class="row justify-content-start">
+          {% if item.Compte_Valider.etat.id == 1 %}
+            <a role="button" class="btn btn-sm btn-outline-info text-success" href=#>Ce compte à une demande en cours</a>
+          {% elif item.Compte_Valider.etat.id == 3 %}
+            <a role="button" class="btn btn-sm btn-outline-warning text-danger" href="/admin_page/authacc/verif/{{item.id}}/">Ce compte à vue son activation refusé <i>- Cliquer pour faire une nouvelle demande -</i></a>
+          {% else %}
+            <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/verif/{{item.id}}/">Demande d'approbation</a>
+          {% endif %}
+          {% if not "Administrateur service" in request.session.groups or user.is_staff %}
+          &nbsp;
+          <div>
+          <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/valide/{{item.id}}/">Valider le compte</a>
+          </div>
+          &nbsp;
+          <div>
+          <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/refus/{{item.id}}/">Refuser le compte</a>
+          </div>
+          {% endif %}
+          </div>
+        </td>
       </tr>
       {% endif %}
     {% endfor %}
   </tbody>
 </table>
 {% endblock %}
+{% block section_three %}
+<h4><p class="text-white-75 font-weight-light mb-5" name="titre_user">Récapitulatif des comptes validés</p></h4>
+<table class="table table-info table-responsive-sm table-hover">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">Identifiant</th>
+      <th scope="col">Courriel</th>
+      <th scope="col">Demandeur</th>
+      <th scope="col">Date de demande</th>
+      <th scope="col">Validateur</th>
+      <th scope="col">Date de validation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in dict_check %}
+    {% if not item.is_superuser and item.Compte_Valider.date_crea %}
+      <tr>
+        <td>{{ item.username }}</td>
+        <td>{{ item.email }}</td>
+        <td><b>{{ item.Compte_Valider.demandeur.username }}</b></td>
+        <td><b>{{ item.Compte_Valider.date_demande }}</b></td>
+        <td><b>{{ item.Compte_Valider.validateur.username }}</b></td>
+        <td><b>{{ item.Compte_Valider.date_validation }}</b></td>
+      </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
