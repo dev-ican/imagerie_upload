@@ -23,7 +23,7 @@ from .module_views import del_auth, j_serial, jonc_centre
 @login_required(login_url="/auth/auth_in/")
 def admin_auth(request):
     """Charge la page index pour l'autorisation des utilisateurs."""
-    user_tab = User.objects.all().order_by("username")
+    user_tab = User.objects.all().order_by("username").select_related('Compte_Valider')
     return render(
         request,
         "admin_autorisation.html",
