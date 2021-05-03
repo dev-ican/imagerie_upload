@@ -36,7 +36,7 @@ def admin_auth(request):
 def auth_edit(request, id_etape):
     """Charge la page d'édition des autorisations utilisateur."""
     user_lock =  ValideCompte.objects.get(create_user__id=id_etape)
-    if not user_lock.etat.pk <= 2:
+    if user_lock.etat is None:
         liste_etude = []
         liste_centre = []
         user_info = User.objects.get(pk=id_etape)
