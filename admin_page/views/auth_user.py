@@ -5,10 +5,11 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from admin_page.forms import FormsAutorisation
-from upload.models import JonctionUtilisateurEtude, RefInfocentre
+from upload.models import JonctionUtilisateurEtude, RefInfocentre, ValideCompte
+from django.contrib import messages
 
 from .module_admin import choice_centre, choice_etude
 from .module_log import edition_log
@@ -34,31 +35,38 @@ def admin_auth(request):
 @login_required(login_url="/auth/auth_in/")
 def auth_edit(request, id_etape):
     """Charge la page d'édition des autorisations utilisateur."""
-    liste_etude = []
-    liste_centre = []
-    user_info = User.objects.get(pk=id_etape)
-    if request.method == "POST":
-        form = FormsAutorisation()
-        etude = request.POST["etude"]
-        centre = request.POST["centre"]
-        user_centre = RefInfocentre.objects.filter(
-            user__id=id_etape
-        ).filter(id=centre)
-        user_etude = JonctionUtilisateurEtude.objects.filter(
-            user=id_etape
-        ).filter(etude__id=etude)
-        # Enregistrement du log---------------------------------------
-        # ------------------------------------------------------------
-        nom_documentaire = (
-            " a editer les autorisation de l'utilisateur : "
-            + user_info.username
+    user_lock =  ValideCompte.objects.get(create_user__id=id_etape)
+    if not user_lock.etat.pk <= 2:
+        liste_etude = []
+        liste_centre = []
+        user_info = User.objects.get(pk=id_etape)
+        if request.method == "POST":
+            form = FormsAutorisation()
+            etude = request.POST["etude"]
+            centre = request.POST["centre"]
+            user_centre = RefInfocentre.objects.filter(
+                user__id=id_etape
+            ).filter(id=centre)
+            user_etude = JonctionUtilisateurEtude.objects.filter(
+                user=id_etape
+            ).filter(etude__id=etude)
+            # Enregistrement du log---------------------------------------
+            # ------------------------------------------------------------
+            nom_documentaire = (
+                " a editer les autorisation de l'utilisateur : "
+                + user_info.username
+            )
+            edition_log(request, nom_documentaire)
+            # -------------------------------------------------------------
+            # -------------------------------------------------------------
+            jonc_centre(
+                user_etude, etude, user_info, user_centre, centre
+            )
+    else:
+        message = messages.add_message(
+            request, messages.WARNING, "Ce compte est validé débloquer le pour pouvoir le modifier"
         )
-        edition_log(request, nom_documentaire)
-        # -------------------------------------------------------------
-        # -------------------------------------------------------------
-        jonc_centre(
-            user_etude, etude, user_info, user_centre, centre
-        )
+        return redirect('/admin_page/userAuth/')
     liste_etude = choice_etude(True)
     liste_centre = choice_centre(True)
     form = FormsAutorisation()
@@ -77,7 +85,7 @@ def auth_edit(request, id_etape):
             "form": form,
             "etude": user_etude,
             "centre": user_centre,
-            "user": user_info,
+            "user_info": user_info,
         },
     )
 

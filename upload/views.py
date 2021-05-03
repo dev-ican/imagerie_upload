@@ -8,6 +8,7 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 
 from .forms import UploadForm
+from django.contrib import messages
 from .models import (
     DossierUpload, JonctionEtapeSuivi, JonctionUtilisateurEtude,
     RefControleQualite, RefEtapeEtude, RefEtatEtape, RefTypeAction,
@@ -122,6 +123,9 @@ def formulaire(request):
                 upload=create_jonction, etape=etape, etat=id_etape
             )
         var_url = "/upload/form/"
+        message = messages.add_message(
+            request, messages.WARNING, "Vos données ont été chargées"
+        )
         return redirect(var_url)
     form = UploadForm()
     # Charge les listes déroulantes

@@ -8,20 +8,25 @@
     <!-- Navigation -->
     {% include "include_menus.html" %}
     <!-- Page Content -->
-    <div class="container-fluid">
+    <div class="container col-12" style="padding:0px;margin:0px;min-height: 100vh;">
       <!-- Page Features -->
       <section class="page-section cta">
         <div class="row text-center">
           <div class="container">
             <h5 class="display-3" name='titre_form'>Formulaire d'upload</h5>
+            {% if messages %}
+              {% for message in messages %}
+                <h5 class="text-success" id='msgEtape'>{{ message }}</h5>
+              {% endfor %}
+            {% endif %}
             <p class="lead">Il vous est demandé de renseigner tous les champs disponibles</p>
           </div>
         </div>
         <div class="container">
-          <div class="row text-center">
-            <div class="col-xl-9 mx-auto">
-              <div class="cta-inner text-center rounded">
-                <form action="{% url 'formulaire' %}" method="post" class="was-validated login100-form validate-form" enctype="multipart/form-data" name="form_upload">
+          <div class="row text-center border-top border-bottom">
+            <div class="col-xl-9 mx-auto border-top border-primary" style="margin-top: 10px">
+              <div class="cta-inner text-center" >
+                <form action="{% url 'formulaire' %}" style="padding-top: 15px;" method="post" class="was-validated login100-form validate-form" enctype="multipart/form-data" name="form_upload">
                   <div class="wrap-input100 validate-input m-b-26">
                     <ul>
                       {% csrf_token %}
@@ -29,7 +34,7 @@
                     </ul>
                   </div>
                   {% buttons %}
-                    <input onclick="clicked();" type="button" class="btn btn-primary" name="login" href="" value="Valider"></input>
+                    <input onclick="JSconfirm();" type="button" class="btn btn-primary" name="login" href="" value="Valider"></input>
                   {% endbuttons %}
                 </form>
               </div>
@@ -45,19 +50,31 @@
     </footer>
     <!-- Bootstrap core JavaScript -->
     <script type="text/javascript">
-    function clicked() {
-       if (confirm("La RGPD doit être respecté, en validant l'envois vous certifier que les documents envoyés ne contiennent aucune information prédujiciable.")) {
-           document.forms.form_upload.submit();
-           //e.preventDefault();
+      function JSconfirm(){
+        swal({
+          title: "RGPD",
+          text: "Cette application a pour but de stocker des données de recherche. Pour cela elle doit respecter la RGPD et les directives législatives en vigueur. En validant, vous vous engagez à ne charger via cette application uniquement des images pseudo-anonymisée",
+          icon: "warning",
+          buttons: ["Refuser", "Accepter"],
+          dangerMode: true,
+        })
+      .then((willDelete) => {
+        if (willDelete) {
+          swal("Votre chargement est accepté", {
+          icon: "success",
+          });
+          document.forms.form_upload.submit();
         } else {
-            alert("Cette envois est annulé");
+          swal("Votre chargement est annulé");
         }
-    }
+      });
+
+      }
 
 </script>
     <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
     <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </body>
