@@ -60,7 +60,7 @@ def admin_up(request):
             if len(var_etape) == 2:
                 dictupload["etape_etude"] = var_etape[1]
             dictupload["error"] = var_etape[0]
-            tab_list.append(dictupload)
+            tab_list.append(dict(dictupload))
         dict_nbr["nbr_etape"] = nbr_etape
         dict_nbr["nom_etape"] = nometape
         list_centre = etude_recente(etuderecente, dossier_all)

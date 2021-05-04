@@ -7,14 +7,15 @@
   <body id="ajax" style="min-height: 100vh;">
     {% include "include_menus.html" %}
 
-    <div class="container col-12" style="padding:0px;margin:0px;min-height: 100vh;">
-      <div class="row d-flex">
-        <div class="col-1">
+    <div class="container col-11" style="padding:0px;margin:0px;min-height: 100vh;">
+      <div class="row">
+        <div class="col-2">
         {% include "include_menus_admin.html" %}
         </div>
-        <div class="col-11">
-          <div class="row-fluid d-flex">
-            <div class="col-3">
+        <div class="col-10">
+          <div class="row">
+          <div class="col-12 d-flex">
+            <div class="col-4">
               {% block section_one %}
               {% endblock %}
             </div>
@@ -22,6 +23,7 @@
               {% block section_two %}
               {% endblock %}
             </div>
+          </div>
           </div>
         </div>
       </div>
@@ -36,12 +38,14 @@
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="{% static 'js/custom_script.js' %}"></script>
+    <script src="{% static 'js/custom_script_delEtudeEtape' %}"></script>
     <script src="{% static 'js/custom_script_etape.js' %}"></script>
     <script src="{% static 'js/custom_script_centre.js' %}"></script>
     <script src="{% static 'js/custom_script_user.js' %}"></script>
     <script src="{% static 'js/custom_script_menu_admin.js' %}"></script>
     <script src="{% static 'js/custom_script_doc.js' %}"></script>
     <script src="{% static 'js/custom_centre_del.js' %}"></script>
+    
   </body>
 
 </html>

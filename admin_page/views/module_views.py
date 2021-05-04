@@ -192,11 +192,12 @@ def nom_etape(etude_recente):
 def nom_etape_tris(etude_change):
     """ce module donne le nom des étapes de l'étude récente."""
     nom_etape = RefEtapeEtude.objects.filter(
-        etude=etude_change.id
+        etude=etude_change
     )
     dict_etape_nom = []
 
     for nom in nom_etape:
+        print(nom)
         dict_etape_nom.append(nom.nom)
     return dict_etape_nom
 

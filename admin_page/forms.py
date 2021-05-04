@@ -25,12 +25,21 @@ class FormsEtape(forms.Form):
     """ Formulaire gérant les étapes """
 
     nom = forms.CharField(label="Nom de l'étape", max_length=100)
+    '''etudes = forms.ChoiceField(
+        widget=forms.Select(),
+        choices=(["liste de vos études"]),
+        required=True,
+    )'''
+
+class FormsEtapeEdit(forms.Form):
+    """ Formulaire gérant les étapes """
+
+    nom = forms.CharField(label="Nom de l'étape", max_length=100)
     etudes = forms.ChoiceField(
         widget=forms.Select(),
         choices=(["liste de vos études"]),
         required=True,
     )
-
 
 class FormsAutorisation(forms.Form):
     """ Formulaire gérant les authorisations """

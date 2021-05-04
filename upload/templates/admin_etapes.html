@@ -32,7 +32,11 @@
     {% for item in resultat %}
       <tr>
         <td>{{ item.nom }}</td>
+        {% if not item.etude.id >= 1 %}
+        <td>{% for area in item.etude.all %}{{ area }}<br/>{% endfor %}</td>
+        {% else %}
         <td>{{ item.etude }}</td>
+        {% endif %}
         <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/etapes/edit/{{item.id}}/">EDITER</a><div id="supprEtape" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
       </tr>
     {% endfor %}

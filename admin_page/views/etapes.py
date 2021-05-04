@@ -5,11 +5,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-from admin_page.forms import FormsEtape
+from admin_page.forms import FormsEtape, FormsEtapeEdit
 from upload.models import (
     JonctionEtapeSuivi,
     RefEtapeEtude,
     RefEtudes,
+    SuiviUpload,
 )
 
 from .module_admin import choice_etude
@@ -32,9 +33,9 @@ def admin_etape(request):
     liste_protocole = []
     if request.method == "POST":
         val_nom = request.POST["nom"]
-        val_etude = request.POST["etudes"]
-        query = RefEtudes.objects.get(id__exact=val_etude)
-        RefEtapeEtude.objects.create(nom=val_nom, etude=query)
+        #val_etude = request.POST["etudes"]
+        #query = RefEtudes.objects.get(id__exact=val_etude)
+        RefEtapeEtude.objects.create(nom=val_nom) #etude=query)
         # Enregistrement du log--------------------------------
         # -----------------------------------------------------
         nom_documentaire = " a créé l'étape : " + val_nom
@@ -42,9 +43,9 @@ def admin_etape(request):
         # -----------------------------------------------------
         # -----------------------------------------------------
     form = FormsEtape()
-    liste_protocole = choice_etude(True)
-    form.fields["etudes"].choices = liste_protocole
-    form.fields["etudes"].initial = [0]
+    #liste_protocole = choice_etude(True)
+    #form.fields["etudes"].choices = liste_protocole
+    #form.fields["etudes"].initial = [0]
     etape_tab = RefEtapeEtude.objects.all()
     return render(
         request,
@@ -59,49 +60,44 @@ def etape_edit(request, id_etape):
     liste_protocole = []
     if request.method == "POST":
         select_etape = RefEtapeEtude.objects.get(pk=id_etape)
-        nom = request.POST["nom"]
+        nom_edit = request.POST["nom"]
         etudes = request.POST["etudes"]
         ref_etude = RefEtudes.objects.get(id=etudes)
         # Enregistrement du log---------------------------------
         # ------------------------------------------------------
         nom_documentaire = (
             " a editer l'étape etape/etude - etude édité/etape édité : "
-            + select_etape.etude.nom
-            + "/"
             + select_etape.nom
-            + " - "
-            + ref_etude.nom
             + "/"
-            + nom
+            + str(nom_edit)
         )
         edition_log(request, nom_documentaire)
         # ------------------------------------------------------
         # ------------------------------------------------------
-        select_etape.nom = nom
-        select_etape.etude = ref_etude
+        select_etape.nom = nom_edit
         select_etape.save()
+        select_etape.etude.add(ref_etude)    #.user.add(user_info)
+        #select_etape.etude = ref_etude
         form = FormsEtape()
         return HttpResponseRedirect("/admin_page/etapes/")
     else:
         etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
-        id_etude = RefEtudes.objects.get(nom=etape_filtre.etude)
-        form = FormsEtape()
+        id_etude = RefEtudes.objects.get(pk=1)
+        form = FormsEtapeEdit()
         liste_protocole = choice_etude(False)
         form.fields["etudes"].choices = liste_protocole
-        form.fields["etudes"].initial = [id_etude.id]
+        form.fields["etudes"].initial = [0]
         form.fields["nom"].initial = etape_filtre.nom
         # Enregistrement du log-----------------------------
         # --------------------------------------------------
         nom_documentaire = (
             " a ouvert l'édition pour l'étape etude/etape : "
-            + etape_filtre.etude.nom
-            + "/"
             + etape_filtre.nom
         )
         information_log(request, nom_documentaire)
         # --------------------------------------------------
         # --------------------------------------------------
-    etape_tab = RefEtapeEtude.objects.all()
+    etape_tab = RefEtudes.objects.filter(refetapeetude__id=id_etape)
     return render(
         request,
         "admin_etapes_edit.html",
@@ -181,3 +177,22 @@ def etape_del(request, id_etape):
         "message": message,
     }
     return render(request, "admin_etapes.html", context)
+
+def link_del(request):
+    id_etape = request.POST.get("val_user")
+    id_etude = request.POST.get("type_tab")
+    suppr = True
+    info_suivi = SuiviUpload.objects.filter(etude__etude__id=id_etude)
+    if info_suivi.exists():
+        for nbr in info_suivi:
+            x += 1
+        suppr = False
+    if suppr:
+        id_log = RefEtapeEtude.objects.get(
+            id__exact=id_etape
+        )
+        bdd_etape = RefEtapeEtude.objects.get(pk=id_etape)
+        bdd_etude = RefEtudes.objects.get(pk=id_etude)
+
+        bdd_etape.refetudes.remove(bdd_etude)
+

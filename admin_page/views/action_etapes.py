@@ -48,7 +48,7 @@ def upload_tris(request, id_tris):
         nbr_etape = RefEtapeEtude.objects.filter(
             etude=etude_change.id
         ).count()
-        nom_etape = nom_etape_tris(etude_change)
+        nom_etape = nom_etape_tris(etude_change.id)
         for files in dossier_all:
             dictupload = {}
             dictupload = dict_upload(dictupload, files)
@@ -56,9 +56,10 @@ def upload_tris(request, id_tris):
             var_etape = gestion_etape(
                 nom_etape, infoetape, nbr_etape
             )
+            print(var_etape)
             dictupload["etape_etude"] = var_etape[1]
             dictupload["error"] = var_etape[0]
-            tab_list.append(dict_upload)
+            tab_list.append(dictupload)
         dict_nbr["nbr_etape"] = nbr_etape
         dict_nbr["nom_etape"] = nom_etape
     list_centre = etude_tris(dossier_all)
@@ -74,6 +75,7 @@ def upload_tris(request, id_tris):
     information_log(request, nom_documentaire)
     # ---------------------------------------------
     # ---------------------------------------------
+    print(tab_list)
     return render(
         request,
         "admin_page_upload.html",

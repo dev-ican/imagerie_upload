@@ -75,7 +75,7 @@ class RefInfocentre(models.Model):
 class RefEtapeEtude(models.Model):
 	'''Modèle liant les étapes et les études'''
 	nom = models.CharField(max_length=5000)
-	etude = models.ForeignKey("RefEtudes", on_delete=models.CASCADE)
+	etude = models.ManyToManyField("RefEtudes")
 
 	def __str__(self):
 		return self.nom

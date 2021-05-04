@@ -13,6 +13,7 @@ urlpatterns = [
 	path('etapes/', views.admin_etape, name='admin_etape'),
 	re_path(r'^etapes/edit/([0-9]+)/',views.etape_edit, name='etape_edit'),
 	re_path(r'^etapes/delete/([0-9]+)/',views.etape_del, name='etape_suppr'),
+	re_path(r'^etapes/deletelink',views.link_del, name='link_suppr'),
 	path('viewUser/', views.admin_user, name='admin_utilisateur'),
 	re_path(r'^viewUser/edit/([0-9]+)/',views.user_edit, name='user_edit'),
 	re_path(r'^viewUser/delete/([0-9]+)/',views.user_del, name='user_suppr'),
