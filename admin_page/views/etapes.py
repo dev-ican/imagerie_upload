@@ -127,17 +127,25 @@ def etape_del(request, id_etape):
             id_log = RefEtapeEtude.objects.get(
                 id__exact=id_etape
             )
+            if id_log.etude.name is None:
+                var_lognom = "empty"
+            else:
+                var_lognom = id_log.nom
             # Enregistrement du log------------------------------
             # ---------------------------------------------------
             nom_documentaire = (
                 " a supprimé l'étude (etude/etape) : "
-                + id_log.etude.nom
+                + var_lognom
                 + "/"
                 + id_log.nom
             )
             suppr_log(request, nom_documentaire)
             # ---------------------------------------------------
             # ---------------------------------------------------
+            all_etude = RefEtapeEtude.objects.get(id=id_etape)
+            var_etude = all_etude.etude.all()
+            print(all_etude)
+            print(var_etude)
             RefEtapeEtude.objects.get(
                 id__exact=id_etape
             ).delete()
@@ -148,13 +156,15 @@ def etape_del(request, id_etape):
             id_log = RefEtapeEtude.objects.get(
                 id__exact=id_etape
             )
+            if id_log.etude.name is None:
+                var_lognom = "empty"
+            else:
+                var_lognom = id_log.nom
             # Enregistrement du log------------------------------
             # ---------------------------------------------------
             nom_documentaire = (
                 " à reçu un message d'erreur de suppression pour (etude/etape) : "
-                + id_log.etude.nom
-                + "/"
-                + id_log.nom
+                + var_lognom + "/" + id_log.nom
             )
             information_log(request, nom_documentaire)
             # ----------------------------------------------
@@ -163,13 +173,13 @@ def etape_del(request, id_etape):
                 request,
                 messages.WARNING,
                 "Suppression annulée, cette étape est liée à :"
-                + x
+                + str(x)
                 + " suivi(s)",
             )
     form = FormsEtape()
-    liste_protocole = choice_etude(True)
-    form.fields["etudes"].choices = liste_protocole
-    form.fields["etudes"].initial = [0]
+    #liste_protocole = choice_etude(True)
+    #form.fields["etudes"].choices = liste_protocole
+    #form.fields["etudes"].initial = [0]
     etape_tab = RefEtapeEtude.objects.all()
     context = {
         "form": form,
