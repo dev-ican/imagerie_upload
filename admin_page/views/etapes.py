@@ -145,7 +145,7 @@ def etape_del(request, id_etape):
             all_etude = RefEtapeEtude.objects.get(id=id_etape)
             var_etude = all_etude.etude.all()
             for item in var_etude:
-                all_etude.refetudes.remove(item)
+                all_etude.etude.remove(item)
 
             RefEtapeEtude.objects.get(
                 id__exact=id_etape
