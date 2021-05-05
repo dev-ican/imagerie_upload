@@ -38,7 +38,7 @@ class FormsEtapeEdit(forms.Form):
     etudes = forms.ChoiceField(
         widget=forms.Select(),
         choices=(["liste de vos études"]),
-        required=True,
+        initial='0',
     )
 
 class FormsAutorisation(forms.Form):

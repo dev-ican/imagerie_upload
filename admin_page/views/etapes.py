@@ -62,7 +62,13 @@ def etape_edit(request, id_etape):
         select_etape = RefEtapeEtude.objects.get(pk=id_etape)
         nom_edit = request.POST["nom"]
         etudes = request.POST["etudes"]
-        ref_etude = RefEtudes.objects.get(id=etudes)
+        ajout_etude = True
+        if int(etudes) != 0:
+            ref_etude = RefEtudes.objects.get(id=etudes)
+        else:
+            ajout_etude = False
+
+
         # Enregistrement du log---------------------------------
         # ------------------------------------------------------
         nom_documentaire = (
@@ -76,7 +82,8 @@ def etape_edit(request, id_etape):
         # ------------------------------------------------------
         select_etape.nom = nom_edit
         select_etape.save()
-        select_etape.etude.add(ref_etude)    #.user.add(user_info)
+        if ajout_etude:
+            select_etape.etude.add(ref_etude)    #.user.add(user_info)
         #select_etape.etude = ref_etude
         form = FormsEtape()
         return HttpResponseRedirect("/admin_page/etapes/")
@@ -84,7 +91,7 @@ def etape_edit(request, id_etape):
         etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
         id_etude = RefEtudes.objects.get(pk=1)
         form = FormsEtapeEdit()
-        liste_protocole = choice_etude(False)
+        liste_protocole = choice_etude(True)
         form.fields["etudes"].choices = liste_protocole
         form.fields["etudes"].initial = [0]
         form.fields["nom"].initial = etape_filtre.nom
