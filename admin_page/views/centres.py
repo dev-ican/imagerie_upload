@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
 
-from admin_page.forms import FormCentre
+from admin_page.forms import FormCentre, FormCentreEdit
 from upload.models import RefInfocentre, SuiviUpload
 
 from .module_log import (
@@ -88,7 +88,7 @@ def centre_edit(request, id_etape):
             "numero": user_info.numero,
             "date_ajout": format_date,
         }
-        form = FormCentre(info)
+        form = FormCentreEdit(info)
         # Enregistrement du log------------------------------------------------------------------------
         # ---------------------------------------------------------------------------------------------
         nom_documentaire = (

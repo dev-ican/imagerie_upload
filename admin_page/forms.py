@@ -61,13 +61,18 @@ class FormCentre(forms.Form):
 
     nom = forms.CharField(label="Nom  du centre", max_length=100)
     numero = forms.IntegerField(label="Numéro du centre")
+
+class FormCentreEdit(forms.Form):
+    """ Formulaire gérant les centres """
+
+    nom = forms.CharField(label="Nom  du centre", max_length=100)
+    numero = forms.IntegerField(label="Numéro du centre")
     date_ajout = forms.DateField(
         widget=forms.DateInput(
             format="%d/%m/%Y",
             attrs={"placeholder": "yyyy-mm-dd"},
         )
     )
-
 
 class FormsUser(forms.Form):
     """ Formulaire gérant les utilisateurs """

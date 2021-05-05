@@ -86,7 +86,8 @@ def etape_edit(request, id_etape):
             select_etape.etude.add(ref_etude)    #.user.add(user_info)
         #select_etape.etude = ref_etude
         form = FormsEtape()
-        return HttpResponseRedirect("/admin_page/etapes/")
+        url = "/admin_page/etapes/edit/" + id_etape + "/"
+        return HttpResponseRedirect(url)
     else:
         etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
         id_etude = RefEtudes.objects.get(pk=1)
