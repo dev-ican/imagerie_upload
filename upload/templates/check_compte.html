@@ -23,10 +23,10 @@
       <tr>
         <td>{{ item.username }}</td>
         <td>{{ item.email }}</td>
-        {% if item.Compte_Valider.etat.nom == "" %}
-        <td><b>Aucune demande</b></td>
-        {% else %}
+        {% if item.Compte_Valider.etat.id >= 1 %}
         <td><b>{{ item.Compte_Valider.etat.nom }}</b></td>
+        {% else %}
+        <td><b>Aucune demande</b></td>
         {% endif %}
         <td><div class="row justify-content-start">
           {% if item.Compte_Valider.etat.id == 1 %}
