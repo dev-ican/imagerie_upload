@@ -31,7 +31,7 @@
   </thead>
   <tbody>
     {% for item in resultat %}
-    {% if not item.is_superuser %}
+    {% if not item.is_staff %}
       <tr>
         <td>{{ item.username }}</td>
         <td>{{ item.email }}</td>
