@@ -47,7 +47,7 @@ def get_login(request):
                     list_group.append(item)
                 request.session['groups'] = list_group
 
-                return HttpResponseRedirect("/upload/")
+                return HttpResponseRedirect("/")
     else:
         form = LogIn()
 
@@ -78,4 +78,4 @@ def log_out(request):
         messages.WARNING,
         "Vous êtes maintenant déconnecté",
     )
-    return redirect("/upload/")
+    return redirect("/")

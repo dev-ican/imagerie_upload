@@ -30,9 +30,12 @@
           {% elif item.Compte_Valider.etat.id == 3 %}
             <a role="button" class="btn btn-sm btn-outline-warning text-danger" href="/admin_page/authacc/verif/{{item.id}}/">Ce compte à vue son activation refusé <i>- Cliquer pour faire une nouvelle demande -</i></a>
           {% else %}
+          {% if not user.is_staff or user.is_superuser %}
             <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/verif/{{item.id}}/">Demande d'approbation</a>
           {% endif %}
+          {% endif %}
           {% if not "Administrateur service" in request.session.groups or user.is_staff %}
+          {% if item.Compte_Valider.etat.id != 3 %}
           &nbsp;
           <div>
           <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/valide/{{item.id}}/">Valider le compte</a>
@@ -41,6 +44,7 @@
           <div>
           <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/refus/{{item.id}}/">Refuser le compte</a>
           </div>
+          {% endif %}
           {% endif %}
           </div>
         </td>

@@ -14,6 +14,8 @@
       <a class="nav-link text-warning" id="menuAuthCompte" href="{% url 'auth_compte' %}">Validation des comptes</a>
     </li>
     <li class="nav-item"><p>--------------------------</p></li>
+    {% endif %}
+    {% if user.is_superuser or "Administrateur service" in request.session.groups %}
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuEtudes" href="{% url 'admin_etude' %}">Ajouter des études</a>
     </li>
@@ -25,6 +27,7 @@
     </li>
     <li class="nav-item"><p>--------------------------</p></li>
     {% endif %}
+    {% if not user.is_staff or user.is_superuser %}
     <li class="nav-item active">
       <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>
     </li>
@@ -34,5 +37,6 @@
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuDoc" href="{% url 'gestion' %}">Gestion documentaire</a>
     </li>
+    {% endif %}
   </ul>
 </nav>
