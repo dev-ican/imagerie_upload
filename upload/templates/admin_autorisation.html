@@ -38,7 +38,11 @@
             <td><div class="row justify-content-start"><a role="button" class="btn btn-sm btn-outline-info text-success" href=#>Ce compte est validé ou en attente de validation</a></div></td>
           {% endif %}
         {% else %}
-          <td><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/userAuth/edit/{{item.id}}/">Modifier les autorisations</a></td>
+          {% if not item.is_staff %}
+            <td><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/userAuth/edit/{{item.id}}/">Modifier les autorisations</a></td>
+          {% else %}
+            <td><a role="button" class="btn btn-sm btn-outline-warning" href=#>Appartient au groupe d'administrateur aucune autorisation possible</a></td>
+          {% endif %}
         {% endif %}
       </tr>
     {% endif %}
