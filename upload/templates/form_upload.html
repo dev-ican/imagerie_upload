@@ -23,6 +23,21 @@
           </div>
         </div>
         <div class="container">
+          <div class="row text-center" id="divprogress" style="display: none;">
+          <div class="d-flex justify-content-center mx-auto col-5" >
+            <div class="col-10 mb-1">
+              <div class="card ml-1">
+                <div class="col-6 mx-auto mt-2">
+                  <img class="card-img-top" src="{% static 'images/ajax-loader.gif' %}" width="" height="auto" alt="">
+                </div>
+                <div class="card-body">
+                  <h4 class="card-title">Votre envois est en cours</h4>
+                  <p class="card-text">Merci de patienter.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
           <div class="row text-center border-top border-bottom">
             <div class="col-xl-9 mx-auto border-top border-primary" style="margin-top: 10px">
               <div class="cta-inner text-center" >
@@ -63,6 +78,12 @@
           swal("Votre chargement est accepté", {
           icon: "success",
           });
+          let progress = document.getElementById('progressbar')
+          if(getComputedStyle(divprogress).display != "none"){
+            divprogress.style.display = "none";
+          } else {
+            divprogress.style.display = "block";
+          }
           document.forms.form_upload.submit();
         } else {
           swal("Votre chargement est annulé");

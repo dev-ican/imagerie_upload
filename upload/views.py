@@ -122,7 +122,7 @@ def formulaire(request):
             create_etape = JonctionEtapeSuivi.objects.create(
                 upload=create_jonction, etape=etape, etat=id_etape
             )
-        var_url = "/upload/form/"
+        var_url = "/form/"
         message = messages.add_message(
             request, messages.WARNING, "Vos données ont été chargées"
         )
