@@ -1,0 +1,39 @@
+{% extends "V1_BASES.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block preloader %}
+<img src="{% static 'V1/img/loader.gif' %}" alt="Preloader image">
+{% endblock %}
+{% block intro %}
+<div class="container">
+    <div class="table">
+        <div class="header-text">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h3 class="display-3 light white" id='info_log'>Bienvenue {{ user.username }} !</h3>
+                    <p class="lead white typed">Plateforme de télé-versement ICAN Imaging</p>
+                    <span class="typed-cursor">_</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block section %}
+<div class="cut cut-top"></div>
+<div class="container">
+    <div class="row intro-tables">
+        {% for item in response %}
+        <div class="col-md-4">
+            <div class="intro-table intro-table-hover">
+                <h5 class="white heading hide-hover">{{item.titre}}</h5>
+                <div class="bottom">
+                    <h4 class="white heading small-heading no-margin regular">{{item.description}}</h4>
+                    <a href="/doc/downOnce/{{item.id}}" class="btn btn-white-fill expand">Télécharger le document</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

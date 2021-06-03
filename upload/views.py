@@ -36,7 +36,7 @@ def index(request):
 
     return render(
         request,
-        "index.html",
+        "V1_INDEX.html",
         {"response": doc_list, "user": user_current},
     )
 
@@ -54,7 +54,7 @@ def contact(request):
         date=date_now,
         info="Visite des contacts",
     )
-    return render(request, "contact.html")
+    return render(request, "V1_CONTACT.html")
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -140,4 +140,4 @@ def formulaire(request):
     liste_protocole.append((0, "Séléctionner une étude"))
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
-    return render(request, "form_upload.html", {"form": form})
+    return render(request, "V1_FORMULAIRE.html", {"form": form})

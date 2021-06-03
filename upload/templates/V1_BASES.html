@@ -1,0 +1,85 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en">
+    {% include "V1_Head_ACCEUIL.html" %}
+    <body>
+        <div class="preloader">
+            {% block preloader %}
+            {% endblock %}  
+        </div>
+        {% include "V1_MENU.html" %}
+        <header id="intro">
+            {% block intro %}
+            {% endblock %}
+        </header>
+        <section>
+            {% block section %}
+            {% endblock %}
+        </section>
+        <footer>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 text-center-mobile">
+                        <h3 class="white">Solution Imaging ICAN</h3>
+                        <h5 class="light regular light-white">Système de suivi et de téléversement de donnée IRM</h5>
+                        <img src="{% static 'V1/img/logo_ican_p.png' %}" alt="ICAN Logo">
+                    </div>
+                    <div class="col-sm-6 text-center-mobile">
+                        <h3 class="white">Heure d'ouverture <span class="open-blink"></span></h3>
+                        <div class="row opening-hours">
+                            <div class="col-sm-6 text-center-mobile">
+                                <h5 class="light-white light">Mon - Fri</h5>
+                                <h3 class="regular white">9:00 - 18:00</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bottom-footer text-center-mobile">
+                    <div class="col-sm-8">
+                        <p>&copy; 2021 All Rights Reserved. Exclusively for <a href="http://www.ican-institute.org/">ICAN</a></p>
+                    </div>
+                    <div class="col-sm-4 text-right text-center-mobile">
+                        <ul class="social-footer">
+                            <li><a href="https://www.facebook.com/IHUICAN/"><i class="fa fa-facebook"></i></a></li>
+                            <li><a href="https://www.linkedin.com/in/ihu-ican-b48b02115/"><i class="fa fa-linkedin-square"></i></a></li>
+                            <li><a href="https://twitter.com/ican_institute?lang=fr"><i class="fa fa-twitter"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Holder for mobile navigation -->
+        <div class="mobile-nav">
+            <ul>
+            </ul>
+            <a href="#" class="close-link"><i class="arrow_up"></i></a>
+        </div>
+        <!-- Scripts -->
+        <script src="{% static 'V1/js/jquery-1.11.1.min.js' %}"></script>
+        <script src="{% static 'V1/js/owl.carousel.min.js' %}"></script>
+        <script src="{% static 'V1/js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'V1/js/wow.min.js' %}"></script>
+        <script src="{% static 'V1/js/typewriter.js' %}"></script>
+        <script src="{% static 'V1/js/jquery.onepagenav.js' %}"></script>
+        <script src="{% static 'V1/js/main.js' %}"></script>
+        <!-- old -->
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script src="{% static 'js/custom_script_Contactdel.js' %}"></script>
+        <script>
+          function formContact() {
+            var x = document.getElementById("formContact");
+            var y = document.getElementByClass("preloader");
+            if (x.style.display === "none") {
+              x.style.display = "block";
+            } else {
+              x.style.display = "none";
+            }
+          }
+          window.onload = function(){
+                x.style.display = "none";
+            }
+        </script>       
+    </body>
+    
+    </html>

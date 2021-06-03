@@ -26,7 +26,7 @@ def gestion_contact(request):
         info="Visite des contacts",
     )
     return render(
-        request, "contact.html", {"resultat": contact_tab, "form": form}
+        request, "V1_CONTACT.html", {"resultat": contact_tab, "form": form}
     )
 
 
@@ -120,7 +120,7 @@ def contact_edit(request, id):
     contact_tab = Contact.objects.all()
     return render(
         request,
-        "contact_edit.html",
+        "V1_CONTACT_EDIT.html",
         {"form": form, "resultat": contact_tab, "select": int(id)},
     )
 

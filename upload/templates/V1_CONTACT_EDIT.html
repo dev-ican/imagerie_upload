@@ -1,0 +1,83 @@
+{% extends "V1_BASES_FORMULAIRE.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block preloader %}
+<img src="{% static 'V1/img/loader.gif' %}" alt="Preloader image">
+{% endblock %}
+{% block intro %}
+<div class="container">
+    <div class="table">
+        <div class="header-text">
+            <div class="row">
+                <div class="container-fluid">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-lg-4">
+                            <form action="/contact/edit/{{select}}/" method="post" class="was-validated border border-primary bg-light mb-2 mt-2 justify-content-center">
+                                <div class="form-group">
+                                {% csrf_token %}
+                                {% bootstrap_form form form_group_class='form-group m-2' %}
+                                </div>
+                                {% buttons %}
+                                <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
+                                {% endbuttons %}
+                            </form>
+                        </div>  
+                        <div class="col-lg-8">
+                            <table class="table mt-5">
+                              <thead>
+                                <tr class="bg-primary text-center">
+                                  <th class="text-center" scope="col">Prénom</th>
+                                  <th class="text-center" scope="col">Nom</th>
+                                  <th class="text-center" scope="col">Courriel</th>
+                                  <th class="text-center" scope="col">Téléphone</th>
+                                  <th class="text-center" scope="col">Poste</th>
+                                  {% if user.is_staff %}
+                                  <th class="text-center" scope="col">Actions</th>
+                                  {% endif %}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {% if resultat %}
+                                {% for item in resultat %}
+                                <tr class="bg-info text-primary text-center">
+                                  <td>{{ item.prenom }}</td>
+                                  <td>{{ item.nom }}</td>
+                                  <td>{{ item.courriel }}</td>
+                                  <td>{{ item.telephone }}</td>
+                                  <td>{{ item.poste }}</td>
+                                  {% if user.is_staff %}
+                                    <td>
+                                        <div class="container-fluid">
+                                            <div class="row  d-flex justify-content-center">
+                                                {% if item.id == select %}
+                                                    <div class="col-lg-8">
+                                                        <a role="button" class="btnM btn-blue-fill"><p class="text-warning">En cours d'édition...</p></a>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-lg-3">
+                                                        <a role="button" class="btnM btn-blue-fill" href="/contact/edit/{{item.id}}/">EDITER</a>
+                                                    </div>
+                                                {% endif %}
+                                                    <div id="supprCentre" class="col-lg-4"><a role="button" class="btnM btn-blue-fill" href="/contact/deleted/{{item.id}}/"><p class="text-danger">SUPPR.</p></a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>Aucune données renseigné</tr>
+                                {% endif %}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block section %}
+<div class="cut cut-top"></div>
+{% endblock %}
