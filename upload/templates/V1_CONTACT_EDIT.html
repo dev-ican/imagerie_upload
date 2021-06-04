@@ -6,13 +6,13 @@
 {% endblock %}
 {% block intro %}
 <div class="container">
-    <div class="table">
+    <div style="padding-top: 20%;">
         <div class="header-text">
             <div class="row">
                 <div class="container-fluid">
                     <div class="row d-flex justify-content-center">
-                        <div class="col-lg-4">
-                            <form action="/contact/edit/{{select}}/" method="post" class="was-validated border border-primary bg-light mb-2 mt-2 justify-content-center">
+                        <div class="col-lg-3">
+                            <form action="/contact/edit/{{select}}/" method="post" class="was-validated border border-primary bg-dark mb-2 mt-2 justify-content-center">
                                 <div class="form-group">
                                 {% csrf_token %}
                                 {% bootstrap_form form form_group_class='form-group m-2' %}
@@ -22,10 +22,10 @@
                                 {% endbuttons %}
                             </form>
                         </div>  
-                        <div class="col-lg-8">
-                            <table class="table mt-5">
-                              <thead>
-                                <tr class="bg-primary text-center">
+                        <div class="col-lg-9">
+                            <table class="table table-striped mt-5">
+                              <thead class="thead-dark">
+                                <tr>
                                   <th class="text-center" scope="col">Prénom</th>
                                   <th class="text-center" scope="col">Nom</th>
                                   <th class="text-center" scope="col">Courriel</th>
@@ -39,7 +39,7 @@
                               <tbody>
                                 {% if resultat %}
                                 {% for item in resultat %}
-                                <tr class="bg-info text-primary text-center">
+                                <tr class="text-center">
                                   <td>{{ item.prenom }}</td>
                                   <td>{{ item.nom }}</td>
                                   <td>{{ item.courriel }}</td>
@@ -50,15 +50,15 @@
                                         <div class="container-fluid">
                                             <div class="row  d-flex justify-content-center">
                                                 {% if item.id == select %}
-                                                    <div class="col-lg-8">
-                                                        <a role="button" class="btnM btn-blue-fill"><p class="text-warning">En cours d'édition...</p></a>
+                                                    <div class="col-md-8">
+                                                        <a role="button" class="btnM btn-blue-fill"><p class="text-warning" style="font-size: smaller;">En cours d'édition...</p></a>
                                                     </div>
                                                 {% else %}
-                                                    <div class="col-lg-3">
+                                                    <div class="col-md-3">
                                                         <a role="button" class="btnM btn-blue-fill" href="/contact/edit/{{item.id}}/">EDITER</a>
                                                     </div>
                                                 {% endif %}
-                                                    <div id="supprCentre" class="col-lg-4"><a role="button" class="btnM btn-blue-fill" href="/contact/deleted/{{item.id}}/"><p class="text-danger">SUPPR.</p></a>
+                                                    <div id="supprCentre" class="col-lg-4"><a role="button" class="btnM btn-blue-fill" href="/contact/deleted/{{item.id}}/"><p class="text-danger" style="font-size: smaller;">SUPPR.</p></a>
                                             </div>
                                         </div>
                                     </td>

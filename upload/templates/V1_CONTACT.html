@@ -6,7 +6,7 @@
 {% endblock %}
 {% block intro %}
 <div class="container">
-    <div class="table">
+    <div style="padding-top: 20%;">
         <div class="header-text">
             <div class="row">
                 <div class="col-md-12 text-center">
@@ -19,7 +19,7 @@
                                 </div>
                         </div>
                         <div  id="formContact" style='display:none;'>
-                            <form action="/contact/new/" method="post" class="was-validated border border-primary bg-light mb-2 mt-2 justify-content-center">
+                            <form action="/contact/new/" method="post" class="was-validated border border-primary mb-2 mt-2 justify-content-center">
                                 <div class="form-group">
                                     {% csrf_token %}
                                     {% bootstrap_form form form_group_class='form-group m-2' %}
@@ -30,9 +30,9 @@
                             </form>
                         </div>
                         <div class="row text-center">
-                            <table class="table">
-                                <thead>
-                                    <tr class="bg-primary text-center">
+                            <table class="table table-striped">
+                                <thead class="thead-dark">
+                                    <tr>
                                         <th class="text-center" scope="col">Prénom</th>
                                         <th class="text-center" scope="col">Nom</th>
                                         <th class="text-center" scope="col">Courriel</th>
@@ -46,7 +46,7 @@
                                 <tbody>
                                     {% if resultat %}
                                         {% for item in resultat %}
-                                            <tr class="bg-info text-primary text-center">
+                                            <tr class="text-center">
                                                 <td>{{ item.prenom }}</td>
                                                 <td>{{ item.nom }}</td>
                                                 <td>{{ item.courriel }}</td>
