@@ -11,8 +11,8 @@ def user_directory_path(instance, filename):
 
 def doc_directory_path(instance, filename):
 	'''Modèle gérant l'enregistrement des documents '''
-	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
-	return '{0}/{1}'.format('document',filename)
+	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<documents>/<nom etude>/fichier
+	return '{0}/{1}/{2}'.format('documents',instance.etude.nom,filename)
 
 class ValideCompte(models.Model):
 	'''Modèle gérant le suivi des demandes de validation'''

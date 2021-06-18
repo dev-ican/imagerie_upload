@@ -12,7 +12,7 @@ from django.contrib import messages
 from .models import (
     DossierUpload, JonctionEtapeSuivi, JonctionUtilisateurEtude,
     RefControleQualite, RefEtapeEtude, RefEtatEtape, RefTypeAction,
-    SuiviDocument, SuiviUpload, log)
+    SuiviDocument, SuiviUpload, log, RefInfocentre)
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -87,6 +87,9 @@ def formulaire(request):
         )
         date_now = timezone.now()
         filez = request.FILES.getlist("upload")
+
+        num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
+        nomage_id = id_etude.etude.nom,"_",num_centre.numero,"_",nip
         # Création du dossier en lien avec les fichiers chargés
         create_jonction = DossierUpload(
             user=user_current, controle_qualite=id_qc, date=date
@@ -98,7 +101,7 @@ def formulaire(request):
             create_suivi = SuiviUpload(
                 user=user_current,
                 etude=id_etude,
-                id_patient=nip,
+                id_patient=nomage_id,
                 date_upload=date_now,
                 date_examen=date,
                 fichiers=f,
