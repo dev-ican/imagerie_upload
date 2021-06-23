@@ -348,7 +348,7 @@ def down_all(request, id):
     response = HttpResponse(content_type="application/zip")
     response[
         "Content-Disposition"
-    ] = "attachement;filename=corelab.zip"
+    ] = "attachement;filename=" + obj.id_patient + ".zip"
     in_memory.seek(0)
     response.write(in_memory.read())
     # Enregistrement du log------------------------------

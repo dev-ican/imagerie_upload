@@ -44,12 +44,13 @@ def admin_up(request):
 
     try:
         dossier_all = SuiviUpload.objects.filter(
-            etude=etuderecente.etude
+            etude__etude__id=etuderecente.etude.etude.id
         ).distinct("dossier")
         nbr_etape = RefEtapeEtude.objects.filter(
             etude=etuderecente.etude.etude
         ).count()
         nometape = nom_etape(etuderecente.etude.id)
+        print(dossier_all, etuderecente.etude)
         for files in dossier_all:
             dictupload = {}
             dictupload = dict_upload(dictupload, files)

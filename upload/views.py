@@ -89,7 +89,7 @@ def formulaire(request):
         filez = request.FILES.getlist("upload")
 
         num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
-        nomage_id = id_etude.etude.nom,"_",num_centre.numero,"_",nip
+        nomage_id = str(id_etude.etude.nom) + "_" + str(num_centre.numero) + "_" + str(nip)
         # Création du dossier en lien avec les fichiers chargés
         create_jonction = DossierUpload(
             user=user_current, controle_qualite=id_qc, date=date
