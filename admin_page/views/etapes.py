@@ -90,7 +90,7 @@ def etape_edit(request, id_etape):
         return HttpResponseRedirect(url)
     else:
         etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
-        id_etude = RefEtudes.objects.get(pk=1)
+        #id_etude = RefEtudes.objects.get(pk=1)
         form = FormsEtapeEdit()
         liste_protocole = choice_etude(True)
         form.fields["etudes"].choices = liste_protocole
