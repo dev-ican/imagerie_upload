@@ -26,7 +26,7 @@ def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape):
             error = True
         else:
             nw_dict = {
-                "Aucune_etape": "Aucune étape enregistré dans les bases de données"
+                "Aucune_etape": "Aucune étape enregistrée dans les bases de données"
             }
             error = True
 

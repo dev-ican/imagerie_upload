@@ -49,9 +49,9 @@
     {% for item in resultat %}
       <tr value="{{item.id_}}">
         {% if 'passed' in item.Etudes %}
-        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-warning">{{ item.Etudes }}</span><h5></td>
+        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-success">{{ item.Etudes }}</span><h5></td>
         {% else %}
-        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod_{{ item.Etudes_id }}{{item.id_}}"><h5><span class="badge badge-success">{{ item.Etudes }}</span><h5></td>
+        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod_{{ item.Etudes_id }}{{item.id_}}"><h5><span class="badge badge-warning">{{ item.Etudes }}</span><h5></td>
         {% endif %}
         <td><a href="/admin_page/upfiles/dospat/{{ item.id_ }}/"><h5><span class="badge badge-secondary">{{ item.id }}</span></h5></td>
         <td>{{ item.nbr_upload }}</td>

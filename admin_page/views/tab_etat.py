@@ -50,7 +50,7 @@ def admin_up(request):
             etude=etuderecente.etude.etude
         ).count()
         nometape = nom_etape(etuderecente.etude.id)
-        print(dossier_all, etuderecente.etude)
+
         for files in dossier_all:
             dictupload = {}
             dictupload = dict_upload(dictupload, files)
