@@ -25,14 +25,19 @@ SECRET_KEY = '3@bx3hwi)0=4rzp@_h5kq02!8bd9&)-b^#0g81xghe@+tjlzy7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['134.157.204.80', '127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
 
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
+
 INSTALLED_APPS = [
     'sslserver',
     'bootstrap4',
+    'bootstrap_datepicker_plus',
     'phonenumber_field',
     'upload.apps.UploadConfig',
     'auth_app.apps.AuthAppConfig',
@@ -66,6 +71,15 @@ SESSION_COOKIE_SECURE = True
 SERVER_TYPE = "DEV"
 CSRF_COOKIE_SECURE = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 7200
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_HOST_USER = 'si_ican@ihuican.onmicrosoft.com'
+EMAIL_HOST_PASSWORD = 'FAKE'
+EMAIL_PORT = 587
+MAX_UPLOAD_SIZE = "4299161600"
 
 TEMPLATES = [
     {
@@ -94,14 +108,13 @@ WSGI_APPLICATION = 'app_upload.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'upload',
-        'USER': 'upload_user',
-        'PASSWORD': 'upload_MDP_user*',
+        'NAME': 'icanupload',
+        'USER': 'uploaduser',
+        'PASSWORD': 'uploaduser', #'ican+user*projet+upload/+',
         'HOST': 'localhost',
         'PORT': '',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
