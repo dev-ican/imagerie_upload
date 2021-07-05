@@ -25,7 +25,7 @@ SECRET_KEY = '3@bx3hwi)0=4rzp@_h5kq02!8bd9&)-b^#0g81xghe@+tjlzy7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['FAKE']
 
 
 # Application definition
@@ -76,8 +76,8 @@ SESSION_COOKIE_AGE = 7200
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.office365.com'
-EMAIL_HOST_USER = 'si_ican@ihuican.onmicrosoft.com'
-EMAIL_HOST_PASSWORD = '975_Microsoft_Spjdvn%5A9KTJ'
+EMAIL_HOST_USER = 'FAKE'
+EMAIL_HOST_PASSWORD = 'FAKE'
 EMAIL_PORT = 587
 MAX_UPLOAD_SIZE = "4299161600"
 
