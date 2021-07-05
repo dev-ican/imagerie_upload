@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
+from django.core.exceptions import ObjectDoesNotExist
 from .forms import UploadForm
 from django.contrib import messages
 from .models import (
@@ -90,46 +91,63 @@ def formulaire(request):
 
         num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
         nomage_id = str(id_etude.etude.nom) + "_" + str(num_centre.numero) + "_" + str(nip)
-        # Création du dossier en lien avec les fichiers chargés
-        create_jonction = DossierUpload(
-            user=user_current, controle_qualite=id_qc, date=date
-        )
-        create_jonction.save()
-        # Création dans la table suivi upload de
-        #chaque fichier chargé en lien avec le dossier
-        for f in filez:
-            create_suivi = SuiviUpload(
-                user=user_current,
-                etude=id_etude,
-                id_patient=nomage_id,
-                date_upload=date_now,
-                date_examen=date,
-                fichiers=f,
-                dossier=create_jonction,
+        # Vérification de la présence d'un id identique
+        try:
+            search_doublon = SuiviUpload.objects.filter(id_patient__exact=nomage_id)
+            if search_doublon.exists():
+                doublon = True
+        except ObjectDoesNotExist:
+            doublon = False
+        
+        # Si un doublon est détecté rien n'est créé un message est renvoyé vers l'utilisateur
+        if doublon == False:
+            # Création du dossier en lien avec les fichiers chargés
+            create_jonction = DossierUpload(
+                user=user_current, controle_qualite=id_qc, date=date
             )
-            name_file = f.name
-            create_suivi.save()
-            # Si le fichier chargé est une archive alors décompréssé
-            # Supprime l'archive à la fin
-            if name_file.find(".zip") != -1:
-                zipfile_save = zipfile.ZipFile(
-                    create_suivi.fichiers.path, mode="r"
+            create_jonction.save()
+            # Création dans la table suivi upload de
+            #chaque fichier chargé en lien avec le dossier
+            for f in filez:
+                create_suivi = SuiviUpload(
+                    user=user_current,
+                    etude=id_etude,
+                    id_patient=nomage_id,
+                    date_upload=date_now,
+                    date_examen=date,
+                    fichiers=f,
+                    dossier=create_jonction,
                 )
-                path = os.path.dirname(create_suivi.fichiers.path)
-                zipfile_save.extractall(path)
-                zipfile_save.close()
-                if os.path.exists(create_suivi.fichiers.path):
-                    os.remove(create_suivi.fichiers.path)
-        # Création de chaque étapes pour le patient chargé
-        for etape in id_etapes:
-            create_etape = JonctionEtapeSuivi.objects.create(
-                upload=create_jonction, etape=etape, etat=id_etape
+                name_file = f.name
+                create_suivi.save()
+                # Si le fichier chargé est une archive alors décompréssé
+                # Supprime l'archive à la fin
+                if name_file.find(".zip") != -1:
+                    zipfile_save = zipfile.ZipFile(
+                        create_suivi.fichiers.path, mode="r"
+                    )
+                    path = os.path.dirname(create_suivi.fichiers.path)
+                    zipfile_save.extractall(path)
+                    zipfile_save.close()
+                    if os.path.exists(create_suivi.fichiers.path):
+                        os.remove(create_suivi.fichiers.path)
+            # Création de chaque étapes pour le patient chargé
+            for etape in id_etapes:
+                create_etape = JonctionEtapeSuivi.objects.create(
+                    upload=create_jonction, etape=etape, etat=id_etape
+                )
+            var_url = "/form/"
+            message = messages.add_message(
+                request, messages.WARNING, "SUCCES - Vos données ont été chargées"
             )
-        var_url = "/form/"
-        message = messages.add_message(
-            request, messages.WARNING, "Vos données ont été chargées"
-        )
-        return redirect(var_url)
+            return redirect(var_url)
+        elif doublon == True:
+            var_url = "/form/"
+            message = messages.add_message(
+                request, messages.WARNING, "EREUR - Cet identifiant est déjà renseigné dans la base de donnée votre upload est annulé"
+            )
+            return redirect(var_url)
+
     form = UploadForm()
     # Charge les listes déroulantes
     request_utilisateur_protocole = (

@@ -5,3 +5,4 @@ data/
 *.sqlite3
 static
 htmlcov
+app_upload/settings.py

@@ -45,6 +45,7 @@ def gestion_documentaire(request):
         elif type == str(1):
             url_img = "bg-nw-protocole.jpg"
         id_etude = RefEtudes.objects.get(id__exact=etude)
+        print(id_etude)
         date_now = timezone.now()
         user_current = request.user
         filez = request.FILES.getlist("document")
