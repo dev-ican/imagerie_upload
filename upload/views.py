@@ -92,6 +92,7 @@ def formulaire(request):
         num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
         nomage_id = str(id_etude.etude.nom) + "_" + str(num_centre.numero) + "_" + str(nip)
         # Vérification de la présence d'un id identique
+        doublon = False
         try:
             search_doublon = SuiviUpload.objects.filter(id_patient__exact=nomage_id)
             if search_doublon.exists():
