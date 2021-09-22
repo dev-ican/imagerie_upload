@@ -9,7 +9,7 @@ $('#supprContact a[role="button"]').click(function(event) {
 	}
 
 
-	if (confirm("Cette entrée sera supprimé définitivement")) {
+	if (confirm("Cette entrée sera supprimée définitivement")) {
 		$.ajaxSetup({
     		beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -29,7 +29,7 @@ $('#supprContact a[role="button"]').click(function(event) {
 			document.location.reload(true);}
 	})
 	} else {
-		  window.alert("La suppréssion est annulée");
+		  window.alert("La suppression est annulée");
 		}
 	
 });

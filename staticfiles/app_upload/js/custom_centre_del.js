@@ -9,7 +9,7 @@ $('#supprCentre a[role="button"]').click(function(event) {
 	}
 
 
-	if (confirm("Cette entrée sera supprimé définitivement ainsi que tous les enregistrements qui lui sont liés")) {
+	if (confirm("Cette entrée sera supprimée définitivement ainsi que tous les enregistrements qui lui sont liés")) {
 		$.ajaxSetup({
     		beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -29,7 +29,7 @@ $('#supprCentre a[role="button"]').click(function(event) {
 			$('#ajax').html(response);}
 	})
 	} else {
-		  window.alert("La suppréssion est annulée");
+		  window.alert("La suppression est annulée");
 		}
 	
 });

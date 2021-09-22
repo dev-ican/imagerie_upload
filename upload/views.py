@@ -123,7 +123,7 @@ def formulaire(request):
                 create_suivi.save()
                 # Si le fichier chargé est une archive alors décompréssé
                 # Supprime l'archive à la fin
-                if name_file.find(".zip") != -1:
+                """if name_file.find(".zip") != -1:
                     zipfile_save = zipfile.ZipFile(
                         create_suivi.fichiers.path, mode="r"
                     )
@@ -131,7 +131,7 @@ def formulaire(request):
                     zipfile_save.extractall(path)
                     zipfile_save.close()
                     if os.path.exists(create_suivi.fichiers.path):
-                        os.remove(create_suivi.fichiers.path)
+                        os.remove(create_suivi.fichiers.path)"""
             # Création de chaque étapes pour le patient chargé
             for etape in id_etapes:
                 create_etape = JonctionEtapeSuivi.objects.create(
