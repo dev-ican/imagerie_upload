@@ -90,7 +90,14 @@ def formulaire(request):
         filez = request.FILES.getlist("upload")
 
         num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
-        nomage_id = str(id_etude.etude.nom) + "_" + str(num_centre.numero) + "_" + str(nip)
+        if len(str(num_centre.numero)) == 3 :
+            num_centre_val = str(num_centre.numero)
+        elif len(str(num_centre.numero)) == 2:
+            num_centre_val = "0" + str(num_centre.numero)
+        elif len(str(num_centre.numero)) == 1:
+            num_centre_val = "00" + str(num_centre.numero)
+        
+        nomage_id = str(id_etude.etude.nom) + "_" + num_centre_val + "_" + str(nip)
         # Vérification de la présence d'un id identique
         doublon = False
         try:
