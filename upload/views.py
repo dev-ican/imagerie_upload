@@ -14,6 +14,7 @@ from .models import (
     DossierUpload, JonctionEtapeSuivi, JonctionUtilisateurEtude,
     RefControleQualite, RefEtapeEtude, RefEtatEtape, RefTypeAction,
     SuiviDocument, SuiviUpload, log, RefInfocentre)
+from django.views.decorators.csrf import csrf_exempt,csrf_protect
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -59,6 +60,7 @@ def contact(request):
 
 
 @login_required(login_url="/auth/auth_in/")
+@csrf_exempt
 def formulaire(request):
     ''' Charge la page du formulaire de chargement.'''
     date_now = timezone.now()
