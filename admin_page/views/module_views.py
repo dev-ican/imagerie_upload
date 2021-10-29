@@ -319,7 +319,7 @@ def j_serial(o):
     )
 
 
-def del_auth(type_tab, id_search, req):
+def del_auth(type_tab, id_search, req,user_info):
     """Ce module permet de supprimer une autorisation."""
     user_current = req.user
     message = ""
@@ -345,6 +345,7 @@ def del_auth(type_tab, id_search, req):
             user_etude = JonctionUtilisateurEtude.objects.get(
                 id__exact=id_search
             ).delete()
+            user_etude.save()
             message = "Suppression des autorisations ont été appliquées"
         else:
             message = (
@@ -353,20 +354,22 @@ def del_auth(type_tab, id_search, req):
                 + " document(s) trouvés"
             )
     elif type_tab == "centre":
-        verif = RefInfocentre.objects.filter(id=id_search)
-        if not verif.exists():
+        user_type = User.objects.get(pk=user_info)
+        verif = RefInfocentre.objects.get(id=id_search)
+        print(user_type.username,user_info,verif)
+        if verif:
             # Enregistrement du log--------------------------------
             # -----------------------------------------------------
             nom_documentaire = (
                 " a supprimé l'autorisation : "
-                + user_etude.etude.nom
+                + verif.nom
                 + " de l'utilisateur "
                 + user_current.username
             )
             suppr_log(req, nom_documentaire)
             # ----------------------------------------------------
             # ----------------------------------------------------
-            verif.user.remove(id_search)
+            verif.user.remove(user_type)
             message = (
                 "Le centre n'est plus lié à cet utilisateur"
             )

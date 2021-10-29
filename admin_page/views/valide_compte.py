@@ -29,6 +29,7 @@ from .module_log import (
 
 @login_required(login_url="/auth/auth_in/")
 def auth_compte(request):
+    message = ""
     inactive_user = User.objects.filter(is_active=False).select_related('Compte_Valider')
     valide_user = User.objects.filter(is_active=True).select_related('Compte_Valider')
 

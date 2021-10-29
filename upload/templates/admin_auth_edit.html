@@ -16,6 +16,7 @@
 {% endblock %}
 {% block aside_1 %}
 <h4><p class="text-white-75 font-weight-light mb-5">Les études liées à l'utilisateur : {{user_info.username}}</p></h4>
+<h5 class="text-warning" id='msgEtape'>{{ messages }}</h5>
 <h6><p class="text-warning font-weight-light mb-5" id="message"></p></h6>
 <table class="table table-info table-responsive-lg">
   <thead class="thead-light">
@@ -30,7 +31,7 @@
       <tr>
         <td>{{ item.etude.nom }}</td>
         <td>{{ item.etude.date_ouverture }}</td>
-        <td value="{{user.id}}" name="etude"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="{{item.id}}">Supprimer l'attribution</button></td>
+        <td value="{{user.id}}" name="etude"><button role="button" class="btn btn-sm btn-outline-secondary" name="supprEtudeAuth" value="{{item.id}}">Supprimer l'attribution</button></td>
       </tr>
     {% endfor %}
   </tbody>
@@ -53,7 +54,7 @@
         <td>{{ item.nom }}</td>
         <td>{{ item.numero }}</td>
         <td>{{ item.date_ajout }}</td>
-        <td value="{{user.id}}" name="centre"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="{{item.id}}">Supprimer l'attribution</button></td>
+        <td value="{{user_info.id}}" name="centre"><button role="button" class="btn btn-sm btn-outline-secondary" name="clikable" value="{{item.id}}">Supprimer l'attribution</button></td>
       </tr>
     {% endfor %}
   </tbody>
