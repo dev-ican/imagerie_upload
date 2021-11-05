@@ -6,7 +6,7 @@ from django.utils import timezone
 from upload.models import (DossierUpload, JonctionEtapeSuivi,
                            JonctionUtilisateurEtude, RefEtapeEtude, RefEtudes,
                            RefInfocentre, SuiviUpload, ValideCompte)
-
+from configparser import ConfigParser
 from .module_log import suppr_log
 from datetime import datetime
 from django.utils import timezone
@@ -226,7 +226,27 @@ def send_mail(user_send, compte, to_mail, origin):
         corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.80/admin_page/authacc \n"
         corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
         corps += "\n Système app upload"
-    email = EmailMessage(title, corps, 'si_ican@ihuican.onmicrosoft.com', to=to_mail)
+    email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)
+    email.send()
+
+def send_rgpd_fail(user_stock, user_suppr, nip, to_mail):
+    ''' Gère l'envois de courriel lors de la suppression de donner après une indication de QC refused RGPD'''
+    # user_stock représente l'utilisateur ayant déposé le patient
+    # user_suppr représente l'utilisateur supprimant les données
+    # nip représente le code utilisateur
+    config = ConfigParser()		
+    config.read("texte_app.ini",encoding="utf8")#read("texte_app.ini")
+    mail_txt = config['mod_view']
+
+    to_mail = [to_mail]
+    title = str(nip) + " " + mail_txt["title_rgpd"] + " " + str(user_suppr)
+    corps = str(mail_txt["corp_add_a"]) + str("\n\n") + str(mail_txt["corp_add_b"]) + " " + str(nip) + " ne respectent pas les régles RGPD qui ont cours à l'ICAN. \n"
+    corps += "\n Cette indication entraine la suppression des données pour ce patient sur le serveur. Cette suppression fut validé par :" + str(user_suppr)
+    corps += "\n\n Si vous avez des questions merci de vous rapprocher de l'utilisateur ayant valider cette supression. \n"
+    corps += "\n\n Ceci est un courriel automatique merci de ne pas y répondre"
+    corps += "\n Système app upload"
+
+    email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)
     email.send()
 
 def nw_password(

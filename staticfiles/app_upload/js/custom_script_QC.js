@@ -55,17 +55,30 @@ $('td[class="click_qc"]').one("click", function(){
 //---------------------------------------------------------------------------------------
 
 function change_qc(event) {
+	let suppr_data = false
+	let accept_QC_RGPD = false
 	var url_etude = "/admin_page/upfiles/majQC";
 	var etat_id = $(this).children("option:selected").val();
 	var jonction_id = $(this).parent('td').attr('name');
 	var value_etude = $('select[name="select_etude"]').children("option:selected").val();
+	const url_research = "/admin_page/upfiles/"
 
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
 	function csrfSafeMethod(method) {
 		// these HTTP methods do not require CSRF protection
 		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	}
+	};
+	
+	console.log(etat_id)
+
+	if (etat_id === '4') {
+		accept_QC_RGPD = confirm("En indiquant un manquement RGPD, toutes les données associées seront supprimées.");
+		accept_QC_RGPD ? suppr_data = true : suppr_data = false; 
+	} else {
+		accept_QC_RGPD = true;
+		suppr_data = false;
+	};
 
 	$.ajaxSetup({
 		beforeSend: function(xhr, settings) {
@@ -75,16 +88,23 @@ function change_qc(event) {
 	}
 	});
 
-	$.ajax({
-		url : url_etude + "/",
-		data : {
-			etat_id : etat_id,
-			jonction : jonction_id,
-			etude_id : value_etude
-		},
-		type : 'GET',
-		success: function(response, status, XHR){
-			console.log("SUCCESS");
-			$('#ajax').html(response);}
-	})
+	console.log(accept_QC_RGPD,suppr_data);
+	if (accept_QC_RGPD) {
+		$.ajax({
+			url : url_etude + "/",
+			data : {
+				etat_id : etat_id,
+				jonction : jonction_id,
+				etude_id : value_etude,
+				data_suppr : suppr_data
+			},
+			type : 'GET',
+			success: function(response, status, XHR){
+				console.log("SUCCESS");
+				$('#ajax').html(response);
+				$('body').load(url_research, function(response, status, XHR){});}
+		})
+	} else {
+		$('body').load(url_research, function(response, status, XHR){})
+	};
 };

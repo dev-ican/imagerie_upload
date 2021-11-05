@@ -23,7 +23,7 @@ from upload.models import (
     SuiviUpload,
 )
 
-from .module_log import edition_log, information_log
+from .module_log import edition_log, information_log, suppr_log
 from .module_views import (
     dict_upload,
     etude_tris,
@@ -31,6 +31,7 @@ from .module_views import (
     gestion_etude_tris,
     info_etape,
     nom_etape_tris,
+    send_rgpd_fail,
 )
 
 
@@ -56,7 +57,6 @@ def upload_tris(request, id_tris):
             var_etape = gestion_etape(
                 nom_etape, infoetape, nbr_etape
             )
-            print(var_etape)
             dictupload["etape_etude"] = var_etape[1]
             dictupload["error"] = var_etape[0]
             tab_list.append(dictupload)
@@ -75,7 +75,6 @@ def upload_tris(request, id_tris):
     information_log(request, nom_documentaire)
     # ---------------------------------------------
     # ---------------------------------------------
-    print(tab_list)
     return render(
         request,
         "admin_page_upload.html",
@@ -119,7 +118,6 @@ def upload_mod(request):
 @login_required(login_url="/auth/auth_in/")
 def upload_mod_qc(request):
     """Appel ajax lors du double clic sur une case du tableau.
-
     Ce module renvois la liste des états du controle qualité et
     l'intégre dans la cellule ou l'utilisateur à cliqué
     """
@@ -182,32 +180,57 @@ def upload_maj(request):
 @login_required(login_url="/auth/auth_in/")
 def upload_maj_qc(request):
     """Appel ajax lors du changement d'état d'un controle qualité.
-
     Ce module modifie l'état dans la base de donnée puis renvois vers la
     page pour afficher la modification
     """
     val_jonction = request.GET.get("jonction")
     val_etat = request.GET.get("etat_id")
     val_etude = request.GET.get("etude_id")
+    suppr_data = request.GET.get("data_suppr")
     id_log = SuiviUpload.objects.filter(
         dossier__id__exact=val_jonction
     )[:1]
-    qc = RefControleQualite.objects.get(id__exact=val_etat)
-    DossierUpload.objects.filter(id__exact=val_jonction).update(
-        controle_qualite=qc
-    )
+    user_current = request.user
+
+    print(suppr_data)
+    if suppr_data == "true":
+        dos_upload = DossierUpload.objects.get(id__exact=val_jonction)
+        files_upload = SuiviUpload.objects.filter(dossier__id=dos_upload.id)
+        path_name = files_upload[0].fichiers
+        dir_name = os.path.dirname("data/" + str(path_name))
+        fichiers = [f for f in os.listdir(dir_name) if os.path.isfile(os.path.join(dir_name, f))]
+        for item in fichiers:
+            os.remove(str(dir_name) + "/" + str(item))
+        os.rmdir(dir_name)
+        # Enregistrement du log-----------------
+        # --------------------------------------
+        nom_documentaire = (
+            " a supprimé les données en indiquant un manquement à la RGPD pour : "
+            + id_log[0].id_patient
+        )
+        suppr_log(request, nom_documentaire)
+        # --------------------------------------
+        # --------------------------------------
+        send_rgpd_fail(id_log[0].user.username, user_current.username, id_log[0].id_patient, id_log[0].user.email)
+        files_upload.delete()
+        dos_upload.delete()
+    else:
+        qc = RefControleQualite.objects.get(id__exact=val_etat)
+        DossierUpload.objects.filter(id__exact=val_jonction).update(
+            controle_qualite=qc
+        )
+        # Enregistrement du log-----------------
+        # --------------------------------------
+        nom_documentaire = (
+            " a modifié l'état du controle qualité pour : "
+            + id_log[0].id_patient
+            + " la nouvelle étape est : "
+            + qc.nom
+        )
+        edition_log(request, nom_documentaire)
+        # --------------------------------------
+        # --------------------------------------
     var_url = "/admin_page/upfiles/tris/" + str(val_etude) + "/"
-    # Enregistrement du log-----------------
-    # --------------------------------------
-    nom_documentaire = (
-        " a modifié l'état du controle qualité pour : "
-        + id_log[0].id_patient
-        + " la nouvelle étape est : "
-        + qc.nom
-    )
-    edition_log(request, nom_documentaire)
-    # --------------------------------------
-    # --------------------------------------
     return redirect(var_url)
 
 

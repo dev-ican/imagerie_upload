@@ -69,7 +69,10 @@ class Command(BaseCommand):
                 id=2, nom="QC passed")
             qc.save()
             qc = RefControleQualite.objects.create(
-                id=3, nom="QC refused")
+                id=3, nom="QC refused - Technical")
+            qc.save()
+            qc = RefControleQualite.objects.create(
+                id=4, nom="QC refused - GDPR")
             qc.save()
         
         #Renseigne les référence pour la validation d'un compte
