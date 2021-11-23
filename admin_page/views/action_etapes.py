@@ -192,16 +192,21 @@ def upload_maj_qc(request):
     )[:1]
     user_current = request.user
 
-    print(suppr_data)
     if suppr_data == "true":
         dos_upload = DossierUpload.objects.get(id__exact=val_jonction)
         files_upload = SuiviUpload.objects.filter(dossier__id=dos_upload.id)
         path_name = files_upload[0].fichiers
+        path_pic = os.getcwd() + "\data\images\\" + files_upload[0].etude.etude.nom
+        path = str(path_pic) + "\\" + str(files_upload[0].id_patient)
         dir_name = os.path.dirname("data/" + str(path_name))
         fichiers = [f for f in os.listdir(dir_name) if os.path.isfile(os.path.join(dir_name, f))]
+        image_irm = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         for item in fichiers:
             os.remove(str(dir_name) + "/" + str(item))
         os.rmdir(dir_name)
+        for object in image_irm:
+            os.remove(str(path) + "/" + str(object))
+        os.rmdir(path)
         # Enregistrement du log-----------------
         # --------------------------------------
         nom_documentaire = (

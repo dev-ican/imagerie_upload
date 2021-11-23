@@ -68,18 +68,24 @@ def formulaire(request):
     liste_protocole = []
     # Si le formulaire est envoyé
     if request.method == "POST":
-        # Renseignement de la table de Log
-        type_action = RefTypeAction.objects.get(pk=4)
-        log.objects.create(
-            user=user_current,
-            action=type_action,
-            date=date_now,
-            info="Utilisation du formulaire pour envois de donnée",
-        )
         # Récupération des données du formulaire
         etude = request.POST["etudes"]
         nip = request.POST["nip"]
         date = request.POST["date_irm"]
+        # --------------------------------------
+        # --------------------------------------
+        # Renseignement de la table de Log
+        type_action = RefTypeAction.objects.get(pk=4)
+        info_str = "Utilisation du formulaire pour envois de donnée pour l'ID patient : " + str(nip)
+        log_info = log(
+            user=user_current,
+            action=type_action,
+            date=date_now,
+            info= str(info_str),
+        )
+        log_info.save()
+        # ---------------------------------------
+        # ---------------------------------------
         id_etude = JonctionUtilisateurEtude.objects.get(
             id__exact=etude
         )
@@ -131,16 +137,19 @@ def formulaire(request):
                 name_file = f.name
                 create_suivi.save()
                 # Si le fichier chargé est une archive alors décompréssé
-                # Supprime l'archive à la fin
-                """if name_file.find(".zip") != -1:
+                # MODIF 23112021 : Le fichier est décompréssé dans un dossier images hébergé dans Data
+                # Medis doit aller chercher les nouveaux patient ainsi décompréssé dans se dossier
+                if name_file.find(".zip") != -1:
                     zipfile_save = zipfile.ZipFile(
                         create_suivi.fichiers.path, mode="r"
                     )
-                    path = os.path.dirname(create_suivi.fichiers.path)
+                    path_save = os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
+                    path = str(path_save) + "\\" + str(create_suivi.id_patient)
+                    os.makedirs(path)
                     zipfile_save.extractall(path)
                     zipfile_save.close()
-                    if os.path.exists(create_suivi.fichiers.path):
-                        os.remove(create_suivi.fichiers.path)"""
+                    #if os.path.exists(create_suivi.fichiers.path):
+                        #os.remove(create_suivi.fichiers.path)
             # Création de chaque étapes pour le patient chargé
             for etape in id_etapes:
                 create_etape = JonctionEtapeSuivi.objects.create(
@@ -158,6 +167,7 @@ def formulaire(request):
             )
             return redirect(var_url)
 
+    list_log = SuiviUpload.objects.filter(user=user_current.id)
     form = UploadForm()
     # Charge les listes déroulantes
     request_utilisateur_protocole = (
@@ -171,4 +181,4 @@ def formulaire(request):
     liste_protocole.append((0, "Séléctionner une étude"))
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
-    return render(request, "V1_FORMULAIRE.html", {"form": form})
+    return render(request, "V1_FORMULAIRE.html", {"form": form, "log_upload":list_log})

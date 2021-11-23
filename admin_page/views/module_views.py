@@ -12,6 +12,8 @@ from datetime import datetime
 from django.utils import timezone
 from django.core.mail import EmailMessage
 
+import ast
+
 def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape):
     """Ce module permet de ramener le nom de l'étape Si il y a une erreur,
     c'est indiqué à la place de l'étape."""
@@ -197,7 +199,6 @@ def nom_etape_tris(etude_change):
     dict_etape_nom = []
 
     for nom in nom_etape:
-        print(nom)
         dict_etape_nom.append(nom.nom)
     return dict_etape_nom
 
@@ -237,14 +238,19 @@ def send_rgpd_fail(user_stock, user_suppr, nip, to_mail):
     config = ConfigParser()		
     config.read("texte_app.ini",encoding="utf8")#read("texte_app.ini")
     mail_txt = config['mod_view']
+    list_corp = ast.literal_eval(config.get("mod_view", "corp_rgpd"))
 
     to_mail = [to_mail]
     title = str(nip) + " " + mail_txt["title_rgpd"] + " " + str(user_suppr)
-    corps = str(mail_txt["corp_add_a"]) + str("\n\n") + str(mail_txt["corp_add_b"]) + " " + str(nip) + " ne respectent pas les régles RGPD qui ont cours à l'ICAN. \n"
-    corps += "\n Cette indication entraine la suppression des données pour ce patient sur le serveur. Cette suppression fut validé par :" + str(user_suppr)
-    corps += "\n\n Si vous avez des questions merci de vous rapprocher de l'utilisateur ayant valider cette supression. \n"
-    corps += "\n\n Ceci est un courriel automatique merci de ne pas y répondre"
-    corps += "\n Système app upload"
+    corps = str(list_corp[0]) + \
+        str(list_corp[1]) + \
+        str(nip) + \
+        str(list_corp[2]) + \
+        str(list_corp[3]) + \
+        str(list_corp[4]) + str(user_suppr) + "\n" + \
+        str(list_corp[5]) + "\n\n" + \
+        str(list_corp[6]) + "\n\n" + \
+        str(list_corp[7])
 
     email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)
     email.send()
@@ -376,7 +382,6 @@ def del_auth(type_tab, id_search, req,user_info):
     elif type_tab == "centre":
         user_type = User.objects.get(pk=user_info)
         verif = RefInfocentre.objects.get(id=id_search)
-        print(user_type.username,user_info,verif)
         if verif:
             # Enregistrement du log--------------------------------
             # -----------------------------------------------------
