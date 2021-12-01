@@ -2,7 +2,7 @@
 {% load bootstrap4 %}
 
 <nav class="navbar navbar-expand-md">
-    <div class="container">
+    <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -22,6 +22,7 @@
                     <li><a name="administration" href="{% url 'admin' %}">Administration</a></li>
                 {% endif %}
                 <li><a href="{% url 'contact_gestion' %}">Contacts</a></li>
+                <li><a href="{% url 'compte' %}">Compte</a></li>
                 <li><a class="btn btn-blue" href="{% url 'logout' %}">Log-Out</a></li>
             </ul>
         </div>

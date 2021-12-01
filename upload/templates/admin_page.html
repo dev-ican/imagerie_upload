@@ -2,6 +2,33 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_two %}
+<h2><p class="text-white-75 font-weight-light mb-5" name="titre_graphique">Les derniers éléments chargés</p></h2>
+<div class="row-fluid">
+  <table class="table table-striped table-bordered" 
+  data-toggle="table" 
+  data-pagination="true"
+  data-url="{{json}}"
+  cellspacing="0" 
+  widht="100%">
+      <thead>
+      <tr>
+          <th data-field="nip">NIP</th>
+          <th data-field="examen">DATE EXAMEN</th>
+          <th data-field="upload">DATE UPLOAD</th>
+          <th data-field="username">USERNAME</th>
+      </tr>
+      </thead>
+      <tbody>
+          {% for item in list_json %}
+          <tr>
+              {% for object in item %}
+                  <th scope="row">{{ object }}</th>
+              {% endfor %}
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
 <h2><p class="text-white-75 font-weight-light mb-5" name="titre_graphique">Graphique d'utilisation et de suivi des étapes</p></h2>
 <div class="row col-12">
 {% for key,item in nbr_etat.items %}

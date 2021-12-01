@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 
+import idlelib
 import json
+from os.path import isdir
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
+from datetime import datetime
 
-from upload.models import (
-    DossierUpload,
-    JonctionEtapeSuivi,
-    RefEtatEtape,
-    RefEtudes,
-    SuiviUpload,
-)
+from upload.models import (DossierUpload, JonctionEtapeSuivi, RefEtapeEtude,
+                           RefEtatEtape, RefEtudes, SuiviUpload)
 
 from .module_log import information_log
 
@@ -78,6 +76,30 @@ def admin_page(request):
     information_log(request, nom_documentaire)
     # --------------------------------------------------------
     # --------------------------------------------------------
+    tab_list = {}
+    list_tab = []
+    # Savoir si des étape se nomme : téléchargement, download
+    list_nom = ["téléchargement","download","Téléchargement","Download", "Upload"]
+    list_filter = RefEtapeEtude.objects.filter(nom__in=list_nom)
+    for item in list_filter:
+        id_etape = item.id
+        jonc_dossier = JonctionEtapeSuivi.objects.filter(etape=id_etape).filter(etat=1)
+        for object in jonc_dossier:
+            dict_object = {}
+            dossier_result = SuiviUpload.objects.filter(dossier=object.upload.id)
+            dossier_first = dossier_result[0]
+            date_ex =datetime.strftime(dossier_first.date_examen,'%Y-%m-%d')
+            date_up = datetime.strftime(dossier_first.date_upload,'%Y-%m-%d')
+            dict_object[dossier_first.id_patient] = {
+            "id": dossier_first.id,
+            "nip": dossier_first.id_patient,
+            "date_exam": date_ex,
+            "date_upload": date_up,
+            "user": dossier_first.user.username,
+            }
+            list_tab.append([dossier_first.id_patient,date_ex,date_up,dossier_first.user.username,])
+    creation_json = json.dumps(tab_list)
+
     return render(
-        request, "admin_page.html", {"nbr_etat": dict_etat}
+        request, "admin_page.html", {"nbr_etat": dict_etat, "list_json":list_tab}
     )

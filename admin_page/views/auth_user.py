@@ -7,13 +7,13 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from admin_page.forms import FormsAutorisation
+from admin_page.forms import FormsAutorisation, FormPwdChange
 from upload.models import JonctionUtilisateurEtude, RefInfocentre, ValideCompte
 from django.contrib import messages
 
-from .module_admin import choice_centre, choice_etude
+from .module_admin import choice_centre, choice_etude, check_mdp
 from .module_log import edition_log
-from .module_views import del_auth, j_serial, jonc_centre
+from .module_views import del_auth, j_serial, jonc_centre, pwd_nw
 
 # Gère la partie autorisation
 # --------------------------------------------------------------------------------------
@@ -147,3 +147,25 @@ def auth_del(request):
             json.dumps(creation_json),
             content_type="application/json",
         )
+
+@login_required(login_url="/auth/auth_in/")
+def compte_user(request):
+    user_current = request.user
+    if request.method == "POST":
+        mail = request.POST["email"]
+        mdp_o = request.POST["nw_mdp"]
+        mdp_t = request.POST["nw_mdp_second"]
+        verif_pwd = check_mdp(mdp_o,mdp_t)
+        pwd_nw(verif_pwd, mdp_o, mail, user_current)
+
+    info = {
+            "email": user_current.email,
+        }
+    form = FormPwdChange(info)
+    return render(
+        request,
+        "V1_COMPTE.html",
+        {
+            "form": form,
+        },
+    )

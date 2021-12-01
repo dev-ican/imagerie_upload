@@ -315,6 +315,13 @@ def edit_password(
             user_info.is_staff = False
     user_info.save()
 
+def pwd_nw(check_mdp, pass_first, email, user_info):
+    """Ce module gère l'édition du mot de passe."""
+    if check_mdp:
+        user_info.email = email
+        user_info.set_password(pass_first)
+        user_info.save()
+
 
 def jonc_centre(
     user_etude, etude, user_info, user_centre, centre

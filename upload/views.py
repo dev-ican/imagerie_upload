@@ -168,6 +168,12 @@ def formulaire(request):
             return redirect(var_url)
 
     list_log = SuiviUpload.objects.filter(user=user_current.id)
+    # Charge le log de chargement de l'utilisateur actuel
+    list_chargement = []
+    for object in list_log:
+        nip_chargement = [object.date_examen,object.etude.etude.nom,object.id_patient]
+        list_chargement.append(nip_chargement)
+
     form = UploadForm()
     # Charge les listes déroulantes
     request_utilisateur_protocole = (
@@ -181,4 +187,4 @@ def formulaire(request):
     liste_protocole.append((0, "Séléctionner une étude"))
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
-    return render(request, "V1_FORMULAIRE.html", {"form": form, "log_upload":list_log})
+    return render(request, "V1_FORMULAIRE.html", {"form": form, "log_upload":list_chargement})

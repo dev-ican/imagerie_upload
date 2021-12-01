@@ -1,0 +1,53 @@
+{% extends "V1_BASES_FORMULAIRE.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block preloader %}
+<img src="{% static 'V1/img/loader.gif' %}" alt="Preloader image">
+{% endblock %}
+{% block intro %}
+<div class="container">
+    <div class="table">
+        <div style="margin-top: 20%;">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div class="row text-center">
+                        <div class="container">
+                          <h2 class="display-3 light white" name='titre_form'>Modification de vos informations</h2>
+                          {% if messages %}
+                            {% for message in messages %}
+                                {% if message|first in 'SUCCES' %}
+                                    <h5 class="text-success" id='msgEtape'>{{ message }}</h5>
+                                {% else %}
+                                    <h5 class="text-danger" id='msgEtape'>{{ message }}</h5>
+                                {% endif %}
+                            {% endfor %}
+                          {% endif %}
+                        </div>
+                    </div>
+                        <div class="row text-center border-top border-bottom">
+                            <div class="col-xl-9 mx-auto border-top border-primary" style="margin-top: 10px">
+                                <div class="cta-inner text-center" >
+                                    <form action="" style="padding-top: 15px;" method="post" class="was-validated login100-form validate-form" enctype="multipart/form-data" name="">
+                                        <div class="wrap-input100 validate-input m-b-26">
+                                            <ul>
+                                                {% csrf_token %}
+                                                {% bootstrap_form form layout='horizontal' %}
+                                            </ul>
+                                        </div>
+                                        {% buttons %}
+                                            <input type="submit" class="btn btn-primary" name="login"></input>
+                                        {% endbuttons %}
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block section %}
+<div class="cut cut-top"></div>
+{% endblock %}

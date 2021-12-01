@@ -39,4 +39,5 @@ urlpatterns = [
 	re_path(r'^upfiles/downAll/([0-9]+)/',views.down_all, name='donwnload_all'),
 	re_path(r'^upfiles/walk_up/',views.walk_up, name='walk_up'),
 	re_path(r'^upfiles/walk_return/',views.walk_down, name='walk_return'),
+	path('compte/', views.compte_user, name='compte'),
 ]

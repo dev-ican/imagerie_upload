@@ -74,6 +74,38 @@ class FormCentreEdit(forms.Form):
         )
     )
 
+class FormPwdChange(forms.Form):
+    """Formulaire de modification des mots de passes"""
+
+    email = forms.EmailField(
+        label="Courriel de l'utilisateur",
+        help_text='',
+        max_length=200,
+        validators=[EmailValidator()],
+    )
+    nw_mdp = forms.CharField(
+        label="Nouveau Mot de passe",
+        widget=forms.PasswordInput,
+        max_length=100,
+        validators=[
+            RegexValidator(
+                regex="([a-zA-Z]){4,12}([0-9]){2,12}",
+                message="Mot de passe invalide",
+            )
+        ],
+    )
+    nw_mdp_second = forms.CharField(
+        label="Répéter le mot de passe",
+        widget=forms.PasswordInput,
+        max_length=100,
+        validators=[
+            RegexValidator(
+                regex="([a-zA-Z]){4,12}([0-9]){2,12}",
+                message="Mot de passe invalide",
+            )
+        ],
+    )
+
 class FormsUser(forms.Form):
     """ Formulaire gérant les utilisateurs """
 
