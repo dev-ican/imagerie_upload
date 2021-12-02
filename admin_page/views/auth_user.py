@@ -44,7 +44,8 @@ def auth_edit(request, id_etape):
         user_block = RefInfocentre.objects.filter(user__id=id_etape)
         user_info = User.objects.get(pk=id_etape)
         if request.method == "POST":
-            if len(user_block) < 1:
+            centre = request.POST["centre"]
+            if len(user_block) < 1 or centre == "0":
                 form = FormsAutorisation()
                 etude = request.POST["etude"]
                 centre = request.POST["centre"]
