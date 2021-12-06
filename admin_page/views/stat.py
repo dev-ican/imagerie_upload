@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import idlelib
+
 import json
 from os.path import isdir
 
@@ -23,6 +23,7 @@ from .module_log import information_log
 @login_required(login_url="/auth/auth_in/")
 def admin_page(request):
     """Permet d'afficher la page de statistique."""
+    user_current = request.user
     dict_etat = {}
     list_etude = RefEtudes.objects.all()
     list_etat = RefEtatEtape.objects.all()
@@ -101,5 +102,5 @@ def admin_page(request):
     creation_json = json.dumps(tab_list)
 
     return render(
-        request, "admin_page.html", {"nbr_etat": dict_etat, "list_json":list_tab}
+        request, "V1_ADMIN_STAT.html", {"nbr_etat": dict_etat, "list_json":list_tab, 'title_page':'Accueil Administration de l\'application Upload'}
     )
