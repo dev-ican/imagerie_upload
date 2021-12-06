@@ -102,5 +102,5 @@ def admin_page(request):
     creation_json = json.dumps(tab_list)
 
     return render(
-        request, "V1_ADMIN_STAT.html", {"nbr_etat": dict_etat, "list_json":list_tab, 'title_page':'Accueil Administration de l\'application Upload'}
-    )
+        request, "admin_page.html", {"nbr_etat": dict_etat, "list_json":list_tab, 'title_page':'Accueil Administration de l\'application Upload'}
+    ) #V1_ADMIN_STAT.html
