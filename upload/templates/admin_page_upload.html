@@ -16,9 +16,9 @@
     <div class="col-auto my-1">
       {% csrf_token %}
       <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Classer par etude</label>
-      <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+      <select name="select_centre" class="custom-select mr-sm-2" id="inlineFormCustomSelect">
         {% for centre in str_centre %}
-        <option value="{{centre.id}}">{{centre.nom}}</option>
+        <option name="select_{{centre.nom}}" value="{{centre.id}}">{{centre.nom}}</option>
         {% endfor %}
       </select>
     </div>
