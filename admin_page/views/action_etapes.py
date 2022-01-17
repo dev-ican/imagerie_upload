@@ -196,8 +196,8 @@ def upload_maj_qc(request):
         dos_upload = DossierUpload.objects.get(id__exact=val_jonction)
         files_upload = SuiviUpload.objects.filter(dossier__id=dos_upload.id)
         path_name = files_upload[0].fichiers
-        path_pic = os.getcwd() + "\data\images\\" + files_upload[0].etude.etude.nom
-        path = str(path_pic) + "\\" + str(files_upload[0].id_patient)
+        path_pic = "/home/admin_ican/images" #os.getcwd() + "\data\images\\" + files_upload[0].etude.etude.nom
+        path = str(path_pic) + "/" + str(files_upload[0].id_patient)
         dir_name = os.path.dirname("data/" + str(path_name))
         fichiers = [f for f in os.listdir(dir_name) if os.path.isfile(os.path.join(dir_name, f))]
         image_irm = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]

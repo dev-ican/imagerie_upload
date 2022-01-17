@@ -143,8 +143,8 @@ def formulaire(request):
                     zipfile_save = zipfile.ZipFile(
                         create_suivi.fichiers.path, mode="r"
                     )
-                    path_save = os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
-                    path = str(path_save) + "\\" + str(create_suivi.id_patient)
+                    path_save = "/home/admin_ican/images/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
+                    path = str(path_save) + "/" + str(create_suivi.id_patient)
                     os.makedirs(path)
                     zipfile_save.extractall(path)
                     zipfile_save.close()
