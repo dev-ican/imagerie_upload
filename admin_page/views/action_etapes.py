@@ -45,7 +45,6 @@ def upload_tris(request, id_tris):
 	dict_nbr = {}
 	val_centre = request.POST.get("centre")
 	etude_change = RefEtudes.objects.get(id=id_tris)
-	print(val_centre,id_tris)
 	if val_centre != "0" and val_centre is not None:
 		user_id = User.objects.filter(refinfocentre__id=val_centre)
 		dossier_all = SuiviUpload.objects.filter(
@@ -53,7 +52,6 @@ def upload_tris(request, id_tris):
 		).filter(user__in=user_id).distinct("dossier")
 	else:
 		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tris).distinct("dossier")
-		print(dossier_all)
 	if dossier_all.exists():
 		nbr_etape = RefEtapeEtude.objects.filter(
 			etude=etude_change.id
@@ -154,7 +152,6 @@ def upload_maj(request):
 	"""
 	val_jonction = request.GET.get("jonction")
 	val_etat = request.GET.get("etat_id")
-	print(val_etat)
 	val_etude = request.GET.get("etude_id")
 	id_log = JonctionEtapeSuivi.objects.get(
 		id__exact=val_jonction
