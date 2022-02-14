@@ -56,7 +56,7 @@ def admin_up(request):
             dictupload = dict_upload(dictupload, files)
             infoetape = info_etape(files)
             var_etape = gestion_etape(
-                nometape, infoetape, nbr_etape
+                nometape, infoetape, nbr_etape,files,etuderecente
             )
             if len(var_etape) == 2:
                 dictupload["etape_etude"] = var_etape[1]
@@ -73,18 +73,6 @@ def admin_up(request):
         gestion_info = gestion_etude_recente(
             etuderecente, dossier_all, list_centre
         )
-        '''return render(
-                request,
-                "admin_page_upload.html",
-                {
-                    "resultat": tab_list,
-                    "dict_nbr": dict_nbr,
-                    "str_etude": gestion_info[1],
-                    "str_centre": gestion_info[0],
-                    "taille": 0,
-                    "debug": infoetape,
-                },
-        )'''
 
     nbr_entrée = len(tab_list)
     # Enregistrement du log-----------------------------
@@ -93,6 +81,7 @@ def admin_up(request):
     information_log(request, nom_documentaire)
     # --------------------------------------------------
     # --------------------------------------------------
+    # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
     return render(
         request,
         "admin_page_upload.html",
@@ -103,6 +92,7 @@ def admin_up(request):
             "str_centre": gestion_info[0],
             "taille": nbr_entrée,
             "debug" : dict_nbr,
+            "title_page":"Administration des étapes"
         },
     )
 

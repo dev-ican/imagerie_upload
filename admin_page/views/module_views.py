@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from upload.models import (DossierUpload, JonctionEtapeSuivi,
                            JonctionUtilisateurEtude, RefEtapeEtude, RefEtudes,
-                           RefInfocentre, SuiviUpload, ValideCompte)
+                           RefInfocentre, SuiviUpload, ValideCompte,JonctionEtapeSuivi,RefEtatEtape)
 from configparser import ConfigParser
 from .module_log import suppr_log
 from datetime import datetime
@@ -14,25 +14,29 @@ from django.core.mail import EmailMessage
 
 import ast
 
-def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape):
+def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude_select):
     """Ce module permet de ramener le nom de l'étape Si il y a une erreur,
     c'est indiqué à la place de l'étape."""
     if (
         len(dict_etape_nom) == 0
         or len(dict_etape_value) != nbr_etape
     ):
-        if len(dict_etape_value) != nbr_etape:
-            nw_dict = {
-                "Aucune_etape": "Une erreur sur les étapes lors de l'enregistrement de ces données ont été relevé"
-            }
-            error = True
-        else:
-            nw_dict = {
-                "Aucune_etape": "Aucune étape enregistrée dans les bases de données"
-            }
-            error = True
+        element_etape = RefEtapeEtude.objects.filter(
+            etude=etude_select.etude.etude
+        )
+        for item_info_etape in element_etape:
+            nbr_etat = RefEtatEtape.objects.get(id=1)
+            id_dossierupload = DossierUpload.objects.get(id=id_dossier.dossier.id)
+            check_etape = JonctionEtapeSuivi.objects.filter(upload=id_dossierupload.id).filter(etape=item_info_etape.id)
+            if not check_etape.exists():
+                nw_etape = JonctionEtapeSuivi(upload=id_dossierupload,etape=item_info_etape,etat=nbr_etat)
+                nw_etape.save()
+        dictupload = {}
+        dictupload = dict_upload(dictupload, id_dossier)
+        infoetape = info_etape(id_dossier)
+        error = False
+        return [error, infoetape]
 
-        return [error, nw_dict]
     else:
         etape_etude = dict_etape_value
         error = False
@@ -207,6 +211,7 @@ def send_mail(user_send, compte, to_mail, origin):
     # origin représente l'origine de la demande : Vérification pour une demande d'ouverture de compte venant d'un admin service
     # valider pour un compte validé par un admin SI
     # refus pour un compte refusé par un admin SI
+    # Il faut poursuivre l'utilisation d'un document annexe pour le contenue texte.
     if origin == 'verification':
         title = str(user_send) + " demande la validation du compte " + str(compte.username)
         corps = "Bonjour, \n\n Une demande de validation de compte sur l'application d'upload est demandé par : " + str(user_send)
