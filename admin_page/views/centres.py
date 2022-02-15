@@ -45,10 +45,20 @@ def admin_centre(request):
         # ------------------------------------------------------------
     form = FormCentre()
     centre_tab = RefInfocentre.objects.all().order_by("nom")
+    resultat_info_centre = []
+    for item_centre in centre_tab:
+        alluser_centre = User.objects.filter(refinfocentre__id=item_centre.id)
+        allinfo_suivi = SuiviUpload.objects.filter(
+            user__in=alluser_centre
+        ).distinct("dossier").count()
+        dict_info = {"nom":item_centre.nom,"numero":item_centre.numero, "date_ajout":item_centre.date_ajout, "nbr":allinfo_suivi}
+        resultat_info_centre.append(dict_info)
+    print(resultat_info_centre)
+
     return render(
         request,
         "admin_centre.html",
-        {"form": form, "resultat": centre_tab},
+        {"form": form, "resultat": resultat_info_centre},
     )
 
 

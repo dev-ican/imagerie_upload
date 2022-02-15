@@ -62,7 +62,7 @@ def upload_tris(request, id_tris):
 			dictupload = dict_upload(dictupload, files)
 			infoetape = info_etape(files)
 			var_etape = gestion_etape(
-				nom_etape, infoetape, nbr_etape
+				nom_etape, infoetape, nbr_etape,files,etude_change
 			)
 			dictupload["etape_etude"] = var_etape[1]
 			dictupload["error"] = var_etape[0]
