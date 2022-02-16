@@ -53,7 +53,6 @@ def admin_centre(request):
         ).distinct("dossier").count()
         dict_info = {"nom":item_centre.nom,"numero":item_centre.numero, "date_ajout":item_centre.date_ajout, "nbr":allinfo_suivi}
         resultat_info_centre.append(dict_info)
-    print(resultat_info_centre)
 
     return render(
         request,
