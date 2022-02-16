@@ -1,0 +1,100 @@
+{% load static %}
+{% load bootstrap4 %}
+
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'V1/admin_page/dist/img/logo_app.png' %}" alt="ican Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">CoreLab</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'V1/admin_page/dist/img/user.png' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">{{ request.session.username }}</a>
+        </div>
+      </div>
+
+      <!-- SidebarSearch Form -->
+      <div class="form-inline">
+        <div class="input-group" data-widget="sidebar-search">
+          <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+          <div class="input-group-append">
+            <button class="btn btn-sidebar">
+              <i class="fas fa-search fa-fw"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+          <li class="nav-item">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Gestion des comptes
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+                {% if user.is_staff or "Administrateur service" in request.session.groups %}
+                    <li class="nav-item">
+                    <a class="nav-link" id="menuUser" href="{% url 'admin_utilisateur' %}">Ajouter un utilisateur</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" id="menuUserAuth" href="{% url 'admin_autorisation' %}">Droits des utilisateurs</a>
+                    </li>
+                    <li class="nav-item">
+                    <a class="nav-link" id="menuAuthCompte" href="{% url 'auth_compte' %}">Validation des comptes</a>
+                    </li>
+                {% endif %}
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-copy"></i>
+              <p>
+                Paramétrages
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+                {% if user.is_superuser or "Administrateur service" in request.session.groups %}
+                <li class="nav-item">
+                  <a class="nav-link" id="menuEtudes" href="{% url 'admin_etude' %}">Ajouter des études</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="menuEtapes" href="{% url 'admin_etape' %}">Création des étapes</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="menuCentres" href="{% url 'admin_centre' %}">Ajouter un centre</a>
+                </li>
+                {% endif %}
+            </ul>
+            {% if not user.is_staff or user.is_superuser %}
+            <li class="nav-item"><p>--------------------------</p></li>
+            <li class="nav-item active">
+              <a class="nav-link" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" id="menuSuiviEtude" href="{% url 'admin_upload' %}">Suivi des études</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="menuDoc" href="{% url 'gestion' %}">Gestion documentaire</a>
+            </li>
+            {% endif %}
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+  </aside>

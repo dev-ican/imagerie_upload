@@ -62,13 +62,15 @@ def contact(request):
 @login_required(login_url="/auth/auth_in/")
 @csrf_exempt
 def formulaire(request):
-    ''' Charge la page du formulaire de chargement.'''
+    ''' Charge la page du formulaire de chargement de données'''
     date_now = timezone.now()
     user_current = request.user
     liste_protocole = []
     # Si le formulaire est envoyé
+    # ---------------------------
     if request.method == "POST":
         # Récupération des données du formulaire
+        # --------------------------------------
         etude = request.POST["etudes"]
         nip = request.POST["nip"]
         date = request.POST["date_irm"]
@@ -98,6 +100,8 @@ def formulaire(request):
         filez = request.FILES.getlist("upload")
 
         num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
+        # Modification du numéro de centre
+        # --------------------------------
         if len(str(num_centre.numero)) == 3 :
             num_centre_val = str(num_centre.numero)
         elif len(str(num_centre.numero)) == 2:
@@ -107,6 +111,7 @@ def formulaire(request):
         
         nomage_id = str(id_etude.etude.nom) + "_" + num_centre_val + "_" + str(nip)
         # Vérification de la présence d'un id identique
+        # ---------------------------------------------
         doublon = False
         try:
             search_doublon = SuiviUpload.objects.filter(id_patient__exact=nomage_id)
@@ -143,13 +148,12 @@ def formulaire(request):
                     zipfile_save = zipfile.ZipFile(
                         create_suivi.fichiers.path, mode="r"
                     )
-                    path_save = "/home/admin_ican/images/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
+                    path_save = "/home/admin_ican/images/"
                     path = str(path_save) + "/" + str(create_suivi.id_patient)
                     os.makedirs(path)
                     zipfile_save.extractall(path)
                     zipfile_save.close()
-                    #if os.path.exists(create_suivi.fichiers.path):
-                        #os.remove(create_suivi.fichiers.path)
+
             # Création de chaque étapes pour le patient chargé
             for etape in id_etapes:
                 create_etape = JonctionEtapeSuivi.objects.create(
@@ -163,7 +167,7 @@ def formulaire(request):
         elif doublon == True:
             var_url = "/form/"
             message = messages.add_message(
-                request, messages.WARNING, "EREUR - Cet identifiant est déjà renseigné dans la base de donnée votre upload est annulé"
+                request, messages.WARNING, "ERREUR - Cet identifiant est déjà renseigné dans la base de données votre upload est annulé"
             )
             return redirect(var_url)
 

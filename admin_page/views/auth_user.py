@@ -151,6 +151,7 @@ def auth_del(request):
 
 @login_required(login_url="/auth/auth_in/")
 def compte_user(request):
+    """ Affiche la page du compte Utilisateur """
     user_current = request.user
     if request.method == "POST":
         mail = request.POST["email"]

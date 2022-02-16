@@ -1,0 +1,118 @@
+{% extends "V1_BASE_ADMIN.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block section_two %}
+<h2><p class="text-white-75 font-weight-light mb-5" name="titre_graphique">Les derniers éléments chargés</p></h2>
+<div class="row-fluid">
+  <table id="example2" class="table table-bordered table-hover" 
+  data-toggle="table" 
+  data-pagination="true"
+  data-url="{{json}}"
+  cellspacing="0" 
+  widht="100%">
+      <thead>
+      <tr>
+          <th data-field="nip">NIP</th>
+          <th data-field="examen">DATE EXAMEN</th>
+          <th data-field="upload">DATE UPLOAD</th>
+          <th data-field="username">USERNAME</th>
+      </tr>
+      </thead>
+      <tbody>
+          {% for item in list_json %}
+          <tr>
+              {% for object in item %}
+                  <th scope="row">{{ object }}</th>
+              {% endfor %}
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</div>
+<h2><p class="text-white-75 font-weight-light mb-5" name="titre_graphique">Graphique d'utilisation et de suivi des étapes</p></h2>
+<div class="row col-12">
+{% for key,item in nbr_etat.items %}
+<div class="card bg-light mb-2 ml-1 col-5">
+  <div class="card-header"><img src="{% static 'images/icons/checkbox-QC.png' %}" width="50" height="auto" alt=""> Informations sur le projet : {{key}}</div>
+  <div class="card-body">
+    <p class="card-text">
+{% for cle, value in item.items %}
+{% if cle == 'data' %}
+<canvas id="{{key}}" name='graph_{{key}}' width="100" height="80"></canvas>
+<script>
+	var id = $("canvas[name*='graph_{{key}}']").attr('id');
+	var ctx = document.getElementById(id).getContext('2d');
+	var array;
+  	array = {{value|safe}};
+  	var array_nom = [];
+  	array_nom.push(array['nom'][0]);
+  	var array_nbr = [];
+  	array_nbr = [array['nbr'][0]];
+
+  	{% for etape, number in item.items %}
+  		{% if etape != 'data' %}
+  			array_nom.push("{{etape|safe}}");
+  			array_nbr.push({{number|safe}});
+  		{% endif %}
+	{% endfor %}
+
+  var graph = new Chart(ctx, {
+  type: 'horizontalBar',
+  data: {
+  labels: array_nom,
+  datasets: [{
+  label: 'Nombre de patient par étude',
+  data:  array_nbr,
+  backgroundColor: [
+  'rgba(204, 153, 255, 0.6)'
+  ],
+  borderColor: [
+  'rgba(0, 0, 0, 1)'
+  ],
+  borderWidth: 1
+  }],
+  },
+  options: {
+  scales: {
+  yAxes: [{
+  ticks: {
+      beginAtZero: true
+  }
+  }]
+  }
+  }
+  });
+  </script>
+  <script>
+  $(function () {
+    if ( $.fn.dataTable.isDataTable( '#example2' ) ) {
+    table = $('#example2').DataTable();
+    }
+    else {
+        table = $('#example2').DataTable( {
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": false,
+            "autoWidth": false,
+            "responsive": true,
+        } );
+    }
+  });
+</script>
+{% endif %}
+{% endfor %}
+<div class="row col-12">
+{% for cle, value in item.items %}
+{% if cle != 'data' %}
+<div class="badge badge-secondary ml-1 mb-1 align-middle"><p class="text-break">{{cle}} : {{value}}</p></div>
+{% endif %}
+{% endfor %}
+</div>
+</p>
+  </div>
+</div>
+{% endfor %}
+</div>
+{% endblock %}

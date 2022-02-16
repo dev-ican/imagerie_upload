@@ -12,7 +12,7 @@ from .forms import LogIn
 
 
 def get_login(request):
-    """Permet de se connecter au site Allows you to connect to the site."""
+    """Permet de se connecter au site // Allows you to connect to the site."""
 
     if request.method == "POST":
         form = LogIn(request.POST)
@@ -46,6 +46,7 @@ def get_login(request):
                 for item in user_groups:
                     list_group.append(item)
                 request.session['groups'] = list_group
+                request.session['username'] = user_current.username
 
                 return HttpResponseRedirect("/")
     else:
@@ -55,7 +56,7 @@ def get_login(request):
 
 
 def log_out(request):
-    """Permet de se déconnecter Allows to disconnect."""
+    """Permet de se déconnecter // Allows to disconnect."""
     # Enregistrement du log------------------------------------
     # ---------------------------------------------------------
     date_now = timezone.now()

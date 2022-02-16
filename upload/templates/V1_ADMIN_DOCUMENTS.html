@@ -1,0 +1,78 @@
+{% extends "V1_BASE_ADMIN.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% block section_one %}
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                  <h3 class="card-title">Ajouter un nouveau document</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex">
+                    <form action="" method="post" class="was-validated border border-primary bg-light mb-2 justify-content-center" enctype="multipart/form-data">
+                        <div class="form-group">
+                            {% csrf_token %}
+                            {% bootstrap_form form form_group_class='form-group m-2' %}
+                        </div>
+                        {% buttons %}
+                            <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
+                        {% endbuttons %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header border-0">
+                <div class="d-flex justify-content-between">
+                    <h3 class="card-title">
+                        <p class="text-white-100 font-weight-light mb-5" name="titre_document">Les documents enregistrés</p>
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="d-flex">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col">Nom du document</th>
+                                <th scope="col">Description du document</th>
+                                <th scope="col">Date d'ajout</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in resultat %}
+                                <tr>
+                                    <td>{{ item.titre }}</td>
+                                    <td>{{ item.description }}</td>
+                                    <td>{{ item.date }}</td>
+                                    <td>
+                                        <div class="row align-items-center">
+                                            <div class="col-4">
+                                                <a role="button" class="btn btn-outline-secondary" href="/doc/downOnce/{{item.id}}/">Télécharger</a>
+                                            </div>
+                                            <div class="col-4">
+                                                <a role="button" class="btn btn-outline-secondary" href="/doc/edit/{{item.id}}/">editer</a>
+                                            </div>
+                                            <div class="col-4">
+                                                <a id="supprDoc" role="button" class="btn btn-outline-secondary" value="{{item.id}}">suppr.</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+{% block section_two %}
+
+{% endblock %}
