@@ -108,9 +108,9 @@ WSGI_APPLICATION = 'app_upload.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'icanupload',
-        'USER': 'uploaduser',
-        'PASSWORD': 'uploaduser', #'ican+user*projet+upload/+',
+        'NAME': 'FAKE',
+        'USER': 'FAKE',
+        'PASSWORD': 'FAKE',
         'HOST': 'localhost',
         'PORT': '',
     }
