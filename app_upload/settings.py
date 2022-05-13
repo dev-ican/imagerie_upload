@@ -25,7 +25,7 @@ SECRET_KEY = 'FAKE'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['FAKE']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -108,11 +108,11 @@ WSGI_APPLICATION = 'app_upload.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'FAKE',
-        'USER': 'FAKE',
-        'PASSWORD': 'FAKE',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'AlexJ2022!',
         'HOST': 'localhost',
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 
