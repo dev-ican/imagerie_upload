@@ -101,6 +101,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app_upload.wsgi.application'
 
+# a effacer avant prod
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField' 
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -110,7 +112,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'PASSWORD': 'AlexJ2022!',
+        'PASSWORD': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432',
     }
