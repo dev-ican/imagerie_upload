@@ -110,9 +110,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'NAME': 'icanupload_test',
+        'USER': 'ocuser',
+        'PASSWORD': 'ocuser',
         'HOST': 'localhost',
         'PORT': '5432',
     }
