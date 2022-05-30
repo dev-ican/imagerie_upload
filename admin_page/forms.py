@@ -1,12 +1,14 @@
-from datetime import date
-
+# from datetime import date
 from django import forms
 from django.core.validators import *
-from django.http import *
+# from django.http import *
+# from upload.models import *
 
-from upload.models import *
 
-CHOICES = [(0, "Collaborateurs"), (1, "Utilisateurs"), (2,"Administrateur service")]
+CHOICES = [(0, "Collaborateurs"),
+           (1, "Utilisateurs"),
+           (2,"Administrateur service")
+           ]
 
 
 class FormsEtude(forms.Form):
@@ -31,6 +33,7 @@ class FormsEtape(forms.Form):
         required=True,
     )'''
 
+
 class FormsEtapeEdit(forms.Form):
     """ Formulaire gérant les étapes """
 
@@ -40,6 +43,7 @@ class FormsEtapeEdit(forms.Form):
         choices=(["liste de vos études"]),
         initial='0',
     )
+
 
 class FormsAutorisation(forms.Form):
     """ Formulaire gérant les authorisations """
@@ -62,6 +66,7 @@ class FormCentre(forms.Form):
     nom = forms.CharField(label="Nom  du centre", max_length=100)
     numero = forms.IntegerField(label="Numéro du centre")
 
+
 class FormCentreEdit(forms.Form):
     """ Formulaire gérant les centres """
 
@@ -74,8 +79,9 @@ class FormCentreEdit(forms.Form):
         )
     )
 
+
 class FormPwdChange(forms.Form):
-    """Formulaire de modification des mots de passes"""
+    """Formulaire de modification des mots de passe"""
 
     email = forms.EmailField(
         label="Courriel de l'utilisateur",
@@ -105,6 +111,7 @@ class FormPwdChange(forms.Form):
             )
         ],
     )
+
 
 class FormsUser(forms.Form):
     """ Formulaire gérant les utilisateurs """

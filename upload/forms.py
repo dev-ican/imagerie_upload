@@ -1,19 +1,21 @@
 from django import forms
-from django.core.validators import *
-from django.http import *
-from datetime import date
+# from django.core.validators import *
+# from django.http import *
+# from datetime import date
 # from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-from .models import *
+# from .models import *
     
+
 class LogIn(forms.Form):
     ''' Formulaire pour se loguer '''
     log_id = forms.CharField(label='Identifiant', max_length=100)
-    pwd = forms.CharField(
-        label='Mot de passe',
-        widget=forms.PasswordInput(),
-        max_length=100)
+    pwd = forms.CharField(label='Mot de passe',
+                          widget=forms.PasswordInput(),
+                          max_length=100
+                          )
+
 
 class UploadForm(forms.Form):
     ''' Formulaire de chargement de fichier '''
