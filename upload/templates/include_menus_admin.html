@@ -3,7 +3,7 @@
 
 <nav class="nav bg-secondary" style="min-height: 100vh;position: fixed;">
   <ul class="navbar-nav flex-column text-dark ml-1 mr-1">
-    {% if user.is_staff or "Administrateur service" in request.session.groups %}
+    {% if user.is_staff or "Administrateur service" in request.session.groups or "URC" in request.session.groups %}
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuUser" href="{% url 'admin_utilisateur' %}">Ajouter un utilisateur</a>
     </li>
@@ -15,7 +15,7 @@
     </li>
     <li class="nav-item"><p>--------------------------</p></li>
     {% endif %}
-    {% if user.is_superuser or "Administrateur service" in request.session.groups %}
+    {% if user.is_superuser or "Administrateur service" in request.session.groups or "URC" in request.session.groups%}
     <li class="nav-item">
       <a class="nav-link text-warning" id="menuEtudes" href="{% url 'admin_etude' %}">Ajouter des études</a>
     </li>
@@ -27,7 +27,7 @@
     </li>
     <li class="nav-item"><p>--------------------------</p></li>
     {% endif %}
-    {% if not user.is_staff or user.is_superuser %}
+    {% if not user.is_staff or user.is_superuser or "URC" in request.session.groups %}
     <li class="nav-item active">
       <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>
     </li>

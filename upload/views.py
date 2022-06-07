@@ -20,7 +20,7 @@ from django.views.decorators.csrf import csrf_exempt,csrf_protect
 @login_required(login_url="/auth/auth_in/")
 def index(request):
     ''' Chargement de l'index, permet de charger
-    les documents devant être listé sur la page d'accueille '''
+    les documents devant être listés sur la page d'accueil '''
     tab_etude = [] 
     date_now = timezone.now()
     user_current = request.user
@@ -45,17 +45,16 @@ def index(request):
 
 @login_required(login_url="/auth/auth_in/")
 def contact(request):
-    '''Charge la page d'acceuille et
+    '''Charge la page d'acceuil et
     renvois les contacts déjà entrés '''
     date_now = timezone.now()
     user_current = request.user
     type_action = RefTypeAction.objects.get(pk=4)
-    log.objects.create(
-        user=user_current,
-        action=type_action,
-        date=date_now,
-        info="Visite des contacts",
-    )
+    log.objects.create(user=user_current,
+                      action=type_action,
+                      date=date_now,
+                      info="Visite des contacts",
+                      )
     return render(request, "V1_CONTACT.html")
 
 

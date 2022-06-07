@@ -42,7 +42,7 @@ class FormsEtapeEdit(forms.Form):
         widget=forms.Select(),
         choices=(["liste de vos études"]),
         initial='0',
-    )
+        )
 
 
 class FormsAutorisation(forms.Form):
@@ -52,12 +52,12 @@ class FormsAutorisation(forms.Form):
         widget=forms.Select(),
         choices=(["liste des études"]),
         initial="0",
-    )
+        )
     centre = forms.ChoiceField(
         widget=forms.Select(),
         choices=(["liste des études"]),
         initial="0",
-    )
+        )
 
 
 class FormCentre(forms.Form):

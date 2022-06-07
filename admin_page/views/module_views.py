@@ -268,8 +268,11 @@ def nw_password(
         # Création de l'utilisateur après vérification de son mot de passe
         #__________________________________________________________________
         nw_user = User.objects.create_user(
-            username=username, password=pass_first, email=email, is_active=False,
-        )
+                            username=username,
+                            password=pass_first,
+                            email=email,
+                            is_active=False,
+                            )
         # Sauvegarde du compte
         #_____________________
         nw_user.save()
@@ -279,6 +282,7 @@ def nw_password(
         # Sauvegarde de la création
         #_________________________
         nw_valide.save()
+        # print(Group.objects.all())
         if int(type) == 0:
             my_group = Group.objects.get(name='Collaborateurs')
             my_group.user_set.add(nw_user)

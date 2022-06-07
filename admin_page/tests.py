@@ -1,7 +1,7 @@
 import json
 
-from django.contrib.auth.models import User
-from django.test import TestCase
+from django.contrib.auth.models import User, Group
+from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 
@@ -24,6 +24,9 @@ class TestApp(TestCase):
     def setUp(self):
         """Mise en place des bases de données."""
         date_now = timezone.now()
+
+        groupe_collaborateur = Group.objects.create(name='Utilisateurs')
+
         test_user1 = User.objects.create_user(
             username="testuser1", password="testtest"
         )
@@ -33,8 +36,12 @@ class TestApp(TestCase):
         test_user3 = User.objects.create_user(
             username="testuser3", password="testtest"
         )
+                
         test_user1.save()
         test_user2.save()
+        test_user3.save()
+
+        groupe_collaborateur.user_set.add(test_user1, test_user2, test_user3)
 
         test_etude1 = RefEtudes.objects.create(
             nom="test_etude1", date_ouverture=date_now
@@ -74,13 +81,24 @@ class TestApp(TestCase):
         )
         jonction_etude3.save()
 
+
+        # instance = Setupuser.objects.create(organization=org)
+
+        # for user in users:
+        #    instance.emails_for_help.add(user)
+
         etape_etude = RefEtapeEtude.objects.create(
-            nom="Etape_test1", etude=test_etude1
-        )
+            nom="Etape_test1"
+            )
         etape_etude.save()
+        etape_etude.etude.add(test_etude1)
+        etape_etude.save()
+
+
         etape_etude = RefEtapeEtude.objects.create(
-            nom="Etape_test2", etude=test_etude2
-        )
+            nom="Etape_test2"
+            )
+        etape_etude.etude.add(test_etude2)
         etape_etude.save()
 
         test_centre = RefInfocentre.objects.create(
@@ -89,6 +107,7 @@ class TestApp(TestCase):
             date_ajout=date_now,
         )
         test_centre.save()
+
         test_centre = RefInfocentre.objects.create(
             nom="Centre_test2",
             numero="12587",
@@ -98,8 +117,9 @@ class TestApp(TestCase):
 
         test_typeaction = RefTypeAction.objects.create(
             id=1, nom="Action_1"
-        )
+            )
         test_typeaction.save()
+
         test_typeaction = RefTypeAction.objects.create(
             id=2, nom="Action_2"
         )
@@ -158,9 +178,9 @@ class TestApp(TestCase):
 
     def test_admin_etude(self):
         """Test le module admin etude."""
-        self.client.login(
-            username="testuser1", password="testtest"
-        )
+        self.client.login(username="testuser1",
+                          password="testtest"
+                          )
         response = self.client.get(reverse("login"))
         self.assertEqual(
             str(response.context["user"]), "testuser1"
@@ -554,30 +574,24 @@ class TestApp(TestCase):
     def test_admin_centre(self):
         """Test le module admin centre."""
         date_now = timezone.now()
-        self.client.login(
-            username="testuser1", password="testtest"
-        )
+        self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
-        self.assertEqual(
-            str(response.context["user"]), "testuser1"
-        )
+        self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
+
         check_user = self.client.get(reverse("admin_centre"))
         self.assertTemplateUsed(check_user, "admin_centre.html")
         var_user = check_user.context["resultat"]
         for item in var_user:
-            self.assertIn(
-                item.nom, ["Centre_test1", "Centre_test2"]
-            )
+            self.assertIn(item.nom, ["Centre_test1", "Centre_test2"])
+        
         dict_centre = {
-            "nom": "test_centre_create",
-            "numero": "569",
-            "date_ajout": date_now,
-        }
-        post_centre = self.client.post(
-            reverse("admin_centre"), data=dict_centre
-        )
+                      "nom": "test_centre_create",
+                      "numero": "569",
+                      "date_ajout": date_now,
+                      }
+        post_centre = self.client.post(reverse("admin_centre"), data=dict_centre)
         self.assertEqual(post_centre.status_code, 200)
         reponse = False
         for item in post_centre.context["resultat"]:
@@ -691,22 +705,17 @@ class TestApp(TestCase):
 
     def test_admin_auth(self):
         """Test le module admin autorisation."""
-        self.client.login(
-            username="testuser1", password="testtest"
-        )
+
+        self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
-        self.assertEqual(
-            str(response.context["user"]), "testuser1"
-        )
+        self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
-        check_user = self.client.get(
-            reverse("admin_autorisation")
-        )
+
+        check_user = self.client.get(reverse("admin_autorisation"))
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(
-            check_user, "admin_autorisation.html"
-        )
+        self.assertTemplateUsed(check_user, "admin_autorisation.html")
+        
         var_user = check_user.context["resultat"]
         for item in var_user:
             self.assertIn(
@@ -721,15 +730,15 @@ class TestApp(TestCase):
 
     def test_admin_auth_edit(self):
         """Test le module admin autorisation edition."""
-        self.client.login(
-            username="testuser1", password="testtest"
-        )
+
+        self.client.login(username="testuser1",
+                          password="testtest"
+                          )
         response = self.client.get(reverse("login"))
-        self.assertEqual(
-            str(response.context["user"]), "testuser1"
-        )
+        self.assertEqual(str(response.context["user"]),"testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
+        
         val_dict = {
             "username": "test_user_Auth",
             "email": "test_user@gmail.com",
@@ -738,33 +747,25 @@ class TestApp(TestCase):
             "nom": "",
             "numero": "",
             "type": 1,
-        }
-        post_user = self.client.post(
-            reverse("admin_utilisateur"), data=val_dict
-        )
+            }
+        post_user = self.client.post(reverse("admin_utilisateur"), data=val_dict)
         self.assertEqual(post_user.status_code, 200)
+        
         select_del = User.objects.all()
         for item in select_del:
             if item.username == "test_user_Auth":
                 id_projet = item.id
                 break
-        check_user = self.client.get(
-            reverse("auth_edit", args=(id_projet,))
-        )
+        check_user = self.client.get(reverse("auth_edit", args=(id_projet,)))
         self.assertEqual(check_user.status_code, 200)
-        self.assertTemplateUsed(
-            check_user, "admin_auth_edit.html"
-        )
+        self.assertTemplateUsed(check_user, "admin_auth_edit.html")
+
         var_etude = check_user.context["etude"]
         var_centre = check_user.context["centre"]
         for item in var_etude:
-            self.assertIn(
-                item.nom, ["test_etude1", "test_etude2"]
-            )
+            self.assertIn(item.nom, ["test_etude1", "test_etude2"])
         for item in var_centre:
-            self.assertIn(
-                item.nom, ["Centre_test1", "Centre_test2"]
-            )
+            self.assertIn(item.nom, ["Centre_test1", "Centre_test2"])
         etude_all = RefEtudes.objects.all()
         centre_all = RefInfocentre.objects.all()
         for item in etude_all:

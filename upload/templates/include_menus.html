@@ -16,7 +16,7 @@
         <li class="nav-item">
           <a class="nav-link" name="form" href="{% url 'formulaire' %}">Formulaire d'upload</a>
         </li>
-        {% if user.is_staff or "Administrateur service" in request.session.groups or "Collaborateurs" in request.session.groups  %}
+        {% if user.is_staff or "Administrateur service" in request.session.groups or "Collaborateurs" in request.session.groups or "URC" in request.session.groups %}
         <li class="nav-item">
           <a class="nav-link" name="administration" href="{% url 'admin' %}">Administration</a>
         </li>
