@@ -27,6 +27,17 @@ from .module_log import (
 # --------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------
 
+from django.contrib.auth.models import Group
+group_name = "Collaborateurs"
+
+# group_permissions = Group.objects.get(name=group_name).permissions.all()
+# print(group_permissions)
+
+# for group in Group.objects.all():
+#     permissions = group.permissions.filter(name__contains = "Collaborateurs")
+#     print(permissions)
+
+
 @login_required(login_url="/auth/auth_in/")
 def auth_compte(request):
     message = ""

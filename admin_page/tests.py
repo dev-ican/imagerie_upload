@@ -311,57 +311,45 @@ class TestApp(TestCase):
 
     def test_admin_etape_edit(self):
         """Test le module admin etape edition."""
-        self.client.login(
-            username="testuser1", password="testtest"
-        )
+        
+        self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
-        self.assertEqual(
-            str(response.context["user"]), "testuser1"
-        )
+        self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
-        id_etude = RefEtudes.objects.get(
-            nom__exact="test_etude1"
-        )
-        val_dict = {
-            "nom": "test_etape_edit",
-            "etudes": id_etude.id,
-        }
-        post_etape = self.client.post(
-            reverse("admin_etape"), data=val_dict
-        )
+        
+        etude = RefEtudes.objects.get(nom__exact="test_etude1")
+        val_dict = {"nom": "test_etape_edit",
+                    "etudes": etude.id,
+                   }
+        post_etape = self.client.post(reverse("admin_etape"), data=val_dict)
         self.assertEqual(post_etape.status_code, 200)
+
         select_del = RefEtapeEtude.objects.all()
         for item in select_del:
             if item.nom == "test_etape_edit":
                 id_projet = item.id
                 break
+
+        
         id_etape = RefEtapeEtude.objects.get(id__exact=id_projet)
-        check_etude = self.client.get(
-            reverse("etape_edit", args=(id_projet,))
-        )
+        check_etude = self.client.get(reverse("etape_edit", args=(id_projet,)))
         self.assertEqual(check_etude.status_code, 200)
-        self.assertTemplateUsed(
-            check_etude, "admin_etapes_edit.html"
-        )
+        self.assertTemplateUsed(check_etude, "admin_etapes_edit.html")
+
         var_etude = check_etude.context["resultat"]
         for item in var_etude:
-            self.assertIn(
-                item.nom,
-                [
-                    "Etape_test1",
-                    "Etape_test2",
-                    "test_etape_edit",
-                ],
-            )
-        post_etape = self.client.post(
-            reverse("etape_edit", args=(id_etape.id,)),
-            data={
-                "nom": "test_case_etape",
-                "etudes": id_etape.etude.id,
-            },
-        )
+            self.assertIn(item.nom, ["Etape_test1",
+                                     "Etape_test2",
+                                     "test_etape_edit",
+                                    ])
+
+        post_etape = self.client.post(reverse("etape_edit", args=(id_etape.id,)),
+                                                            data={"nom": "test_case_etape",
+                                                                  "etudes": id_etape.etude.id,
+                                                                  })
         self.assertEqual(post_etape.status_code, 302)
+
         check = self.client.get(reverse("admin_etape"))
         reponse = False
         for item in check.context["resultat"]:

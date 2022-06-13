@@ -33,11 +33,11 @@
         <td>{{ item.nom }}</td>
         <td>{{ item.numero }}</td>
         <td>{{ item.date_ajout }}</td>
-        {% ifnotequal select item.id %}
+        {% if select != item.id %}
         <td><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/centre/edit/{{item.id}}/">EDITER</a></td>
         {% else %}
         <td><a role="button" class="btn btn-sm btn-outline-secondary"> En cours de modification...</a></td>
-        {% endifnotequal %}
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>
