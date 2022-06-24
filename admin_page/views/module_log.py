@@ -1,7 +1,7 @@
 # -*-coding:Utf-8 -*
 
 from django.utils import timezone
-from upload.models import log, RefTypeAction
+from upload.models import Log, RefTypeAction
 
 
 # Gestion log
@@ -16,7 +16,7 @@ def information_log(req, info):
     user_current = req.user
     info = user_current.username + info
     type_action = RefTypeAction.objects.get(pk=4)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,
@@ -30,7 +30,7 @@ def creation_log(req, info):
     user_current = req.user
     info = user_current.username + info
     type_action = RefTypeAction.objects.get(id=7)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,
@@ -39,12 +39,12 @@ def creation_log(req, info):
 
 
 def edition_log(req, info):
-    """ Gère le log création """
+    """ Gère le log édition """
     date_now = timezone.now()
     user_current = req.user
     info = user_current.username + info
     type_action = RefTypeAction.objects.get(pk=2)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,
@@ -53,12 +53,12 @@ def edition_log(req, info):
 
 
 def suppr_log(req, info):
-    """ Gère le log création """
+    """ Gère le log suppression """
     date_now = timezone.now()
     user_current = req.user
     info = user_current.username + info
     type_action = RefTypeAction.objects.get(pk=3)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,

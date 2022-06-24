@@ -57,6 +57,7 @@ def admin_etape(request):
 @login_required(login_url="/auth/auth_in/")
 def etape_edit(request, id_etape):
     """Charge la page d'édition des étapes."""
+
     liste_protocole = []
     if request.method == "POST":
         select_etape = RefEtapeEtude.objects.get(pk=id_etape)
@@ -68,18 +69,17 @@ def etape_edit(request, id_etape):
         else:
             ajout_etude = False
 
-
         # Enregistrement du log---------------------------------
         # ------------------------------------------------------
-        nom_documentaire = (
-            " a editer l'étape etape/etude - etude édité/etape édité : "
-            + select_etape.nom
-            + "/"
-            + str(nom_edit)
-        )
+        nom_documentaire = (" a editer l'étape etape/etude - etude éditée/etape éditée : "
+                            + select_etape.nom
+                            + "/"
+                            + str(nom_edit)
+                            )
         edition_log(request, nom_documentaire)
         # ------------------------------------------------------
         # ------------------------------------------------------
+
         select_etape.nom = nom_edit
         select_etape.save()
         if ajout_etude:
@@ -96,25 +96,21 @@ def etape_edit(request, id_etape):
         form.fields["etudes"].choices = liste_protocole
         form.fields["etudes"].initial = [0]
         form.fields["nom"].initial = etape_filtre.nom
+
         # Enregistrement du log-----------------------------
         # --------------------------------------------------
-        nom_documentaire = (
-            " a ouvert l'édition pour l'étape etude/etape : "
-            + etape_filtre.nom
-        )
+        nom_documentaire = (" a ouvert l'édition pour l'étape etude/etape : "
+                           + etape_filtre.nom
+                           )
         information_log(request, nom_documentaire)
         # --------------------------------------------------
         # --------------------------------------------------
+
     etape_tab = RefEtudes.objects.filter(refetapeetude__id=id_etape)
-    return render(
-        request,
-        "admin_etapes_edit.html",
-        {
-            "form": form,
-            "resultat": etape_tab,
-            "select": int(id_etape),
-        },
-    )
+    return render(request, "admin_etapes_edit.html", {"form": form,
+                                                      "resultat": etape_tab,
+                                                      "select": int(id_etape),
+                                                     })
 
 
 @login_required(login_url="/auth/auth_in/")

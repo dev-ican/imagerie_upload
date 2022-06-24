@@ -10,7 +10,7 @@ from django.shortcuts import render
 from django.utils import timezone
 
 from admin_page.views.module_admin import choice_etude
-from upload.models import RefEtudes, RefTypeAction, SuiviDocument, log
+from upload.models import RefEtudes, RefTypeAction, SuiviDocument, Log
 
 from .forms import DocumentForm
 
@@ -31,7 +31,7 @@ def gestion_documentaire(request):
         user_current = request.user
         type_action = RefTypeAction.objects.get(pk=7)
         nom_documentaire = "Creation documentaire " + str(titre)
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,
@@ -83,7 +83,7 @@ def down_once(request, id):
     user_current = request.user
     type_action = RefTypeAction.objects.get(pk=4)
     nom_documentaire = "Téléchargement du fichier : " + str(filename)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,
@@ -120,7 +120,7 @@ def doc_edit(request, id):
         user_current = request.user
         type_action = RefTypeAction.objects.get(pk=2)
         nom_documentaire = "Edition du document : " + str(titre)
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,
@@ -156,7 +156,7 @@ def doc_edit(request, id):
         nom_documentaire = (
             "Affichage de l'édition documentaire : " + str(obj.titre)
         )
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,
@@ -197,7 +197,7 @@ def doc_deleted(request, id):
         nom_documentaire = "Suppression du document : " + str(
             var_suivi.fichiers
         )
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,

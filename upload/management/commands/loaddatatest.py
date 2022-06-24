@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
-from upload.models import SuiviUpload, JonctionUtilisateurEtude, JonctionEtapeSuivi, RefControleQualite, RefEtudes, RefInfocentre, RefEtapeEtude, RefEtatEtape
+from upload.models import SuiviUpload, JonctionUtilisateurEtude, JonctionEtapeSuivi, RefControleQualite, RefEtudes, RefInfoCentre, RefEtapeEtude, RefEtatEtape
 
 import requests
 import json
@@ -126,22 +126,22 @@ class Command(BaseCommand):
 
         #Renseigne les info du centre liée à l'utilisateur
 
-        if not RefInfocentre.objects.filter(pk=1).exists():
-            info = RefInfocentre.objects.create(
+        if not RefInfoCentre.objects.filter(pk=1).exists():
+            info = RefInfoCentre.objects.create(
                 nom="Nom_centre1",
                 numero="001",
                 date_ajout="2020-08-20")
             info.save()
             info.user.add(test_user1)
 
-            info = RefInfocentre.objects.create(
+            info = RefInfoCentre.objects.create(
                 nom="Nom_centre3",
                 numero="003",
                 date_ajout="2020-08-20")
             info.save()
             info.user.add(test_user2)
 
-            info = RefInfocentre.objects.create(
+            info = RefInfoCentre.objects.create(
                 nom="Nom_centre2",
                 numero="002",
                 date_ajout="2020-08-20")

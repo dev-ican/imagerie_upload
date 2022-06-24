@@ -22,16 +22,16 @@ from upload.models import (
 	RefEtatEtape,
 	RefEtudes,
 	SuiviUpload,
-	RefInfocentre,
+	RefInfoCentre,
 )
 
 from .module_log import edition_log, information_log, suppr_log
 from .module_views import (
-	dict_upload,
+	info_upload,
 	etude_tris,
 	gestion_etape,
 	gestion_etude_tris,
-	info_etape,
+	infos_etats_etape,
 	nom_etape_tris,
 	send_rgpd_fail,
 )
@@ -46,7 +46,7 @@ def upload_tris(request, id_tris):
 	val_centre = request.POST.get("centre")
 	etude_change = RefEtudes.objects.get(id=id_tris)
 	if val_centre != "0" and val_centre is not None:
-		user_id = User.objects.filter(refinfocentre__id=val_centre)
+		user_id = User.objects.filter(Centre__id=val_centre)
 		dossier_all = SuiviUpload.objects.filter(
 			etude__etude=id_tris
 		).filter(user__in=user_id).distinct("dossier")
@@ -58,9 +58,8 @@ def upload_tris(request, id_tris):
 		).count()
 		nom_etape = nom_etape_tris(etude_change.id)
 		for files in dossier_all:
-			dictupload = {}
-			dictupload = dict_upload(dictupload, files)
-			infoetape = info_etape(files)
+			dictupload = info_upload(files)
+			infoetape = infos_etats_etape(files)
 			var_etape = gestion_etape(
 				nom_etape, infoetape, nbr_etape,files,etude_change
 			)
@@ -77,7 +76,7 @@ def upload_tris(request, id_tris):
 	# Enregistrement du log------------------------
 	# ---------------------------------------------
 	nom_documentaire = (
-		" a créé un tris vers l'étude : " + etude_change.nom
+		" a créé un tri vers l'étude : " + etude_change.nom
 	)
 	information_log(request, nom_documentaire)
 	# ---------------------------------------------

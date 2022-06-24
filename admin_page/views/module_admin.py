@@ -5,7 +5,7 @@
 
 from upload.models import (
     RefEtudes,
-    RefInfocentre,
+    RefInfoCentre,
 )
 
 
@@ -30,7 +30,7 @@ def take_data(etude, centre):
         list_response.append("null")
 
     if centre != "EMPTY":
-        save_centre = RefInfocentre.objects.get(pk=centre)
+        save_centre = RefInfoCentre.objects.get(pk=centre)
         list_response.append(save_centre)
     else:
         list_response.append("null")
@@ -56,7 +56,7 @@ def choice_etude(val_zero):
 def choice_centre(val_zero):
     ''' Génère les listes déroulante des centres '''
     liste_centre = []
-    request_centre = RefInfocentre.objects.all().order_by("nom")
+    request_centre = RefInfoCentre.objects.all().order_by("nom")
 
     for util_pro in enumerate(request_centre):
         collapse = (util_pro[1].id, util_pro[1].nom)

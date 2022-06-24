@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from admin_page.forms import FormsAutorisation, FormPwdChange
-from upload.models import JonctionUtilisateurEtude, RefInfocentre, ValideCompte
+from upload.models import JonctionUtilisateurEtude, RefInfoCentre, ValideCompte
 from django.contrib import messages
 
 from .module_admin import choice_centre, choice_etude, check_mdp
@@ -41,7 +41,7 @@ def auth_edit(request, id_etape):
     if user_lock.etat is None or user_lock.etat.id == 3 or grp_user :
         liste_etude = []
         liste_centre = []
-        user_block = RefInfocentre.objects.filter(user__id=id_etape)
+        user_block = RefInfoCentre.objects.filter(user__id=id_etape)
         user_info = User.objects.get(pk=id_etape)
         if request.method == "POST":
             centre = request.POST["centre"]
@@ -49,7 +49,7 @@ def auth_edit(request, id_etape):
                 form = FormsAutorisation()
                 etude = request.POST["etude"]
                 centre = request.POST["centre"]
-                user_centre = RefInfocentre.objects.filter(
+                user_centre = RefInfoCentre.objects.filter(
                     user__id=id_etape
                 ).filter(id=centre)
                 user_etude = JonctionUtilisateurEtude.objects.filter(
@@ -81,7 +81,7 @@ def auth_edit(request, id_etape):
     form.fields["etude"].initial = [0]
     form.fields["centre"].choices = liste_centre
     form.fields["centre"].initial = [0]
-    user_centre = RefInfocentre.objects.filter(user__id=id_etape)
+    user_centre = RefInfoCentre.objects.filter(user__id=id_etape)
     user_etude = JonctionUtilisateurEtude.objects.filter(
         user=id_etape
     )
@@ -107,7 +107,7 @@ def auth_del(request):
     user_info = User.objects.get(pk=id_user)
     if request.method == "POST":
         message = del_auth(type_tab, id_search, request,id_user)
-        user_centre = RefInfocentre.objects.filter(
+        user_centre = RefInfoCentre.objects.filter(
             user__id=user_info.id
         )
         user_etude = JonctionUtilisateurEtude.objects.filter(

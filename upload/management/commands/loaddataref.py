@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from upload.models import (JonctionEtapeSuivi, JonctionUtilisateurEtude,
                            RefControleQualite, RefEtapeEtude, RefEtatEtape,
-                           RefEtatValideCompte, RefEtudes, RefInfocentre,
+                           RefEtatValideCompte, RefEtudes, RefInfoCentre,
                            RefTypeAction, SuiviUpload)
 
 

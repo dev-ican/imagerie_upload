@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from upload.models import (JonctionUtilisateurEtude, RefEtapeEtude,
-                           RefEtatEtape, RefEtudes, RefInfocentre,
+                           RefEtatEtape, RefEtudes, RefInfoCentre,
                            RefTypeAction, SuiviDocument)
 
 
@@ -61,11 +61,11 @@ class TestApp(TestCase):
         )
         etape_etude.save()
 
-        test_centre = RefInfocentre.objects.create(
+        test_centre = RefInfoCentre.objects.create(
             nom="Centre_test1", numero="1258", date_ajout=date_now
         )
         test_centre.save()
-        test_centre = RefInfocentre.objects.create(
+        test_centre = RefInfoCentre.objects.create(
             nom="Centre_test2", numero="12587", date_ajout=date_now
         )
         test_centre.save()

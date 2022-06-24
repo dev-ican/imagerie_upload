@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from attr import fields
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -7,7 +8,7 @@ from django.contrib.auth.models import User
 def user_directory_path(instance, filename):
 	'''Module permettant l'enregistrement des fichiers dans suiviupload '''
 	# faire en sorte de ramener l'enregistrement MEDIA_ROOT/<centre>/
-	id_centre = RefInfocentre.objects.get(user__exact=instance.user.id)
+	id_centre = RefInfoCentre.objects.get(user__exact=instance.user.id)
 	return '{0}/{1}/{2}/{3}'.format(instance.etude.etude.nom, id_centre, instance.id_patient, filename)
 
 def doc_directory_path(instance, filename):
@@ -45,11 +46,11 @@ class SuiviUpload(models.Model):
 	fichiers = models.FileField(upload_to=user_directory_path, null=True)
 
 
-class JonctionUtilisateurEtude(models.Model):
-	'''Modèle gérant le lien entre utilisateurs et études'''
+class DossierUpload(models.Model):
+	'''Modèle gérant les dossiers en lien avec le suiviupload'''
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	etude = models.ForeignKey('RefEtudes', on_delete=models.CASCADE)
-	date_autorisation = models.DateTimeField("Date d'autorisation")
+	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
+	date = models.DateTimeField("Date de création")
 
 
 class RefControleQualite(models.Model):
@@ -58,6 +59,13 @@ class RefControleQualite(models.Model):
 
 	def __str__(self):
 		return self.nom
+
+
+class JonctionUtilisateurEtude(models.Model):
+	'''Modèle gérant le lien entre utilisateurs et études'''
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	etude = models.ForeignKey('RefEtudes', on_delete=models.CASCADE)
+	date_autorisation = models.DateTimeField("Date d'autorisation")
 
 
 class RefEtudes(models.Model):
@@ -69,7 +77,7 @@ class RefEtudes(models.Model):
 		return self.nom
 
 
-class RefInfocentre(models.Model):
+class RefInfoCentre(models.Model):
 	'''Modèle gérant les centres'''
 	nom = models.CharField(max_length=5000)
 	numero = models.IntegerField(blank=True)
@@ -105,13 +113,6 @@ class JonctionEtapeSuivi(models.Model):
 	date = models.DateTimeField("Date de l'étape", blank=True, null=True)
 
 
-class DossierUpload(models.Model):
-	'''Modèle gérant les dossiers en lien avec le suiviupload'''
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
-	date = models.DateTimeField("Date de création")
-
-
 class SuiviDocument(models.Model):
 	'''Modèle gerant le suivi de document'''
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -123,7 +124,7 @@ class SuiviDocument(models.Model):
 	background = models.CharField(max_length=5000, null=True, blank=True)
 
 
-class log(models.Model):
+class Log(models.Model):
 	'''Modèle gérant le log'''
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	action = models.ForeignKey('RefTypeAction', on_delete=models.CASCADE)

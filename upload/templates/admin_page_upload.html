@@ -1,6 +1,7 @@
 {% extends "base_admin_stat.html" %}
 {% load static %}
 {% load bootstrap4 %}
+{% load sorting_tags %}
 {% block section_two %}
 <div class="row col-12">
   <div class="container">
@@ -11,6 +12,25 @@
       <span>Tableau récapitulatif des étapes pour chaque dossier chargé dans le système</span> 
     </div>
   </div>
+  {% comment %} <form method="get">
+    {{ filter_etat_etape.form.as_p}}
+    <button type="submit">Recherche</button>
+  </form>
+  <ul>
+  {% for etat_etape in filter_etat_etape.qs %}
+    <li>{{ etat_etape.nom }}
+  {% endfor %}
+  </ul>
+  <form>
+  <form method="get">
+    {{ filter_etape_etude.form.as_p}}
+    <button type="submit">Recherche</button>
+  </form>
+  <ul>
+  {% for etape_etude in filter_etape_etude.qs %}
+    <li>{{ etape_etude.nom }}  {{ etape_etude.etude }}
+  {% endfor %}
+  </ul> {% endcomment %}
   <form>
   <div class="form-row align-items-center">
     <div class="col-auto my-1">
@@ -26,22 +46,23 @@
       <label class="mr-sm-2 sr-only" for="FormCustomSelect">Indiquer le centre</label>
       <select name="select_etude" class="custom-select mr-sm-2" id="FormCustomSelect">
         {% for etude in str_etude %}
-        <option name="select_{{etude.nom}}" value="{{etude.id}}" {{etude.option}}>{{etude.nom}}</option>
+          <option name="select_{{etude.nom}}" value="{{etude.id}}" {{etude.option}}>{{etude.nom}}</option>
         {% endfor %}
       </select>
     </div>
   </div>
   </form>
 </div>
-{% if taille != 0 %}
+{% if nbr_entree != 0 %}
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
       <th scope="col">QC</th>
       <th scope="col">ID patient</th>
-      <th scope="col">Nbr de fichiers</th>
-      {% for item in dict_nbr.nom_etape %}
-      <th scope="col">{{item}}</th>
+      {% comment %} <th scope="col">Nbr de fichiers</th> {% endcomment %}
+      <!--Il faut ajouter ici le tri-->
+      {% for item_etape in nbr_noms_etape.nom_etape %}
+        <th scope="col">{{ item_etape }}</th>
       {% endfor %}
     </tr>
   </thead>
@@ -55,17 +76,17 @@
         {% else %}
         <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod_{{ item.Etudes_id }}{{item.id_}}"><h5><span class="badge badge-warning">{{ item.Etudes }}</span><h5></td>
         {% endif %}
-        <td><a href="/admin_page/upfiles/dospat/{{ item.id_ }}/"><h5><span class="badge badge-secondary">{{ item.id }}</span></h5></td>
-        <td>{{ item.nbr_upload }}</td>
+        <td><a href="/admin_page/upfiles/dospat/{{ item.id_ }}/"><h5><span class="badge badge-secondary">{{ item.id_patient }}</span></h5></td>
+        {% comment %} <td>{{ item.nbr_upload }}</td> {% endcomment %}
         {% if item.error == True %}
-        <td colspan="{{dict_nbr.nbr_etape}}">{{ item.etape_etude.Aucune_etape }}</td>
+        <td colspan="{{nbr_noms_etape.nbr_etape}}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}
         {% for etape in item.etape_etude %}
-        {% if etape.block %}
-        <td name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.val_id }}" value="{{ etape.val_id }}">{{ etape.val_item }}</td>
-        {% else %}
-        <td class="clickable" name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.val_id }}" value="{{ etape.val_id }}">{{ etape.val_item }}</td>
-        {% endif %}
+          {% if etape.en_cours_d_informations %}
+          <td name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
+          {% else %}
+          <td class="clickable" name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
+          {% endif %}
         {% endfor %}
         {% endif %}
       </tr>

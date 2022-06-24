@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.utils import timezone
 
-from upload.models import Contact, RefTypeAction, log
+from upload.models import Contact, RefTypeAction, Log
 
 from .forms import ContactForm
 
@@ -19,7 +19,7 @@ def gestion_contact(request):
     date_now = timezone.now()
     user_current = request.user
     type_action = RefTypeAction.objects.get(pk=4)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,
@@ -72,7 +72,7 @@ def contact_edit(request, id):
             + "id: "
             + str(id)
         )
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,
@@ -101,7 +101,7 @@ def contact_edit(request, id):
             + " "
             + str(obj.prenom)
         )
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,
@@ -141,7 +141,7 @@ def contact_deleted(request, id):
             + " "
             + str(var_suivi.prenom)
         )
-        log.objects.create(
+        Log.objects.create(
             user=user_current,
             action=type_action,
             date=date_now,

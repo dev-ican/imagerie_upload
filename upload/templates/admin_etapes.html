@@ -2,6 +2,7 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_one %}
+{% if user.is_staff or "Administrateur service" in request.session.groups %}
 <h4><p class="text-white-75 font-weight-light mb-5">Ajouter une étape</p></h4>
 <form action="" method="post" class="was-validated border border-primary bg-light mb-2 justify-content-center">
   <div class="form-group">
@@ -12,6 +13,7 @@
     <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
   {% endbuttons %}
 </form>
+{% endif %}
 {% endblock %}
 {% block section_two %}
 <h4><p class="text-white-75 font-weight-light mb-5" name="titre_TabEtape">Indiquer les étapes des etudes</p></h4>
@@ -25,7 +27,9 @@
     <tr>
       <th scope="col">Nom de l'étape</th>
       <th scope="col">Etude liée</th>
+      {% if user.is_staff or "Administrateur service" in request.session.groups %}
       <th scope="col">Action</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -37,7 +41,9 @@
         {% else %}
         <td>{{ item.etude }}</td>
         {% endif %}
-        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/etapes/edit/{{item.id}}/">EDITER</a><div id="supprEtape" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
+        {% if user.is_staff or "Administrateur service" in request.session.groups %}
+        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/etapes/edit/{{item.id}}">EDITER</a><div id="supprEtape" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

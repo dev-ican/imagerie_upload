@@ -18,7 +18,7 @@
             <ul class="nav navbar-nav navbar-right main-nav">
                 <li><a href="{% url 'index' %}">Accueil</a></li>
                 <li><a name="form" href="{% url 'formulaire' %}">Formulaire d'upload</a></li>
-                {% if user.is_staff or "Administrateur service" in request.session.groups or "Collaborateurs" in request.session.groups  %}
+                {% if user.is_staff or "Administrateur service" in request.session.groups or "Collaborateurs" in request.session.groups or "URC" in request.session.groups %}
                     <li><a name="administration" href="{% url 'admin' %}">Administration</a></li>
                 {% endif %}
                 <li><a href="{% url 'contact_gestion' %}">Contacts</a></li>

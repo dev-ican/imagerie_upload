@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='refinfocentre',
+            model_name='Centre',
             name='numero',
             field=models.IntegerField(blank=True),
         ),

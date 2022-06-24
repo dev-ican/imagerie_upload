@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.contrib.auth.models import User
-from upload.models import RefTypeAction, log
+from upload.models import RefTypeAction, Log
 
 from .forms import LogIn
 
@@ -33,7 +33,7 @@ def get_login(request):
                     "Connexion de l'utilisateur "
                     + str(user_current.username)
                 )
-                log.objects.create(
+                Log.objects.create(
                     user=user_current,
                     action=type_action,
                     date=date_now,
@@ -64,7 +64,7 @@ def log_out(request):
     nom_documentaire = "Deconnexion de l'utilisateur " + str(
         user_current.username
     )
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,

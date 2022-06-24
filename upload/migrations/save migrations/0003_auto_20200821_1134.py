@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
             options={},
         ),
         migrations.AlterModelOptions(
-            name='refinfocentre',
+            name='Centre',
             options={},
         ),
         migrations.AlterModelOptions(
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
             table=None,
         ),
         migrations.AlterModelTable(
-            name='refinfocentre',
+            name='Centre',
             table=None,
         ),
         migrations.AlterModelTable(

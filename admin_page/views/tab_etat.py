@@ -6,15 +6,16 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
-from upload.models import RefEtapeEtude, SuiviUpload
+from upload.models import RefEtapeEtude, RefEtatEtape, SuiviUpload
+from ..filters import RefEtatEtapeFilter, RefEtapeEtudeFilter
 
 from .module_log import information_log
 from .module_views import (
-    dict_upload,
-    etude_recente,
+    info_upload,
+    centres_etude_selectionnee,
     gestion_etape,
     gestion_etude_recente,
-    info_etape,
+    infos_etats_etape,
     nom_etape,
 )
 
@@ -26,75 +27,87 @@ from .module_views import (
 
 @login_required(login_url="/auth/auth_in/")
 def admin_up(request):
-    """Affiche la page du tableau gérant les différents état des étapes d'une
-    étude."""
-    tab_list = []
-    list_centre = []
-    dictupload = {}
-    dict_nbr = {}
+    """Affiche la page du tableau gérant les différents états des étapes d'une étude."""
 
+    resultat = []
+    list_centre = []
+    donnees_de_l_upload = {}
+    nbr_noms_etape = {}
+    # etat_etape_filter = RefEtatEtapeFilter(request.GET, queryset=RefEtatEtape.objects.all())
+    # etape_etude_filter = RefEtapeEtudeFilter(request.GET, queryset=RefEtapeEtude.objects.all())
+    
     try:
-        etuderecente = SuiviUpload.objects.get(
-            id=SuiviUpload.objects.all().order_by(
-                "dossier", "date_upload"
-            )[:1]
-        )
+        # etude_selectionne correspond à la dernière étude créée.
+        etude_selectionnee = SuiviUpload.objects.get(id=SuiviUpload.objects.all().order_by("dossier", "date_upload")[:1])
     except ObjectDoesNotExist:
         return render(request, "admin_page_upload.html")
 
     try:
-        dossier_all = SuiviUpload.objects.filter(
-            etude__etude__id=etuderecente.etude.etude.id
-        ).distinct("dossier")
-        nbr_etape = RefEtapeEtude.objects.filter(
-            etude=etuderecente.etude.etude
-        ).count()
-        nometape = nom_etape(etuderecente.etude.id)
+        # dossiers correspond aux objets "SuiviUpload" liés à l'étude selectionnée.
+        dossiers = SuiviUpload.objects.filter(etude__etude__id=etude_selectionnee.etude.etude.id).distinct("dossier")
 
-        for files in dossier_all:
-            dictupload = {}
-            dictupload = dict_upload(dictupload, files)
-            infoetape = info_etape(files)
-            var_etape = gestion_etape(
-                nometape, infoetape, nbr_etape,files,etuderecente
-            )
+        # nbr_etape correspond au nombre d'étapes de l'étude selectionnée.
+        nbr_etape = RefEtapeEtude.objects.filter(etude=etude_selectionnee.etude.etude).count()
+
+        # noms_etape est une liste comprenant le nom des étapes liés à l'étude selectionnée.
+        noms_etape = nom_etape(etude_selectionnee.etude.id)
+
+    
+        for dossier in dossiers:
+            """
+            La fonction info_upload renvoi un dictionnaire comprenant les données suivante :
+                infos_upload["id_"] = suivi_upload.id
+                infos_upload["Etudes"] = var_qc.controle_qualite.nom
+                infos_upload["Etudes_id"] = var_qc.id
+                infos_upload["id_patient"] = nom_de_l_etude[0].id_patient
+                infos_upload["nbr_upload"] =  nbr_de_fichiers
+            
+            """
+            donnees_de_l_upload = info_upload(dossier)
+            infoetape = infos_etats_etape(dossier)
+            var_etape = gestion_etape(noms_etape,
+                                      infoetape,  
+                                      nbr_etape,
+                                      dossier,
+                                      etude_selectionnee
+                                      )
             if len(var_etape) == 2:
-                dictupload["etape_etude"] = var_etape[1]
-            dictupload["error"] = var_etape[0]
-            tab_list.append(dict(dictupload))
-        dict_nbr["nbr_etape"] = nbr_etape
-        dict_nbr["nom_etape"] = nometape
-        list_centre = etude_recente(etuderecente, dossier_all)
-        gestion_info = gestion_etude_recente(
-            etuderecente, dossier_all, list_centre
-        )
-    except ObjectDoesNotExist:
-        dossier_all = ""
-        gestion_info = gestion_etude_recente(
-            etuderecente, dossier_all, list_centre
-        )
+                donnees_de_l_upload["etape_etude"] = var_etape[1]
+            donnees_de_l_upload["error"] = var_etape[0]
+            resultat.append(dict(donnees_de_l_upload))
 
-    nbr_entrée = len(tab_list)
+        nbr_noms_etape["nbr_etape"] = nbr_etape
+        nbr_noms_etape["nom_etape"] = noms_etape
+        list_centre = centres_etude_selectionnee(dossiers)
+        gestion_info = gestion_etude_recente(etude_selectionnee,
+                                             # dossiers,
+                                             list_centre
+                                             )
+        print(f"gestion_info : {gestion_info}")
+    except ObjectDoesNotExist:
+        dossiers = ""
+        gestion_info = gestion_etude_recente(etude_selectionnee,
+                                             # dossiers,
+                                             list_centre
+                                             )
+
+    nbr_entree = len(resultat)
     # Enregistrement du log-----------------------------
-    # --------------------------------------------------
-    nom_documentaire = " Affiche le tableau des études en cours"
+    nom_documentaire = "Affiche le tableau des études en cours"
     information_log(request, nom_documentaire)
     # --------------------------------------------------
-    # --------------------------------------------------
+    # print(resultat)
+    # print(f"nbr_noms_etape : {nbr_noms_etape}")
     # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
-    return render(
-        request,
-        "admin_page_upload.html",
-        {
-            "resultat": tab_list,
-            "dict_nbr": dict_nbr,
-            "str_etude": gestion_info[1],
-            "str_centre": gestion_info[0],
-            "taille": nbr_entrée,
-            "debug" : dict_nbr,
-            "title_page":"Administration des étapes"
-        },
-    )
+    return render(request, "admin_page_upload.html",{"resultat": resultat,
+                                                    "nbr_noms_etape": nbr_noms_etape,
+                                                    "str_etude": gestion_info[1],
+                                                    "str_centre": gestion_info[0],
+                                                    "nbr_entree": nbr_entree,
+                                                    # "title_page":"Administration des étapes",
+                                                    # "filter_etat_etape" : etat_etape_filter,
+                                                    # "filter_etape_etude": etape_etude_filter
+                                                    })
 
 
 @login_required(login_url="/auth/auth_in/")

@@ -2,6 +2,7 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_one %}
+{% if user.is_staff or "Administrateur service" in request.session.groups %}
 <h4><p class="text-white-75 font-weight-light mb-5">Ajouter un nouveau document</p></h4>
 <form action="" method="post" class="was-validated border border-primary bg-light mb-2 justify-content-center" enctype="multipart/form-data">
   <div class="form-group">
@@ -12,6 +13,7 @@
     <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
   {% endbuttons %}
 </form>
+{% endif %}
 {% endblock %}
 {% block section_two %}
 <h4><p class="text-white-75 font-weight-light mb-5" name="titre_document">Les documents enregistrés</p></h4>
@@ -30,7 +32,11 @@
         <td>{{ item.titre }}</td>
         <td>{{ item.description }}</td>
         <td>{{ item.date }}</td>
+        {% if user.is_staff or "Administrateur service" in request.session.groups %}
         <td><div class="row d-inline-flex ml-1 col-12"><div class="col-6"><a role="button" class="btn btn-sm btn-outline-secondary mb-1" href="/doc/downOnce/{{item.id}}/">Télécharger</a></div><div class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" href="/doc/edit/{{item.id}}/">editer</a></div><div class="col-4"><a id="supprDoc" role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">suppr.</a></div></div></td>
+        {% elif "URC" in request.session.groups %}
+        <td><div class="row d-inline-flex ml-1 col-12"><div class="col-6"><a role="button" class="btn btn-sm btn-outline-secondary mb-1" href="/doc/downOnce/{{item.id}}/">Télécharger</a></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

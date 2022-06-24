@@ -2,6 +2,7 @@
 {% load static %}
 {% load bootstrap4 %}
 {% block section_one %}
+{% if user.is_staff or "Administrateur service" in request.session.groups %}
 <h4><p class="text-white-75 font-weight-light mb-5">Ajouter un nouveau Centre</p></h4>
 <form action="" method="post" class="was-validated border border-primary bg-light mb-2 justify-content-center">
   <div class="form-group">
@@ -12,6 +13,7 @@
     <button type="submit" class="btn btn-primary d-flex m-3" name="login">Ajouter</button>
   {% endbuttons %}
 </form>
+{% endif %}
 {% endblock %}
 {% block section_two %}
 <h4><p class="text-white-75 font-weight-light mb-5" name="titre_TabCentre">Les centres actuellement enregistrés</p></h4>
@@ -22,17 +24,22 @@
       <th scope="col">Numéro du centre</th>
       <th scope="col">Nombre d'upload</th>
       <th scope="col">Date d'ajout</th>
+      {% if user.is_staff or "Administrateur service" in request.session.groups %}
       <th scope="col">Actions</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
     {% for item in resultat %}
       <tr>
+        {% comment %} <td>{{ item.id }}</td> {% endcomment %}
         <td>{{ item.nom }}</td>
         <td>{{ item.numero }}</td>
         <td>{{ item.nbr }}</td>
         <td>{{ item.date_ajout }}</td>
-        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/centre/edit/{{item.id}}/">EDITER</a><div id="supprCentre" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
+        {% if user.is_staff or "Administrateur service" in request.session.groups %}
+        <td><div class="row justify-content-center"><a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/centre/edit/{{item.id}}">EDITER</a><div id="supprCentre" class="col-4"><a role="button" class="btn btn-sm btn-outline-secondary" value="{{item.id}}">SUPPR.</a></div></div></td>
+        {% endif %}
       </tr>
     {% endfor %}
   </tbody>

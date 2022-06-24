@@ -67,7 +67,7 @@ def compte_valide(request, id_user):
     # Propriété et appel de la fonction d'envois de mail
     origin = 'valider'
     check = [check_user.demandeur.email]
-    send_mail(request.user,User.objects.get(pk=id_user),check,origin)
+    # send_mail(request.user,User.objects.get(pk=id_user),check,origin)
 
     # Message à afficher aux utilisateurs
     message = messages.add_message(
@@ -112,7 +112,7 @@ def compte_verif(request, id_user):
 
     origin = 'verification'
     check = ['support_si@ican-institute.org']
-    send_mail(request.user,User.objects.get(pk=id_user),check,origin)
+    # send_mail(request.user,User.objects.get(pk=id_user),check,origin)
 
     message = messages.add_message(
         request, messages.WARNING, "Envoi de votre demande effectué"

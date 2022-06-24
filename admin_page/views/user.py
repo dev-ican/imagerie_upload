@@ -128,11 +128,9 @@ def user_del(request, id_etape):
     if request.method == "POST":
         suppr = True
         info_suivi = User.objects.get(id=id_etape)
-        info_upload = SuiviUpload.objects.filter(
-            user__id=info_suivi.id
-        )
+        info_upload = SuiviUpload.objects.filter(user__id=info_suivi.id)
         if info_upload.exists():
-            for nbr in info_upload:
+            for nbr in info_upload :
                 x += 1
             suppr = False
         if suppr:

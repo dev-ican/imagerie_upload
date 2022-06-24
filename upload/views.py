@@ -13,7 +13,7 @@ from django.contrib import messages
 from .models import (
     DossierUpload, JonctionEtapeSuivi, JonctionUtilisateurEtude,
     RefControleQualite, RefEtapeEtude, RefEtatEtape, RefTypeAction,
-    SuiviDocument, SuiviUpload, log, RefInfocentre)
+    SuiviDocument, SuiviUpload, Log, RefInfoCentre)
 from django.views.decorators.csrf import csrf_exempt,csrf_protect
 
 
@@ -29,7 +29,7 @@ def index(request):
         tab_etude.append(item.etude.id)
     doc_list = SuiviDocument.objects.filter(etude__id__in=tab_etude)
     type_action = RefTypeAction.objects.get(pk=4)
-    log.objects.create(
+    Log.objects.create(
         user=user_current,
         action=type_action,
         date=date_now,
@@ -50,7 +50,7 @@ def contact(request):
     date_now = timezone.now()
     user_current = request.user
     type_action = RefTypeAction.objects.get(pk=4)
-    log.objects.create(user=user_current,
+    Log.objects.create(user=user_current,
                       action=type_action,
                       date=date_now,
                       info="Visite des contacts",
@@ -76,7 +76,7 @@ def formulaire(request):
         # Renseignement de la table de Log
         type_action = RefTypeAction.objects.get(pk=4)
         info_str = "Utilisation du formulaire pour envois de donnée pour l'ID patient : " + str(nip)
-        log_info = log(
+        log_info = Log(
             user=user_current,
             action=type_action,
             date=date_now,
@@ -96,7 +96,7 @@ def formulaire(request):
         date_now = timezone.now()
         filez = request.FILES.getlist("upload")
 
-        num_centre = RefInfocentre.objects.get(user__exact=user_current.id)
+        num_centre = RefInfoCentre.objects.get(user__exact=user_current.id)
         if len(str(num_centre.numero)) == 3 :
             num_centre_val = str(num_centre.numero)
         elif len(str(num_centre.numero)) == 2:

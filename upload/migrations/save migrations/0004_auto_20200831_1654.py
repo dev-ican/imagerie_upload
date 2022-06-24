@@ -14,11 +14,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RemoveField(
-            model_name='refinfocentre',
+            model_name='Centre',
             name='user',
         ),
         migrations.AddField(
-            model_name='refinfocentre',
+            model_name='Centre',
             name='user',
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL),
         ),
