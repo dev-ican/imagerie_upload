@@ -36,22 +36,22 @@ def admin_etape(request):
         #val_etude = request.POST["etudes"]
         #query = RefEtudes.objects.get(id__exact=val_etude)
         RefEtapeEtude.objects.create(nom=val_nom) #etude=query)
+
         # Enregistrement du log--------------------------------
         # -----------------------------------------------------
         nom_documentaire = " a créé l'étape : " + val_nom
         creation_log(request, nom_documentaire)
         # -----------------------------------------------------
         # -----------------------------------------------------
+        
     form = FormsEtape()
     #liste_protocole = choice_etude(True)
     #form.fields["etudes"].choices = liste_protocole
     #form.fields["etudes"].initial = [0]
     etape_tab = RefEtapeEtude.objects.all()
-    return render(
-        request,
-        "admin_etapes.html",
-        {"form": form, "resultat": etape_tab},
-    )
+    return render(request, "admin_etapes.html", {"form": form,
+                                                 "resultat": etape_tab
+                                                })
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -88,6 +88,7 @@ def etape_edit(request, id_etape):
         form = FormsEtape()
         url = "/admin_page/etapes/edit/" + id_etape + "/"
         return HttpResponseRedirect(url)
+
     else:
         etape_filtre = RefEtapeEtude.objects.get(id=id_etape)
         #id_etude = RefEtudes.objects.get(pk=1)
@@ -106,10 +107,11 @@ def etape_edit(request, id_etape):
         # --------------------------------------------------
         # --------------------------------------------------
 
+    # etape_tab = RefEtudes.objects.filter(refetapeetude__id=id_etape)
     etape_tab = RefEtudes.objects.filter(refetapeetude__id=id_etape)
     return render(request, "admin_etapes_edit.html", {"form": form,
                                                       "resultat": etape_tab,
-                                                      "select": int(id_etape),
+                                                    #   "select": int(id_etape),
                                                      })
 
 

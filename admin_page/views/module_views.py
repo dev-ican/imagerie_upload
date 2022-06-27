@@ -41,12 +41,14 @@ def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude
 
 # ancien nom : etude_recente
 def centres_etude_selectionnee(dossiers):
-    """renvoi les centres de l'étude selectionnée."""
-
+    """renvoi les centres liès à l'étude selectionnée."""
+    # print(f"dossiers01 : {dossiers}")
     centres = []
+    
     try:
         for dossier in dossiers:
             centre = RefInfoCentre.objects.get(user=dossier.user.id)
+            # print(f"centre01 : {centre}")
             if centre not in centres:
                 centres.append(centre)
 
@@ -65,41 +67,40 @@ def etude_tris(dossier_all):
     return list_centre
 
 # def gestion_etude_recente(etude_recente, dossier_all, list_centre):
-def gestion_etude_recente(etude_recente, list_centre):
-    """"""
+def gestion_etude_selectionnee(etude_selectionnee, centres):
+    """Renvoi une liste comprenant """
 
     etudes = RefEtudes.objects.all()
-    str_etude = []
-    str_centre = []
-    # str_dict = {}
+    infos_etude = []
+    infos_centre = []
+    print(f'centres: {centres}')
 
-    for centre in list_centre:
-
-        str_dict_centre = {}
-        str_dict_centre["id"] = centre.id
-        str_dict_centre["nom"] = str(centre.nom) + str(centre.numero)
-        str_centre.append(str_dict_centre)
+    for centre in centres:
+        dict_centre = {}
+        dict_centre["id"] = centre.id
+        dict_centre["nom"] = str(centre.nom) + str(centre.numero)
+        infos_centre.append(dict_centre)
 
     for etude in etudes:
-        str_dict = {}
+        dict_etude = {}
 
         try:
-            var_id = etude_recente.etude.etude.id
+            etude_selectionnee_id = etude_selectionnee.etude.etude.id
         except:
-            var_id = -1
+            etude_selectionnee_id = -1
 
-        if etude.id == var_id:
-            str_dict["id"] = str(etude.id)
-            str_dict["option"] = "selected"
-            str_dict["nom"] = etude.nom
-            str_etude.append(str_dict)
+        if etude.id == etude_selectionnee_id:
+            dict_etude["id"] = str(etude.id)
+            dict_etude["option"] = "selected"
+            dict_etude["nom"] = etude.nom
+            infos_etude.append(dict_etude)
         else:
-            str_dict["id"] = str(etude.id)
-            str_dict["option"] = ""
-            str_dict["nom"] = etude.nom
-            str_etude.append(str_dict)
+            dict_etude["id"] = str(etude.id)
+            dict_etude["option"] = ""
+            dict_etude["nom"] = etude.nom
+            infos_etude.append(dict_etude)
 
-    return [str_centre, str_etude]
+    return [infos_centre, infos_etude]
 
 
 def gestion_etude_tris(etude_change, dossier_all, list_centre):

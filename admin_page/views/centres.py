@@ -25,7 +25,8 @@ from .module_log import (
 
 @login_required(login_url="/auth/auth_in/")
 def admin_centre(request):
-    """Charge la page index pour l'ajout ou l'édition d'un centre."""
+    """Charge la page index pour l'ajout, l'édition ou la suppression d'un centre."""
+
     if request.method == "POST":
         nom = request.POST["nom"]
         numero = request.POST["numero"]
@@ -44,30 +45,36 @@ def admin_centre(request):
         # ------------------------------------------------------------
         
     form = FormCentre()
-    centre_tab = RefInfoCentre.objects.all().order_by("nom")
-    resultat_info_centre = []
-    for item_centre in centre_tab:
-        alluser_centre = User.objects.filter(refinfocentre__id=item_centre.id)
-        allinfo_suivi = SuiviUpload.objects.filter(user__in=alluser_centre).distinct("dossier").count()
-        dict_info = {"nom":item_centre.nom,
-                     "numero":item_centre.numero,
-                     "date_ajout":item_centre.date_ajout,
-                     "nbr":allinfo_suivi
-                     }
-        resultat_info_centre.append(dict_info)
+    # centres = RefInfoCentre.objects.all().order_by("nom")
+    # resultat_info_centre = []
+    # for centre in centres:
+    #     alluser_centre = User.objects.filter(refinfocentre__id=centre.id)
+    #     allinfo_suivi = SuiviUpload.objects.filter(user__in=alluser_centre).distinct("dossier").count()
+    #     dict_info = {"nom":centre.nom,
+    #                  "numero":centre.numero,
+    #                  "date_ajout":centre.date_ajout,
+    #                  "nbr":allinfo_suivi
+    #                  }
+    #     resultat_info_centre.append(dict_info)
+    
+    centre_query = RefInfoCentre.objects.all().order_by("nom")
 
-    return render(request, "admin_centre.html", {"form": form, "resultat": resultat_info_centre})
+    return render(request, "admin_centre.html", {"form": form,
+                                                #  "resultat": resultat_info_centre
+                                                 "resultat": centre_query
+                                                 })
 
 
 @login_required(login_url="/auth/auth_in/")
-def centre_edit(request, id_etape):
+def centre_edit(request, id_centre):
     """Charge la page d'édition des centres."""
+
     if request.method == "POST":
         form = FormCentre()
         nom = request.POST["nom"]
         numero = request.POST["numero"]
         date = request.POST["date_ajout"]
-        user_info = RefInfoCentre.objects.get(pk=id_etape)
+        user_info = RefInfoCentre.objects.get(pk=id_centre)
 
         # Enregistrement du log------------------------------
         nom_documentaire = (
@@ -89,7 +96,7 @@ def centre_edit(request, id_etape):
         return HttpResponseRedirect("/admin_page/centre/")
 
     else:
-        user_info = RefInfoCentre.objects.get(pk=id_etape)
+        user_info = RefInfoCentre.objects.get(pk=id_centre)
         format_date = user_info.date_ajout.strftime('%Y-%m-%d')
         info = {"nom": user_info.nom,
                 "numero": user_info.numero,
@@ -108,10 +115,10 @@ def centre_edit(request, id_etape):
         # ----------------------------------------------------------------------------------------------
 
     centre_tab = RefInfoCentre.objects.all().order_by("nom")
-    return render(request,"admin_centre_edit.html",{"form": form,
-                                                    "resultat": centre_tab,
-                                                    "select": int(id_etape)
-                                                    })
+    return render(request, "admin_centre_edit.html", {"form": form,
+                                                     "resultat": centre_tab,
+                                                    #  "select": int(id_centre)
+                                                     })
 
 
 @login_required(login_url="/auth/auth_in/")

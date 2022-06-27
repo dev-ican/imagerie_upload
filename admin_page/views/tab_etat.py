@@ -14,7 +14,7 @@ from .module_views import (
     info_upload,
     centres_etude_selectionnee,
     gestion_etape,
-    gestion_etude_recente,
+    gestion_etude_selectionnee,
     infos_etats_etape,
     nom_etape,
 )
@@ -78,17 +78,20 @@ def admin_up(request):
 
         nbr_noms_etape["nbr_etape"] = nbr_etape
         nbr_noms_etape["nom_etape"] = noms_etape
-        list_centre = centres_etude_selectionnee(dossiers)
-        gestion_info = gestion_etude_recente(etude_selectionnee,
+        print(f"dossiers : {dossiers}")
+        centres_etude_selec = centres_etude_selectionnee(dossiers)
+        # print(f"etude_selectionnee : {etude_selectionnee}")
+        # print(f"centres_etude_selec : {centres_etude_selec}")
+        gestion_info = gestion_etude_selectionnee(etude_selectionnee,
                                              # dossiers,
-                                             list_centre
+                                             centres_etude_selec
                                              )
-        print(f"gestion_info : {gestion_info}")
+        # print(f"gestion_info : {gestion_info}")
     except ObjectDoesNotExist:
         dossiers = ""
-        gestion_info = gestion_etude_recente(etude_selectionnee,
+        gestion_info = gestion_etude_selectionnee(etude_selectionnee,
                                              # dossiers,
-                                             list_centre
+                                             centres_etude_selec
                                              )
 
     nbr_entree = len(resultat)
