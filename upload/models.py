@@ -36,7 +36,7 @@ class RefEtatValideCompte(models.Model):
 
 
 class SuiviUpload(models.Model):
-	'''Modèle gérant le chargement de fichier'''
+	'''Modèle gérant les fichiers uploadés'''
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	etude = models.ForeignKey("JonctionUtilisateurEtude", on_delete=models.CASCADE)
 	id_patient = models.CharField(max_length=5000)
@@ -47,7 +47,7 @@ class SuiviUpload(models.Model):
 
 
 class DossierUpload(models.Model):
-	'''Modèle gérant les dossiers en lien avec le suiviupload'''
+	'''Modèle gérant les dossiers patients en lien avec le suiviupload'''
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	controle_qualite = models.ForeignKey("RefControleQualite", on_delete=models.CASCADE, null=True)
 	date = models.DateTimeField("Date de création")

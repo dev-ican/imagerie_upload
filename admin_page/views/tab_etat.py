@@ -6,8 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
-from upload.models import RefEtapeEtude, RefEtatEtape, SuiviUpload
+from upload.models import RefEtapeEtude, RefEtatEtape, SuiviUpload, RefInfoCentre, RefEtudes
 from ..filters import RefEtatEtapeFilter, RefEtapeEtudeFilter
+from ..forms import FormSelectionEtudeEtape
 
 from .module_log import information_log
 from .module_views import (
@@ -35,78 +36,88 @@ def admin_up(request):
     nbr_noms_etape = {}
     # etat_etape_filter = RefEtatEtapeFilter(request.GET, queryset=RefEtatEtape.objects.all())
     # etape_etude_filter = RefEtapeEtudeFilter(request.GET, queryset=RefEtapeEtude.objects.all())
-    
-    try:
-        # etude_selectionne correspond à la dernière étude créée.
-        etude_selectionnee = SuiviUpload.objects.get(id=SuiviUpload.objects.all().order_by("dossier", "date_upload")[:1])
-    except ObjectDoesNotExist:
-        return render(request, "admin_page_upload.html")
+    form = FormSelectionEtudeEtape(request.POST)
+    # print(f"form : {form}")
+    # print('Les données POST sont : ', request.POST)
 
-    try:
-        # dossiers correspond aux objets "SuiviUpload" liés à l'étude selectionnée.
-        dossiers = SuiviUpload.objects.filter(etude__etude__id=etude_selectionnee.etude.etude.id).distinct("dossier")
+    if form.is_valid():
+        centre_choice_id = form.cleaned_data["centre_choice"]
+        etude_choice_id = form.cleaned_data["etude_choice"]
 
-        # nbr_etape correspond au nombre d'étapes de l'étude selectionnée.
-        nbr_etape = RefEtapeEtude.objects.filter(etude=etude_selectionnee.etude.etude).count()
+        try:
+            # etude_selectionnee correspond à la dernière étude créée.
+            # etude_selectionnee = SuiviUpload.objects.get(id=SuiviUpload.objects.all().order_by("dossier", "date_upload")[:1])
+            etude_selectionnee = RefEtudes.objects.get(id=etude_choice_id)
+        except ObjectDoesNotExist:
+            return render(request, "admin_page_upload.html")
 
-        # noms_etape est une liste comprenant le nom des étapes liés à l'étude selectionnée.
-        noms_etape = nom_etape(etude_selectionnee.etude.id)
+        try:
+            # dossiers correspond aux objets "SuiviUpload" liés à l'étude selectionnée.
+            # dossiers = SuiviUpload.objects.filter(etude__etude__id=etude_selectionnee.etude.etude.id).distinct("dossier")
+            dossiers = SuiviUpload.objects.filter(etude__etude__id=etude_choice_id)
+            # print(f"dossiers : {dossiers}")
 
-    
-        for dossier in dossiers:
-            """
-            La fonction info_upload renvoi un dictionnaire comprenant les données suivante :
-                infos_upload["id_"] = suivi_upload.id
-                infos_upload["Etudes"] = var_qc.controle_qualite.nom
-                infos_upload["Etudes_id"] = var_qc.id
-                infos_upload["id_patient"] = nom_de_l_etude[0].id_patient
-                infos_upload["nbr_upload"] =  nbr_de_fichiers
-            
-            """
-            donnees_de_l_upload = info_upload(dossier)
-            infoetape = infos_etats_etape(dossier)
-            var_etape = gestion_etape(noms_etape,
-                                      infoetape,  
-                                      nbr_etape,
-                                      dossier,
-                                      etude_selectionnee
-                                      )
-            if len(var_etape) == 2:
-                donnees_de_l_upload["etape_etude"] = var_etape[1]
-            donnees_de_l_upload["error"] = var_etape[0]
-            resultat.append(dict(donnees_de_l_upload))
+            # nbr_etape correspond au nombre d'étapes de l'étude selectionnée.
+            # nbr_etape = RefEtapeEtude.objects.filter(etude=etude_selectionnee.etude.etude).count()
+            nbr_etape = RefEtapeEtude.objects.filter(etude=etude_selectionnee).count()
 
-        nbr_noms_etape["nbr_etape"] = nbr_etape
-        nbr_noms_etape["nom_etape"] = noms_etape
-        print(f"dossiers : {dossiers}")
-        centres_etude_selec = centres_etude_selectionnee(dossiers)
-        # print(f"etude_selectionnee : {etude_selectionnee}")
-        # print(f"centres_etude_selec : {centres_etude_selec}")
-        gestion_info = gestion_etude_selectionnee(etude_selectionnee,
-                                             # dossiers,
-                                             centres_etude_selec
-                                             )
-        # print(f"gestion_info : {gestion_info}")
-    except ObjectDoesNotExist:
-        dossiers = ""
-        gestion_info = gestion_etude_selectionnee(etude_selectionnee,
-                                             # dossiers,
-                                             centres_etude_selec
-                                             )
+            # noms_etape est une liste comprenant le nom des étapes liés à l'étude selectionnée.
+            # noms_etape = nom_etape(etude_selectionnee.etude.id)
+            noms_etape = nom_etape(etude_selectionnee)
+
+        
+            for dossier in dossiers:
+                """
+                La fonction info_upload renvoi un dictionnaire comprenant les données suivante :
+                    infos_upload["id_"] = suivi_upload.id
+                    infos_upload["Etudes"] = var_qc.controle_qualite.nom
+                    infos_upload["Etudes_id"] = var_qc.id
+                    infos_upload["id_patient"] = nom_de_l_etude[0].id_patient
+                    infos_upload["nbr_upload"] =  nbr_de_fichiers
+                
+                """
+                donnees_de_l_upload = info_upload(dossier)
+                infoetape = infos_etats_etape(dossier)
+                var_etape = gestion_etape(noms_etape,
+                                        infoetape,  
+                                        nbr_etape,
+                                        dossier,
+                                        etude_selectionnee
+                                        )
+                if len(var_etape) == 2:
+                    donnees_de_l_upload["etape_etude"] = var_etape[1]
+                donnees_de_l_upload["error"] = var_etape[0]
+                resultat.append(dict(donnees_de_l_upload))
+
+            nbr_noms_etape["nbr_etape"] = nbr_etape
+            nbr_noms_etape["nom_etape"] = noms_etape
+            centres_etude_selec = centres_etude_selectionnee(dossiers)
+            gestion_info = gestion_etude_selectionnee(etude_selectionnee,
+                                                    # dossiers,
+                                                    centres_etude_selec
+                                                    )
+            # print(f"gestion_info : {gestion_info}")
+        except ObjectDoesNotExist:
+            dossiers = ""
+            gestion_info = gestion_etude_selectionnee(etude_selectionnee,
+                                                # dossiers,
+                                                centres_etude_selec
+                                                )
 
     nbr_entree = len(resultat)
+
     # Enregistrement du log-----------------------------
     nom_documentaire = "Affiche le tableau des études en cours"
     information_log(request, nom_documentaire)
     # --------------------------------------------------
-    # print(resultat)
-    # print(f"nbr_noms_etape : {nbr_noms_etape}")
+
     # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
     return render(request, "admin_page_upload.html",{"resultat": resultat,
                                                     "nbr_noms_etape": nbr_noms_etape,
-                                                    "str_etude": gestion_info[1],
-                                                    "str_centre": gestion_info[0],
+                                                    # "str_etude": gestion_info[1],
+                                                    # "str_centre": gestion_info[0],
                                                     "nbr_entree": nbr_entree,
+                                                    "form": form
                                                     # "title_page":"Administration des étapes",
                                                     # "filter_etat_etape" : etat_etape_filter,
                                                     # "filter_etape_etude": etape_etude_filter

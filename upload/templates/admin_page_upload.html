@@ -12,57 +12,44 @@
       <span>Tableau récapitulatif des étapes pour chaque dossier chargé dans le système</span> 
     </div>
   </div>
-  {% comment %} <form method="get">
-    {{ filter_etat_etape.form.as_p}}
-    <button type="submit">Recherche</button>
-  </form>
-  <ul>
-  {% for etat_etape in filter_etat_etape.qs %}
-    <li>{{ etat_etape.nom }}
-  {% endfor %}
-  </ul>
-  <form>
-  <form method="get">
-    {{ filter_etape_etude.form.as_p}}
-    <button type="submit">Recherche</button>
-  </form>
-  <ul>
-  {% for etape_etude in filter_etape_etude.qs %}
-    <li>{{ etape_etude.nom }}  {{ etape_etude.etude }}
-  {% endfor %}
-  </ul> {% endcomment %}
-  <form>
+  {% comment %} <form>
   <div class="form-row align-items-center">
-    <div class="col-auto my-1">
-      {% csrf_token %}
-      <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Classer par etude</label>
-      <select name="select_centre" class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+    <div class="col-auto my-1"> {% endcomment %}
+      {% comment %} {% csrf_token %} {% endcomment %}
+      {% comment %} <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Classer par etude</label> {% endcomment %}
+      {% comment %} <select name="select_centre" class="custom-select mr-sm-2" id="inlineFormCustomSelect">
         {% for centre in str_centre %}
         <option name="select_{{centre.nom}}" value="{{centre.id}}">{{centre.nom}}</option>
         {% endfor %}
       </select>
     </div>
-    <div class="col-auto my-1">
-      <label class="mr-sm-2 sr-only" for="FormCustomSelect">Indiquer le centre</label>
-      <select name="select_etude" class="custom-select mr-sm-2" id="FormCustomSelect">
+    <div class="col-auto my-1"> {% endcomment %}
+      {% comment %} <label class="mr-sm-2 sr-only" for="FormCustomSelect">Indiquer le centre</label> {% endcomment %}
+      {% comment %} <select name="select_etude" class="custom-select mr-sm-2" id="FormCustomSelect">
         {% for etude in str_etude %}
           <option name="select_{{etude.nom}}" value="{{etude.id}}" {{etude.option}}>{{etude.nom}}</option>
         {% endfor %}
-      </select>
-    </div>
+      </select> {% endcomment %}
+      {% comment %} <input type="submit" value="Envoyer le formulaire"> {% endcomment %}
+      <form action="" method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Envoyer">
+      </form>
+    {% comment %} </div>
   </div>
   </form>
-</div>
+</div> {% endcomment %}
 {% if nbr_entree != 0 %}
+
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
       <th scope="col">QC</th>
       <th scope="col">ID patient</th>
-      {% comment %} <th scope="col">Nbr de fichiers</th> {% endcomment %}
       <!--Il faut ajouter ici le tri-->
-      {% for item_etape in nbr_noms_etape.nom_etape %}
-        <th scope="col">{{ item_etape }}</th>
+      {% for nom_etape in nbr_noms_etape.nom_etape %}
+        <th scope="col">{{ nom_etape }}</th>
       {% endfor %}
     </tr>
   </thead>
@@ -77,7 +64,6 @@
         <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod_{{ item.Etudes_id }}{{item.id_}}"><h5><span class="badge badge-warning">{{ item.Etudes }}</span><h5></td>
         {% endif %}
         <td><a href="/admin_page/upfiles/dospat/{{ item.id_ }}/"><h5><span class="badge badge-secondary">{{ item.id_patient }}</span></h5></td>
-        {% comment %} <td>{{ item.nbr_upload }}</td> {% endcomment %}
         {% if item.error == True %}
         <td colspan="{{nbr_noms_etape.nbr_etape}}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}

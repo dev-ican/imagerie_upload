@@ -40,14 +40,14 @@ def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude
         return [error, etape_etude]
 
 # ancien nom : etude_recente
-def centres_etude_selectionnee(dossiers):
+def centres_etude_selectionnee(dossiers_suiviupload):
     """renvoi les centres liès à l'étude selectionnée."""
     # print(f"dossiers01 : {dossiers}")
     centres = []
     
     try:
-        for dossier in dossiers:
-            centre = RefInfoCentre.objects.get(user=dossier.user.id)
+        for dossier_suiviupload in dossiers_suiviupload:
+            centre = RefInfoCentre.objects.get(user=dossier_suiviupload.user.id)
             # print(f"centre01 : {centre}")
             if centre not in centres:
                 centres.append(centre)
@@ -57,23 +57,30 @@ def centres_etude_selectionnee(dossiers):
     return centres
 
 
-def etude_tris(dossier_all):
-    """Ce module renvoi les centres liés aux études."""
+def etude_tris(dossiers):
+    """Ce module renvoi les centres liés aux dossiers uploadés."""
+
     list_centre = []
-    for inf in dossier_all:
-        item = RefInfoCentre.objects.get(user=inf.user.id)
-        if item not in list_centre:
-            list_centre.append(item)
+    for dossier in dossiers:
+        try:
+            centre = RefInfoCentre.objects.get(user=dossier.user.id)
+            if centre not in list_centre:
+                list_centre.append(centre)
+
+        except ObjectDoesNotExist:
+            indic_error = "erreur"
+
     return list_centre
+
 
 # def gestion_etude_recente(etude_recente, dossier_all, list_centre):
 def gestion_etude_selectionnee(etude_selectionnee, centres):
-    """Renvoi une liste comprenant """
+    """Renvoi une liste comprenant  """
 
     etudes = RefEtudes.objects.all()
     infos_etude = []
     infos_centre = []
-    print(f'centres: {centres}')
+    # print(f'centres: {centres}')
 
     for centre in centres:
         dict_centre = {}
@@ -161,7 +168,7 @@ def info_upload(suivi_upload):
 def infos_etats_etape(dossier):
     """Renvoi les infos des états liées à une étape."""
     etapes = JonctionEtapeSuivi.objects.filter(upload=dossier.dossier.id).order_by("etape")
-    print(f"etape : {etapes}")
+    # print(f"etape : {etapes}")
     infos_etats = []
 
     for etape in etapes:

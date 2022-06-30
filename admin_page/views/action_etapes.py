@@ -38,41 +38,47 @@ from .module_views import (
 
 
 @login_required(login_url="/auth/auth_in/")
-def upload_tris(request, id_tris):
-	"""Cette page est appelé lors du tris du tableau vers une autre étude, cet
-	appel ce fait via ajax."""
+def upload_tris(request, id_tri):
+	"""Cette page est appelé lors du tri du tableau vers une autre étude, cet
+	appel est fait via ajax."""
+
 	tab_list = []
 	dict_nbr = {}
 	val_centre = request.POST.get("centre")
-	etude_change = RefEtudes.objects.get(id=id_tris)
+	etude_change = RefEtudes.objects.get(id=id_tri)
+
 	if val_centre != "0" and val_centre is not None:
 		user_id = User.objects.filter(Centre__id=val_centre)
-		dossier_all = SuiviUpload.objects.filter(
-			etude__etude=id_tris
-		).filter(user__in=user_id).distinct("dossier")
+		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tri).filter(user__in=user_id).distinct("dossier")
 	else:
-		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tris).distinct("dossier")
+		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tri).distinct("dossier")
+
 	if dossier_all.exists():
-		nbr_etape = RefEtapeEtude.objects.filter(
-			etude=etude_change.id
-		).count()
+		nbr_etape = RefEtapeEtude.objects.filter(etude=etude_change.id).count()
 		nom_etape = nom_etape_tris(etude_change.id)
 		for files in dossier_all:
 			dictupload = info_upload(files)
 			infoetape = infos_etats_etape(files)
-			var_etape = gestion_etape(
-				nom_etape, infoetape, nbr_etape,files,etude_change
-			)
+			var_etape = gestion_etape(nom_etape,
+									  infoetape,
+									  nbr_etape,
+									  files,
+									  etude_change
+									 )
 			dictupload["etape_etude"] = var_etape[1]
 			dictupload["error"] = var_etape[0]
 			tab_list.append(dictupload)
+
 		dict_nbr["nbr_etape"] = nbr_etape
 		dict_nbr["nom_etape"] = nom_etape
+
 	list_centre = etude_tris(dossier_all)
-	gestion_info = gestion_etude_tris(
-		etude_change, dossier_all, list_centre
-	)
+	gestion_info = gestion_etude_tris(etude_change,
+									  dossier_all,
+									  list_centre
+									 )
 	nbr_entrée = len(tab_list)
+
 	# Enregistrement du log------------------------
 	# ---------------------------------------------
 	nom_documentaire = (
@@ -81,17 +87,13 @@ def upload_tris(request, id_tris):
 	information_log(request, nom_documentaire)
 	# ---------------------------------------------
 	# ---------------------------------------------
-	return render(
-		request,
-		"admin_page_upload.html",
-		{
-			"resultat": tab_list,
-			"dict_nbr": dict_nbr,
-			"str_etude": gestion_info[1],
-			"str_centre": gestion_info[0],
-			"taille": nbr_entrée,
-		},
-	)
+
+	return render(request, "admin_page_upload.html", {"resultat": tab_list,
+													  "dict_nbr": dict_nbr,
+													  "str_etude": gestion_info[1],
+													  "str_centre": gestion_info[0],
+													  "taille": nbr_entrée,
+												     })
 
 
 @xframe_options_exempt

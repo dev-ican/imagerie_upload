@@ -2,7 +2,7 @@
 from django import forms
 from django.core.validators import *
 # from django.http import *
-# from upload.models import *
+from upload.models import RefEtudes, RefInfoCentre
 
 
 CHOICES = [(0, "Collaborateurs"),
@@ -55,7 +55,7 @@ class FormsAutorisation(forms.Form):
         )
     centre = forms.ChoiceField(
         widget=forms.Select(),
-        choices=(["liste des études"]),
+        choices=(["liste des centres"]),
         initial="0",
         )
 
@@ -203,3 +203,29 @@ class FormsUserEdit(forms.Form):
             )
         ],
     )
+
+
+class FormSelectionEtudeEtape(forms.Form):
+    """Formulaire permettant de séléctionner un centre et une étude afin d'afficher les données"""
+
+    etudes = RefEtudes.objects.all()
+    choice_etude = []
+    for etude in etudes:
+        choice_etude.append((etude.id, etude.nom))
+
+    centres = RefInfoCentre.objects.all()
+    choice_centre = []
+    for centre in centres:
+        choice_centre.append((centre.id, centre.nom))
+
+    etude_choice = forms.ChoiceField(widget=forms.Select(),
+                                   label="", 
+                                   choices=choice_etude,
+                                   initial="0",
+                                   )
+
+    centre_choice = forms.ChoiceField(widget=forms.Select(),
+                                    label="",
+                                    choices=choice_centre,
+                                    initial="0",
+                                    )

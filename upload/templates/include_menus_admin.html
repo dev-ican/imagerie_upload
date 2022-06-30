@@ -38,7 +38,7 @@
       <a class="nav-link text-warning" id="menuCentres" href="{% url 'admin_centre' %}">Voir les centres</a>
     </li>
     {% endif %} {% endcomment %}
-    <li class="nav-item"><p>--------------------------</p></li>
+    {% comment %} <li class="nav-item"><p>--------------------------</p></li> {% endcomment %}
     {% if not user.is_staff or user.is_superuser or "URC" in request.session.groups %}
     <li class="nav-item active">
       <a class="nav-link text-warning" id="menuRecap" href="{% url 'admin' %}">Récapitulatif</a>

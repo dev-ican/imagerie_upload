@@ -60,7 +60,6 @@ def admin_centre(request):
     centre_query = RefInfoCentre.objects.all().order_by("nom")
 
     return render(request, "admin_centre.html", {"form": form,
-                                                #  "resultat": resultat_info_centre
                                                  "resultat": centre_query
                                                  })
 
@@ -74,32 +73,32 @@ def centre_edit(request, id_centre):
         nom = request.POST["nom"]
         numero = request.POST["numero"]
         date = request.POST["date_ajout"]
-        user_info = RefInfoCentre.objects.get(pk=id_centre)
+        centre_info = RefInfoCentre.objects.get(pk=id_centre)
 
         # Enregistrement du log------------------------------
-        nom_documentaire = (
-            " a editer le centre : "
-            + str(user_info.nom)
-            + str(user_info.numero)
-            + " (Nouvelle entrée : "
-            + str(nom)
-            + str(numero)
-            + ")"
-        )
+        nom_documentaire = (" a editer le centre : "
+                            + str(centre_info.nom)
+                            + str(centre_info.numero)
+                            + " (Nouvelle entrée : "
+                            + str(nom)
+                            + str(numero)
+                            + ")"
+                            )
         edition_log(request, nom_documentaire)
         # ----------------------------------------------------
 
-        user_info.nom = nom
-        user_info.numero = numero
-        user_info.date_ajout = date
-        user_info.save()
+        centre_info.nom = nom
+        centre_info.numero = numero
+        centre_info.date_ajout = date
+        centre_info.save()
         return HttpResponseRedirect("/admin_page/centre/")
 
     else:
-        user_info = RefInfoCentre.objects.get(pk=id_centre)
-        format_date = user_info.date_ajout.strftime('%Y-%m-%d')
-        info = {"nom": user_info.nom,
-                "numero": user_info.numero,
+        """ demander à Vincent pour la sécurité, ici 'else' peut correspondre à GET, donc des informations à entrer dans l'url"""
+        centre_info = RefInfoCentre.objects.get(pk=id_centre)
+        format_date =centre_info.date_ajout.strftime('%Y-%m-%d')
+        info = {"nom": centre_info.nom,
+                "numero": centre_info.numero,
                 "date_ajout": format_date,
                 }
         form = FormCentreEdit(info)
@@ -108,8 +107,8 @@ def centre_edit(request, id_centre):
         # ---------------------------------------------------------------------------------------------
         nom_documentaire = (
             " a ouvert l'édition pour le centre : "
-            + str(user_info.nom)
-            + str(user_info.numero)
+            + str(centre_info.nom)
+            + str(centre_info.numero)
         )
         information_log(request, nom_documentaire)
         # ----------------------------------------------------------------------------------------------
