@@ -39,18 +39,17 @@ def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude
         error = False
         return [error, etape_etude]
 
+
 # ancien nom : etude_recente
 def centres_etude_selectionnee(dossiers_suiviupload):
     """renvoi les centres liès à l'étude selectionnée."""
-    # print(f"dossiers01 : {dossiers}")
     centres = []
     
     try:
         for dossier_suiviupload in dossiers_suiviupload:
-            centre = RefInfoCentre.objects.get(user=dossier_suiviupload.user.id)
-            # print(f"centre01 : {centre}")
-            if centre not in centres:
-                centres.append(centre)
+            centre_correspondant = RefInfoCentre.objects.get(user=dossier_suiviupload.user.id)
+            if centre_correspondant not in centres:
+                centres.append(centre_correspondant)
 
     except ObjectDoesNotExist:
         indic_error = "erreur"
@@ -145,30 +144,27 @@ def info_upload(suivi_upload):
     Cette fonction renvoi un dictionnaire contenant les informations liées a un fichier uploadé.
     La paramètre "suivi_upload" est un objet "SuiviUpload"
     """
-    # Variable indiquant le nombre de fichiers (a supprimer)
-    nbr_de_fichiers = SuiviUpload.objects.filter(dossier=suivi_upload.dossier.id).count()
 
     # Variable contenant l'objet "SuiviUpload" lié au paramètre suivi_upload
-    nom_de_l_etude = SuiviUpload.objects.filter(dossier=suivi_upload.dossier.id)
-    # nom_de_l_etude = SuiviUpload.objects.filter(dossier=suivi_upload.dossier.id)[:1]
+    upload = SuiviUpload.objects.filter(dossier=suivi_upload.dossier.id)
+    # upload = SuiviUpload.objects.filter(dossier=suivi_upload.dossier.id)[:1]
 
-    # var_qc contient l'objet "Dossier Upload" en lien avec suivi_upload
-    var_qc = DossierUpload.objects.get(id=nom_de_l_etude[0].dossier.id)
+    # var_qc contient l'objet "DossierUpload" en lien avec suivi_upload
+    var_qc = DossierUpload.objects.get(id=upload[0].dossier.id)
     
     infos_upload = {}
-    infos_upload["id_"] = suivi_upload.id
-    infos_upload["Etudes"] = var_qc.controle_qualite.nom
-    infos_upload["Etudes_id"] = var_qc.id
-    infos_upload["id_patient"] = nom_de_l_etude[0].id_patient
-    # infos_upload["nbr_upload"] = nbr_de_fichiers
+    infos_upload["suivi_upload_id"] = suivi_upload.id
+    infos_upload["qc_nom"] = var_qc.controle_qualite.nom
+    infos_upload["qc_id"] = var_qc.id
+    infos_upload["id_patient"] = upload[0].id_patient
 
     return infos_upload
 
 # ancien nom : info_etape
 def infos_etats_etape(dossier):
-    """Renvoi les infos des états liées à une étape."""
+    """Renvoi les infos des états liés à une étape."""
+
     etapes = JonctionEtapeSuivi.objects.filter(upload=dossier.dossier.id).order_by("etape")
-    # print(f"etape : {etapes}")
     infos_etats = []
 
     for etape in etapes:
@@ -262,50 +258,62 @@ def send_rgpd_fail(user_stock, user_suppr, nip, to_mail):
     email.send()
 
 
-def nw_password(check_mdp, type, nom, numero, username, pass_first, email):
-    """Créé un password & un utilisateur"""
+def creation_utilisateur(check_mdp, groupe_utilisateurs, centre, username, pass_first, email):
+    """Crée un utilisateur"""
+
+    centre = RefInfoCentre.objects.get(id=centre)
+    numero_de_centre = centre.numero
+    nom_du_centre = centre.nom
+
+
     if check_mdp:
         # Création de l'utilisateur après vérification de son mot de passe
         #__________________________________________________________________
-        nw_user = User.objects.create_user(
-                            username=username,
-                            password=pass_first,
-                            email=email,
-                            is_active=False,
-                            )
-        # Sauvegarde du compte
-        #_____________________
-        nw_user.save()
+        nw_user = User.objects.create_user(username=username,
+                                           password=pass_first,
+                                           email=email,
+                                           is_active=False,
+                                           )
+        # nw_user.save()
+
         # Création du suivi du compte
         #___________________________
-        nw_valide = ValideCompte.objects.create(create_user=nw_user,date_crea=timezone.now())
+        # nw_valide = ValideCompte.objects.create(create_user=nw_user,date_crea=timezone.now())
+        ValideCompte.objects.create(create_user=nw_user,date_crea=timezone.now())
+
         # Sauvegarde de la création
         #_________________________
-        nw_valide.save()
-        # print(Group.objects.all())
-        if int(type) == 0:
+        # nw_valide.save()
+
+        if int(groupe_utilisateurs) == 0:
             my_group = Group.objects.get(name='Collaborateurs')
             my_group.user_set.add(nw_user)
-        elif int(type) == 1:
+        elif int(groupe_utilisateurs) == 1:
             my_group = Group.objects.get(name='Utilisateurs')
             my_group.user_set.add(nw_user)
-        elif int(type) == 2:
+        elif int(groupe_utilisateurs) == 2:
             my_group = Group.objects.get(name='Administrateur service')
             my_group.user_set.add(nw_user)
 
         nw_user.save()
-        if len(nom) > 0 and len(numero) > 0:
-            date_now = timezone.now()
-            nw_centre = RefInfoCentre(
-                nom=nom, numero=numero, date_ajout=date_now
-            )
-            nw_centre.save()
-            nw_centre.user.add(nw_user)
+        print(centre.user.all())
+        centre.user.add(nw_user)
+        print(centre.user.all())
+
+        # JonctionUtilisateurEtude.objects.create(user=nw_user,
+        #                                         etude=RefEtudes.objects)
+
+        # if centre > 0 and numero_de_centre > 0:
+        #     date_now = timezone.now()
+        #     nw_centre = RefInfoCentre(nom=centre,
+        #                               numero=numero_de_centre,
+        #                               date_ajout=date_now)
+
+        #     nw_centre.save()
+        #     nw_centre.user.add(nw_user)
 
 
-def edit_password(
-    check_mdp, type, username, pass_first, email, user_info
-):
+def edit_password(check_mdp, type, username, pass_first, email, user_info):
     """Ce module gère l'édition du mot de passe."""
     if check_mdp:
         user_info.username = username
@@ -333,16 +341,21 @@ def pwd_nw(check_mdp, pass_first, email, user_info):
         user_info.save()
 
 
-def jonc_centre(user_etude, etude, user_info, user_centre, centre):
+def jonction_utilisateur_etude(user_etude, etude, user_info, user_centre, centre):
     """Crée l'autorisation pour l'utilisateur vis à vis d'un centre."""
+
     if not user_etude.exists() and int(etude) > 0:
         date_now = timezone.now()
         save_etude = RefEtudes.objects.get(pk=etude)
-        nw_jonction = JonctionUtilisateurEtude.objects.create(
-            user=user_info,
-            etude=save_etude,
-            date_autorisation=date_now,
-        )
+        # nw_jonction = JonctionUtilisateurEtude.objects.create(user=user_info,
+        #                                                       etude=save_etude,
+        #                                                       date_autorisation=date_now,
+        #                                                      )
+        JonctionUtilisateurEtude.objects.create(user=user_info,
+                                                etude=save_etude,
+                                                date_autorisation=date_now,
+                                                )
+
     if not user_centre.exists() and int(centre) > 0:
         date_now = timezone.now()
         save_centre = RefInfoCentre.objects.get(pk=centre)
@@ -365,13 +378,11 @@ def del_auth(type_tab, id_search, req,user_info):
     user_current = req.user
     message = ""
     if type_tab == "etude":
-        user_etude = JonctionUtilisateurEtude.objects.get(
-            id=id_search
-        )
-        verif_suivi = SuiviUpload.objects.filter(
-            etude=user_etude
-        )
+        user_etude = JonctionUtilisateurEtude.objects.get(id=id_search)
+        verif_suivi = SuiviUpload.objects.filter(etude=user_etude)
+
         if not verif_suivi.exists():
+
             # Enregistrement du log---------------------------------
             # ------------------------------------------------------
             nom_documentaire = (
@@ -383,21 +394,21 @@ def del_auth(type_tab, id_search, req,user_info):
             suppr_log(req, nom_documentaire)
             # -----------------------------------------------------
             # -----------------------------------------------------
-            user_etude = JonctionUtilisateurEtude.objects.get(
-                id__exact=id_search
-            ).delete()
+
+            user_etude = JonctionUtilisateurEtude.objects.get(id__exact=id_search).delete()
             user_etude.save()
             message = "Suppression des autorisations ont été appliquées"
         else:
-            message = (
-                "Suppression annulée, cet utilisateur à chargé des documents :"
-                + str(len(verif_suivi))
-                + " document(s) trouvés"
-            )
+            message = ("Suppression annulée, cet utilisateur à chargé des documents :"
+                       + str(len(verif_suivi))
+                       + " document(s) trouvés"
+                      )
     elif type_tab == "centre":
         user_type = User.objects.get(pk=user_info)
         verif = RefInfoCentre.objects.get(id=id_search)
+
         if verif:
+
             # Enregistrement du log--------------------------------
             # -----------------------------------------------------
             nom_documentaire = (
@@ -410,13 +421,10 @@ def del_auth(type_tab, id_search, req,user_info):
             # ----------------------------------------------------
             # ----------------------------------------------------
             verif.user.remove(user_type)
-            message = (
-                "Le centre n'est plus lié à cet utilisateur"
-            )
+            message = ("Le centre n'est plus lié à cet utilisateur")
         else:
-            message = (
-                "Cet utilisateur lié à ce centre a chargé des documents ("
-                + str(len(verif))
-                + " document(s))"
-            )
+            message = ("Cet utilisateur lié à ce centre a chargé des documents ("
+                       + str(len(verif))
+                       + " document(s))"
+                      )
     return message

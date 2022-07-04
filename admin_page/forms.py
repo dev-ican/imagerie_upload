@@ -116,49 +116,52 @@ class FormPwdChange(forms.Form):
 class FormsUser(forms.Form):
     """ Formulaire gérant les utilisateurs """
 
-    username = forms.CharField(
-        label="Identifiant de l'utilisateur", max_length=100
-    )
-    type = forms.ChoiceField(
-        label="",
-        choices=CHOICES,
-        widget=forms.RadioSelect(
-            attrs={"class": "d-inline-flex"}
-        ),
-    )
-    email = forms.EmailField(
-        label="Courriel de l'utilisateur",
-        max_length=200,
-        validators=[EmailValidator()],
-    )
-    nom = forms.CharField(
-        label="Nom du Centre", max_length=100, required=False
-    )
-    numero = forms.IntegerField(
-        label="Numero du Centre", required=False
-    )
-    pass_first = forms.CharField(
-        label="Mot de passe",
-        widget=forms.PasswordInput,
-        max_length=100,
-        validators=[
-            RegexValidator(
-                regex="([a-zA-Z]){4,12}([0-9]){2,12}",
-                message="Mot de passe invalide",
-            )
-        ],
-    )
-    pass_second = forms.CharField(
-        label="Répéter le mot de passe",
-        widget=forms.PasswordInput,
-        max_length=100,
-        validators=[
-            RegexValidator(
-                regex="([a-zA-Z]){4,12}([0-9]){2,12}",
-                message="Mot de passe invalide",
-            )
-        ],
-    )
+    centres = RefInfoCentre.objects.all()
+    choice_centre = []
+    for centre in centres:
+        choice_centre.append((centre.id, centre.nom))
+
+    username = forms.CharField(label="Identifiant de l'utilisateur", max_length=100)
+    
+    type = forms.ChoiceField(label="",
+                            choices=CHOICES,
+                            widget=forms.RadioSelect(
+                            attrs={"class": "d-inline-flex"}
+                            ))
+
+    email = forms.EmailField(label="Courriel de l'utilisateur",
+                             max_length=200,
+                             validators=[EmailValidator()],
+                            )
+
+    centre = forms.ChoiceField(widget=forms.Select(),
+                                     label="Centre :", 
+                                     choices=choice_centre,
+                                     initial="4",
+                                     )
+
+    # nom = forms.CharField(label="Nom du Centre",
+    #                       max_length=100,
+    #                       required=False
+    #                      )
+
+    # numero = forms.IntegerField(label="Numero du Centre",
+    #                             required=False
+    #                            )
+
+    pass_first = forms.CharField(label="Mot de passe",
+                                 widget=forms.PasswordInput,
+                                 max_length=100,
+                                 validators=[RegexValidator(regex="([a-zA-Z]){4,12}([0-9]){2,12}",
+                                                            message="Mot de passe invalide",
+                                                            )])
+
+    pass_second = forms.CharField(label="Répéter le mot de passe",
+                                  widget=forms.PasswordInput,
+                                  max_length=100,
+                                  validators=[RegexValidator(regex="([a-zA-Z]){4,12}([0-9]){2,12}",
+                                                             message="Mot de passe invalide",
+                                                            )])
 
 
 class FormsUserEdit(forms.Form):
@@ -219,13 +222,13 @@ class FormSelectionEtudeEtape(forms.Form):
         choice_centre.append((centre.id, centre.nom))
 
     etude_choice = forms.ChoiceField(widget=forms.Select(),
-                                   label="", 
-                                   choices=choice_etude,
-                                   initial="0",
-                                   )
+                                     label="", 
+                                     choices=choice_etude,
+                                     initial="4",
+                                     )
 
     centre_choice = forms.ChoiceField(widget=forms.Select(),
-                                    label="",
-                                    choices=choice_centre,
-                                    initial="0",
-                                    )
+                                      label="",
+                                      choices=choice_centre,
+                                      initial="5",
+                                      )

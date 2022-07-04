@@ -13,7 +13,8 @@ from django.contrib import messages
 
 from .module_admin import choice_centre, choice_etude, check_mdp
 from .module_log import edition_log
-from .module_views import del_auth, j_serial, jonc_centre, pwd_nw
+from .module_views import del_auth, j_serial, jonction_utilisateur_etude, pwd_nw
+
 
 # Gère la partie autorisation
 # --------------------------------------------------------------------------------------
@@ -24,37 +25,36 @@ from .module_views import del_auth, j_serial, jonc_centre, pwd_nw
 @login_required(login_url="/auth/auth_in/")
 def admin_auth(request):
     """Charge la page index pour l'autorisation des utilisateurs."""
+
     user_tab = User.objects.all().order_by("username").select_related('Compte_Valider')
-    return render(
-        request,
-        "admin_autorisation.html",
-        {"resultat": user_tab},
-    )
+    return render(request, "admin_autorisation.html",
+                           {"resultat": user_tab}
+                           )
 
 
 @login_required(login_url="/auth/auth_in/")
-def auth_edit(request, id_etape):
+def auth_edit(request, id_user):
     """Charge la page d'édition des autorisations utilisateur."""
+
     message = ""
-    user_lock =  ValideCompte.objects.get(create_user__id=id_etape)
+    valide_compte =  ValideCompte.objects.get(create_user__id=id_user)
     grp_user = request.user.groups.filter(name="Administrateur service").exists()
-    if user_lock.etat is None or user_lock.etat.id == 3 or grp_user :
+
+    # valid_compte_id == 3 signifie REFUS
+    if valide_compte.etat is None or valide_compte.etat.id == 3 or grp_user :
         liste_etude = []
         liste_centre = []
-        user_block = RefInfoCentre.objects.filter(user__id=id_etape)
-        user_info = User.objects.get(pk=id_etape)
+        user_block = RefInfoCentre.objects.filter(user__id=id_user)
+        user_info = User.objects.get(pk=id_user)
         if request.method == "POST":
             centre = request.POST["centre"]
             if len(user_block) < 1 or centre == "0":
                 form = FormsAutorisation()
                 etude = request.POST["etude"]
                 centre = request.POST["centre"]
-                user_centre = RefInfoCentre.objects.filter(
-                    user__id=id_etape
-                ).filter(id=centre)
-                user_etude = JonctionUtilisateurEtude.objects.filter(
-                    user=id_etape
-                ).filter(etude__id=etude)
+                user_centre = RefInfoCentre.objects.filter(user__id=id_user).filter(id=centre)
+                user_etude = JonctionUtilisateurEtude.objects.filter(user=id_user).filter(etude__id=etude)
+
                 # Enregistrement du log---------------------------------------
                 # ------------------------------------------------------------
                 nom_documentaire = (
@@ -64,16 +64,17 @@ def auth_edit(request, id_etape):
                 edition_log(request, nom_documentaire)
                 # -------------------------------------------------------------
                 # -------------------------------------------------------------
-                jonc_centre(
-                    user_etude, etude, user_info, user_centre, centre
-                )
+
+                jonction_utilisateur_etude(user_etude, etude, user_info, user_centre, centre)
             else:
                 message = "Un utilisateur ne peut avoir qu'un centre"
     else:
-        message = messages.add_message(
-            request, messages.WARNING, "Ce compte est validé débloquer le pour pouvoir le modifier"
-        )
+        message = messages.add_message(request,
+                                       messages.WARNING,
+                                       "Ce compte est validé, débloquer le pour pouvoir le modifier"
+                                      )
         return redirect('/admin_page/userAuth/')
+
     liste_etude = choice_etude(True)
     liste_centre = choice_centre(True)
     form = FormsAutorisation()
@@ -81,21 +82,16 @@ def auth_edit(request, id_etape):
     form.fields["etude"].initial = [0]
     form.fields["centre"].choices = liste_centre
     form.fields["centre"].initial = [0]
-    user_centre = RefInfoCentre.objects.filter(user__id=id_etape)
-    user_etude = JonctionUtilisateurEtude.objects.filter(
-        user=id_etape
-    )
-    return render(
-        request,
-        "admin_auth_edit.html",
-        {
-            "form": form,
-            "etude": user_etude,
-            "centre": user_centre,
-            "user_info": user_info,
-            "messages":message,
-        },
-    )
+    user_centre = RefInfoCentre.objects.filter(user__id=id_user)
+    user_etude = JonctionUtilisateurEtude.objects.filter(user=id_user)
+
+    return render( request, "admin_auth_edit.html", {"form": form,
+                                                     "etude": user_etude,
+                                                     "centre": user_centre,
+                                                     "user_info": user_info,
+                                                     "messages":message,
+                                                    }
+                                            )
 
 
 @login_required(login_url="/auth/auth_in/")

@@ -55,23 +55,24 @@
   </thead>
   <tbody>
     {% for item in resultat %}
-      <tr value="{{item.id_}}">
-        {% if 'passed' in item.Etudes %}
-        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-success">{{ item.Etudes }}</span><h5></td>
-        {% elif 'QC refused - GDPR' in item.Etudes %}
-        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-danger">{{ item.Etudes }}</span><h5></td>
+      <tr value="{{item.suivi_upload_id}}">
+        {% if 'passed' in qc_nom %}
+          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-success">{{ item.qc_nom }}</span><h5></td>
+        {% elif 'QC refused - GDPR' in item.qc_nom %}
+          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-danger">{{ item.qc_nom }}</span><h5></td>
         {% else %}
-        <td name="{{ item.Etudes_id }}" class="click_qc" id="qc_mod_{{ item.Etudes_id }}{{item.id_}}"><h5><span class="badge badge-warning">{{ item.Etudes }}</span><h5></td>
+          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod_{{ item.qc_id }}{{item.suivi_upload_id}}"><h5><span class="badge badge-warning">{{ item.qc_nom }}</span><h5></td>
         {% endif %}
-        <td><a href="/admin_page/upfiles/dospat/{{ item.id_ }}/"><h5><span class="badge badge-secondary">{{ item.id_patient }}</span></h5></td>
+          <td><a href="/admin_page/upfiles/dospat/{{ item.suivi_upload_id }}/"><h5><span class="badge badge-secondary">{{ item.id_patient }}</span></h5></td>
         {% if item.error == True %}
-        <td colspan="{{nbr_noms_etape.nbr_etape}}">{{ item.etape_etude.Aucune_etape }}</td>
+          <td colspan="{{ nbr_noms_etape.nbr_etape }}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}
         {% for etape in item.etape_etude %}
           {% if etape.en_cours_d_informations %}
-          <td name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
-          {% else %}
-          <td class="clickable" name="{{ etape.val_item }}" id="modif_{{item.id_}}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
+            <td name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
+          {% endif %}
+          {% if not "URC" in request.session.groups%}
+            <td class="clickable" name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
           {% endif %}
         {% endfor %}
         {% endif %}

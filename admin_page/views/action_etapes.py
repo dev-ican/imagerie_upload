@@ -22,7 +22,6 @@ from upload.models import (
 	RefEtatEtape,
 	RefEtudes,
 	SuiviUpload,
-	RefInfoCentre,
 )
 
 from .module_log import edition_log, information_log, suppr_log
@@ -101,8 +100,8 @@ def upload_tris(request, id_tri):
 def upload_mod(request):
 	"""Appel ajax lors du double clic sur une case du tableau.
 
-	Ce module renvois la liste des états d'une étape et l'intégre dans
-	la cellule ou l'utilisateur à cliqué
+	Ce module renvoi la liste des états d'une étape et l'intégre dans
+	la cellule où l'utilisateur a cliqué.
 	"""
 	tab_list = {}
 	val_etat = RefEtatEtape.objects.all()
@@ -116,18 +115,15 @@ def upload_mod(request):
 		}
 		x += 1
 	creation_json = json.dumps(tab_list)
-	return HttpResponse(
-		json.dumps(creation_json),
-		content_type="application/json",
-	)
+	return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
 
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")
 def upload_mod_qc(request):
 	"""Appel ajax lors du double clic sur une case du tableau.
-	Ce module renvois la liste des états du controle qualité et
-	l'intégre dans la cellule ou l'utilisateur à cliqué
+	Ce module renvoi la liste des états du controle qualité et
+	l'intégre dans la cellule où l'utilisateur a cliqué.
 	"""
 	tab_list = {}
 	val_etat = RefControleQualite.objects.all()
@@ -137,10 +133,7 @@ def upload_mod_qc(request):
 		tab_list[var_str] = {"id": etat.id, "nom": etat.nom}
 		x += 1
 	creation_json = json.dumps(tab_list)
-	return HttpResponse(
-		json.dumps(creation_json),
-		content_type="application/json",
-	)
+	return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
 
 @xframe_options_exempt
@@ -148,28 +141,24 @@ def upload_mod_qc(request):
 def upload_maj(request):
 	"""Appel ajax lors du changement d'état d'une étape.
 
-	Ce module modifie l'état dans la base de donnée puis renvois vers la
+	Ce module modifie l'état dans la base de donnée puis renvoi vers la
 	page pour afficher la modification
 	"""
+
 	val_jonction = request.GET.get("jonction")
 	val_etat = request.GET.get("etat_id")
 	val_etude = request.GET.get("etude_id")
-	id_log = JonctionEtapeSuivi.objects.get(
-		id__exact=val_jonction
-	)
+	id_log = JonctionEtapeSuivi.objects.get(id__exact=val_jonction)
+
 	if val_etat == str(4):
 		date_now = datetime.today()
-		JonctionEtapeSuivi.objects.filter(
-			id__exact=val_jonction
-		).update(etat=val_etat)
-		JonctionEtapeSuivi.objects.filter(
-			id__exact=val_jonction
-		).update(date=date_now)
+		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
+		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(date=date_now)
 	else:
-		JonctionEtapeSuivi.objects.filter(
-			id__exact=val_jonction
-		).update(etat=val_etat)
+		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
+
 	var_url = "/admin_page/upfiles/tris/" + str(val_etude) + "/"
+	
 	# Enregistrement du log---------------------
 	# ------------------------------------------
 	nom_documentaire = (

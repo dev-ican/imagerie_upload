@@ -13,8 +13,8 @@ from django.contrib import messages
 from .models import (
     DossierUpload, JonctionEtapeSuivi, JonctionUtilisateurEtude,
     RefControleQualite, RefEtapeEtude, RefEtatEtape, RefTypeAction,
-    SuiviDocument, SuiviUpload, Log, RefInfoCentre)
-from django.views.decorators.csrf import csrf_exempt,csrf_protect
+    SuiviDocument, SuiviUpload, Log, RefInfoCentre, RefEtudes)
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -61,7 +61,8 @@ def contact(request):
 @login_required(login_url="/auth/auth_in/")
 @csrf_exempt
 def formulaire(request):
-    ''' Charge la page du formulaire de chargement.'''
+    ''' Charge la page du formulaire d'upload de fichier patient'''
+
     date_now = timezone.now()
     user_current = request.user
     liste_protocole = []
@@ -71,32 +72,29 @@ def formulaire(request):
         etude = request.POST["etudes"]
         nip = request.POST["nip"]
         date = request.POST["date_irm"]
+
         # --------------------------------------
         # --------------------------------------
         # Renseignement de la table de Log
         type_action = RefTypeAction.objects.get(pk=4)
         info_str = "Utilisation du formulaire pour envois de donnée pour l'ID patient : " + str(nip)
-        log_info = Log(
-            user=user_current,
-            action=type_action,
-            date=date_now,
-            info= str(info_str),
-        )
+        log_info = Log(user=user_current,
+                       action=type_action,
+                       date=date_now,
+                       info= str(info_str),
+                      )
         log_info.save()
         # ---------------------------------------
         # ---------------------------------------
-        id_etude = JonctionUtilisateurEtude.objects.get(
-            id__exact=etude
-        )
+
+        id_etude = JonctionUtilisateurEtude.objects.get(id__exact=etude)
         id_qc = RefControleQualite.objects.get(id=1)
         id_etape = RefEtatEtape.objects.get(id=1)
-        id_etapes = RefEtapeEtude.objects.filter(
-            etude=id_etude.etude.id
-        )
+        id_etapes = RefEtapeEtude.objects.filter(etude=id_etude.etude.id)
         date_now = timezone.now()
         filez = request.FILES.getlist("upload")
-
         num_centre = RefInfoCentre.objects.get(user__exact=user_current.id)
+
         if len(str(num_centre.numero)) == 3 :
             num_centre_val = str(num_centre.numero)
         elif len(str(num_centre.numero)) == 2:
@@ -105,6 +103,7 @@ def formulaire(request):
             num_centre_val = "00" + str(num_centre.numero)
         
         nomage_id = str(id_etude.etude.nom) + "_" + num_centre_val + "_" + str(nip)
+
         # Vérification de la présence d'un id identique
         doublon = False
         try:
@@ -137,7 +136,7 @@ def formulaire(request):
                 create_suivi.save()
                 # Si le fichier chargé est une archive alors décompréssé
                 # MODIF 23112021 : Le fichier est décompréssé dans un dossier images hébergé dans Data
-                # Medis doit aller chercher les nouveaux patient ainsi décompréssé dans se dossier
+                # Medis doit aller chercher les nouveaux patient ainsi décompréssé dans ce dossier
                 if name_file.find(".zip") != -1:
                     zipfile_save = zipfile.ZipFile(
                         create_suivi.fichiers.path, mode="r"
@@ -175,15 +174,16 @@ def formulaire(request):
 
     form = UploadForm()
     # Charge les listes déroulantes
-    request_utilisateur_protocole = (
-        JonctionUtilisateurEtude.objects.filter(
-            user=user_current.id
-        )
-    )
+    request_utilisateur_protocole = (JonctionUtilisateurEtude.objects.filter(user=user_current.id))
+
     for util_pro in request_utilisateur_protocole:
         collapse = (util_pro.id, util_pro.etude.nom)
         liste_protocole.append(collapse)
-    liste_protocole.append((0, "Séléctionner une étude"))
+    
+    liste_protocole.append((0, "Sélectionner une étude"))
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
-    return render(request, "V1_FORMULAIRE.html", {"form": form, "log_upload":list_chargement})
+
+    return render(request, "V1_FORMULAIRE.html", {"form": form,
+                                                  "log_upload": list_chargement
+                                                  })

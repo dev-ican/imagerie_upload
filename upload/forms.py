@@ -5,8 +5,6 @@ from django import forms
 # from bootstrap_datepicker_plus import DatePickerInput
 from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
-# from .models import *
-    
 
 class LogIn(forms.Form):
     ''' Formulaire pour se loguer '''

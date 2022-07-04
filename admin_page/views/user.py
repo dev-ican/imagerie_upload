@@ -16,7 +16,7 @@ from .module_log import (
     information_log,
     suppr_log,
 )
-from .module_views import edit_password, nw_password
+from .module_views import edit_password, creation_utilisateur
 
 # Gère la partie Admin Utilisateur
 # ----------------------------------------------
@@ -27,37 +27,39 @@ from .module_views import edit_password, nw_password
 @login_required(login_url="/auth/auth_in/")
 def admin_user(request):
     """Charge la page index pour l'ajout ou l'édition d'un utilisateur."""
+
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
-        nom = request.POST["nom"]
-        numero = request.POST["numero"]
+        centre = request.POST["centre"]
+        # numero = request.POST["numero"]
         pass_first = request.POST["pass_first"]
         pass_second = request.POST["pass_second"]
         type = request.POST["type"]
+
         checkmdp = check_mdp(pass_first, pass_second)
-        nw_password(
-            checkmdp,
-            type,
-            nom,
-            numero,
-            username,
-            pass_first,
-            email,
-        )
+        creation_utilisateur(checkmdp,
+                    type,
+                    centre,
+                    # numero,
+                    username,
+                    pass_first,
+                    email,
+                    )
+
         # Enregistrement du log-----------------------------------
         # --------------------------------------------------------
         nom_documentaire = " a créé l'utilisateur : " + username
         creation_log(request, nom_documentaire)
         # --------------------------------------------------------
         # --------------------------------------------------------
+
     form = FormsUser()
     user_tab = User.objects.all().order_by("username").select_related('Compte_Valider')
-    return render(
-        request,
-        "admin_user.html",
-        {"form": form, "resultat": user_tab},
-    )
+
+    return render(request, "admin_user.html", {"form": form,
+                                               "resultat": user_tab
+                                               })
 
 
 @login_required(login_url="/auth/auth_in/")
