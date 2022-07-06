@@ -166,7 +166,7 @@ def doc_edit(request, id):
         id_etude = RefEtudes.objects.get(nom=obj.etude)
         form = DocumentForm()
         # Charge le formulaire avec les listes déroulantes
-        liste_protocole = choice_Etude(False)
+        liste_protocole = choice_etude(False)
         form.fields["etudes"].choices = liste_protocole
         form.fields["etudes"].initial = [id_etude.id]
         form.fields["titre"].initial = obj.titre
@@ -211,7 +211,7 @@ def doc_deleted(request, id):
             request, messages.WARNING, "Suppression Faite"
         )
     form = DocumentForm()
-    liste_protocole = choice_Etude(True)
+    liste_protocole = choice_etude(True)
     form.fields["etudes"].choices = liste_protocole
     form.fields["etudes"].initial = [0]
     doc_tab = SuiviDocument.objects.all()

@@ -92,6 +92,8 @@ def admin_up(request):
 
                 nbr_entree = len(resultat)
 
+                # print(f"resultat : {resultat['etape_etude']}")
+
                 # gestion_info = gestion_etude_selectionnee(etude_selectionnee,
                 #                                         centres_etude_selec
                 #                                         )

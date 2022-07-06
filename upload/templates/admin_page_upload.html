@@ -70,10 +70,9 @@
         {% for etape in item.etape_etude %}
           {% if etape.en_cours_d_informations %}
             <td name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
-          {% endif %}
-          {% if not "URC" in request.session.groups%}
-            <td class="clickable" name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
-          {% endif %}
+          {% else %}
+          <td class="clickable" name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
+          {% endif %}  
         {% endfor %}
         {% endif %}
       </tr>
@@ -83,6 +82,8 @@
 {% else %}
 <span>Aucun fichier n'est chargé dans l'application</span>
 {% endif %}
+{% if not "URC" in request.session.groups%}
 <script src="{% static 'js/custom_script_tab.js' %}"></script>
 <script src="{% static 'js/custom_script_QC.js' %}"></script>
+{% endif %}
 {% endblock %}

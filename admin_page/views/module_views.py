@@ -168,7 +168,7 @@ def infos_etats_etape(dossier):
     infos_etats = []
 
     for etape in etapes:
-        # Si l'état de l'étape est "En cours d'informations"
+        # Si l'état de l'étape est "Demande d'informations"
         if etape.etat.id == 4:
             infos_etats.append({"val_item": etape.date,
                                 "etape_id": etape.id,
