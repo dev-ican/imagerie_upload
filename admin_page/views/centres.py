@@ -72,9 +72,11 @@ def centre_edit(request, id_centre):
         form = FormCentre()
         nom = request.POST["nom"]
         numero = request.POST["numero"]
-        date = request.POST["date_ajout"]
+        utilisateurs = request.POST["utilisateurs"]
+        # date = request.POST["date_ajout"]
         centre_info = RefInfoCentre.objects.get(pk=id_centre)
 
+        # TODO modifier le log pour ajouter les utilisateurs liés au centre lors de l'édition
         # Enregistrement du log------------------------------
         nom_documentaire = (" a editer le centre : "
                             + str(centre_info.nom)
@@ -89,12 +91,12 @@ def centre_edit(request, id_centre):
 
         centre_info.nom = nom
         centre_info.numero = numero
-        centre_info.date_ajout = date
+        centre_info.user.add(utilisateurs)
+        # centre_info.date_ajout = date
         centre_info.save()
         return HttpResponseRedirect("/admin_page/centre/")
 
     else:
-        """ demander à Vincent pour la sécurité, ici 'else' peut correspondre à GET, donc des informations à entrer dans l'url"""
         centre_info = RefInfoCentre.objects.get(pk=id_centre)
         format_date =centre_info.date_ajout.strftime('%Y-%m-%d')
         info = {"nom": centre_info.nom,

@@ -18,6 +18,7 @@ from .module_log import (
 )
 from .module_views import edit_password, creation_utilisateur
 
+
 # Gère la partie Admin Utilisateur
 # ----------------------------------------------
 # ----------------------------------------------
@@ -63,8 +64,10 @@ def admin_user(request):
 
 
 @login_required(login_url="/auth/auth_in/")
-def user_edit(request, id_etape):
+def user_edit(request, id_user):
     """Charge la page d'édition des utilisateurs."""
+    # TODO ajouter le centre dans l'édition d'utilisateur
+
     if request.method == "POST":
         form = FormsUserEdit()
         type = request.POST["type"]
@@ -72,7 +75,8 @@ def user_edit(request, id_etape):
         email = request.POST["email"]
         pass_first = request.POST["pass_first"]
         pass_second = request.POST["pass_second"]
-        user_info = User.objects.get(pk=id_etape)
+        user_info = User.objects.get(pk=id_user)
+
         # Enregistrement du log-------------------
         # ----------------------------------------
         nom_documentaire = (
@@ -85,42 +89,39 @@ def user_edit(request, id_etape):
         edition_log(request, nom_documentaire)
         # ----------------------------------------
         # ----------------------------------------
+        
         checkmdp = check_mdp(pass_first, pass_second)
-        edit_password(
-            checkmdp,
-            type,
-            username,
-            pass_first,
-            email,
-            user_info,
-        )
+        edit_password(checkmdp,
+                      type,
+                      username,
+                      pass_first,
+                      email,
+                      user_info,
+                      )
         return HttpResponseRedirect("/admin_page/viewUser/")
+
     else:
-        user_info = User.objects.get(pk=id_etape)
-        info = {
-            "username": user_info.username,
-            "email": user_info.email,
-        }
+        user_info = User.objects.get(pk=id_user)
+        info = {"username": user_info.username,
+                "email": user_info.email,
+                }
         form = FormsUserEdit(info)
+
         # Enregistrement du log--------------------------
         # -----------------------------------------------
-        nom_documentaire = (
-            " a ouvert l'édition pour l'utilisateur : "
-            + user_info.username
-        )
+        nom_documentaire = (" a ouvert l'édition pour l'utilisateur : "
+                            + user_info.username
+                            )
         information_log(request, nom_documentaire)
         # -----------------------------------------------
         # -----------------------------------------------
+
     user_tab = User.objects.all().order_by("username")
-    return render(
-        request,
-        "admin_user_edit.html",
-        {
-            "form": form,
-            "resultat": user_tab,
-            "select": int(id_etape),
-        },
-    )
+
+    return render(request, "admin_user_edit.html",  {"form": form,
+                                                     "resultat": user_tab,
+                                                     "select": int(id_user),
+                                                    })
 
 
 @login_required(login_url="/auth/auth_in/")

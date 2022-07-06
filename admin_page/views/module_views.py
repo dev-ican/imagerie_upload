@@ -17,10 +17,10 @@ import ast
 def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude_select):
     """Ce module permet de ramener le nom de l'étape s'il y a une erreur,
     c'est indiqué à la place de l'étape."""
-    # print(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude_select)
     
     if (len(dict_etape_nom) == 0 or len(dict_etape_value) != nbr_etape):
-        element_etape = RefEtapeEtude.objects.filter(etude=etude_select.etude.etude)
+        # element_etape = RefEtapeEtude.objects.filter(etude=etude_select.etude.etude)
+        element_etape = RefEtapeEtude.objects.filter(etude=etude_select)
 
         for item_info_etape in element_etape:
             nbr_etat = RefEtatEtape.objects.get(id=1)
@@ -296,9 +296,7 @@ def creation_utilisateur(check_mdp, groupe_utilisateurs, centre, username, pass_
             my_group.user_set.add(nw_user)
 
         nw_user.save()
-        print(centre.user.all())
         centre.user.add(nw_user)
-        print(centre.user.all())
 
         # JonctionUtilisateurEtude.objects.create(user=nw_user,
         #                                         etude=RefEtudes.objects)

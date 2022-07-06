@@ -35,7 +35,7 @@ def admin_auth(request):
 @login_required(login_url="/auth/auth_in/")
 def auth_edit(request, id_user):
     """Charge la page d'édition des autorisations utilisateur."""
-
+    
     message = ""
     valide_compte =  ValideCompte.objects.get(create_user__id=id_user)
     grp_user = request.user.groups.filter(name="Administrateur service").exists()
@@ -65,7 +65,11 @@ def auth_edit(request, id_user):
                 # -------------------------------------------------------------
                 # -------------------------------------------------------------
 
+                # crée la jonction entre l'utilisateur et l'étude
+                print(user_etude, etude, user_info, user_centre, centre)
+
                 jonction_utilisateur_etude(user_etude, etude, user_info, user_centre, centre)
+
             else:
                 message = "Un utilisateur ne peut avoir qu'un centre"
     else:
@@ -90,8 +94,7 @@ def auth_edit(request, id_user):
                                                      "centre": user_centre,
                                                      "user_info": user_info,
                                                      "messages":message,
-                                                    }
-                                            )
+                                                    })
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -140,10 +143,7 @@ def auth_del(request):
             "message": message,
         }
         creation_json = json.dumps(context)
-        return HttpResponse(
-            json.dumps(creation_json),
-            content_type="application/json",
-        )
+        return HttpResponse(json.dumps(creation_json), content_type="application/json")
 
 @login_required(login_url="/auth/auth_in/")
 def compte_user(request):

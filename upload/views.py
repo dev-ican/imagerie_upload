@@ -66,7 +66,9 @@ def formulaire(request):
     date_now = timezone.now()
     user_current = request.user
     liste_protocole = []
-    # Si le formulaire est envoyé
+
+    print(user_current)
+    
     if request.method == "POST":
         # Récupération des données du formulaire
         etude = request.POST["etudes"]
@@ -93,7 +95,20 @@ def formulaire(request):
         id_etapes = RefEtapeEtude.objects.filter(etude=id_etude.etude.id)
         date_now = timezone.now()
         filez = request.FILES.getlist("upload")
-        num_centre = RefInfoCentre.objects.get(user__exact=user_current.id)
+        # num_centre = RefInfoCentre.objects.get(user__exact=user_current.id)
+
+        #TODO erreur lors de l'upload
+        for centre in RefInfoCentre.objects.all():
+            for user in centre.user.all():
+                print(user)
+                print(request.user)
+                if user == request.user:
+                    num_centre = RefInfoCentre.objects.get(user=user)
+                    print(f"num_centre : {num_centre}")
+                    break
+                    
+                # print(user)
+                # print(centre)
 
         if len(str(num_centre.numero)) == 3 :
             num_centre_val = str(num_centre.numero)

@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 
 from upload.models import RefEtapeEtude, RefEtatEtape, SuiviUpload, RefInfoCentre, RefEtudes
-from ..filters import RefEtatEtapeFilter, RefEtapeEtudeFilter
+# from ..filters import RefEtatEtapeFilter, RefEtapeEtudeFilter
 from ..forms import FormSelectionEtudeEtape
 
 from .module_log import information_log
@@ -15,7 +15,7 @@ from .module_views import (
     info_upload,
     centres_etude_selectionnee,
     gestion_etape,
-    gestion_etude_selectionnee,
+    # gestion_etude_selectionnee,
     infos_etats_etape,
     nom_etape,
 )
@@ -69,22 +69,15 @@ def admin_up(request):
                     infos_upload["qc_id"] = var_qc.id
                     infos_upload["id_patient"] = upload[0].id_patient
                                 
-                    """
-                    # centre = RefInfoCentre.objects.get(user=centre_choisi_id.user.id)
-                    
-                    
-                    # print(centre_selectionnee)
-                    # print(centre_selectionnee.user.all())
-
-            
+                    """            
                     donnees_de_l_upload = info_upload(dossier)
                     infoetape = infos_etats_etape(dossier)
                     var_etape = gestion_etape(noms_etape,
-                                                infoetape,  
-                                                nbr_etape,
-                                                dossier,
-                                                etude_selectionnee
-                                                )
+                                              infoetape,  
+                                              nbr_etape,
+                                              dossier,
+                                              etude_selectionnee
+                                              )
 
                     if len(var_etape) == 2:
                         donnees_de_l_upload["etape_etude"] = var_etape[1]
@@ -94,14 +87,14 @@ def admin_up(request):
                 nbr_noms_etape["nbr_etape"] = nbr_etape
                 nbr_noms_etape["nom_etape"] = noms_etape
 
+                centres_etude_selec = centres_etude_selectionnee(dossiers_lies_a_l_etude)
+                print(f"centre_etude_selectionne ; {centres_etude_selec}")
+
                 nbr_entree = len(resultat)
 
-                # centres_etude_selec = centres_etude_selectionnee(dossiers_lies_a_l_etude)
-                # print(f"centre_etude_selectionne ; {centres_etude_selec}")
-
                 # gestion_info = gestion_etude_selectionnee(etude_selectionnee,
-                                                        # centres_etude_selec
-                                                        # )
+                #                                         centres_etude_selec
+                #                                         )
                 # print(f"gestion_info : {gestion_info}")
                 
 

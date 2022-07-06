@@ -1,5 +1,6 @@
 # from datetime import date
 from django import forms
+from django.contrib.auth.models import User
 from django.core.validators import *
 # from django.http import *
 from upload.models import RefEtudes, RefInfoCentre
@@ -9,7 +10,6 @@ CHOICES = [(0, "Collaborateurs"),
            (1, "Utilisateurs"),
            (2,"Administrateur service")
            ]
-
 
 class FormsEtude(forms.Form):
     """ Formulaire gérant les études """
@@ -70,14 +70,35 @@ class FormCentre(forms.Form):
 class FormCentreEdit(forms.Form):
     """ Formulaire gérant les centres """
 
+    # TODO supprimer la date d'ajout dans l'édition, et ajouter un champs multiplechoicefield pour séléctionner les utilisateurs.
+
+    # class RefInfoCentre(models.Model):
+    #     '''Modèle gérant les centres'''
+    #     nom = models.CharField(max_length=5000)
+    #     numero = models.IntegerField(blank=True)
+    #     date_ajout = models.DateTimeField("Date d'ajout")
+    #     user = models.ManyToManyField(User)
+
+    users = User.objects.filter(is_staff=False).filter(is_superuser=False)
+    centres = RefInfoCentre.objects.all()
+
+    choix_utilisateurs = []
+
+    for user in users:
+        choix_utilisateurs.append((user.id, user.username))
+
+
     nom = forms.CharField(label="Nom  du centre", max_length=100)
     numero = forms.IntegerField(label="Numéro du centre")
-    date_ajout = forms.DateField(
-        widget=forms.DateInput(
-            format="%d/%m/%Y",
-            attrs={"placeholder": "yyyy-mm-dd"},
-        )
-    )
+    utilisateurs = forms.MultipleChoiceField(label="Utilisateurs rattachés au centre",
+                                             widget=forms.Select(),
+                                             choices=choix_utilisateurs)
+    # date_ajout = forms.DateField(
+    #     widget=forms.DateInput(
+    #         format="%d/%m/%Y",
+    #         attrs={"placeholder": "yyyy-mm-dd"},
+    #     )
+    # )
 
 
 class FormPwdChange(forms.Form):
