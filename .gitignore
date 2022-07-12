@@ -1,3 +1,4 @@
+.gitignore
 __pycache__
 geckodriver.log
 webdriver/
@@ -7,3 +8,4 @@ static
 htmlcov
 app_upload/settings.py
 app_upload/.env
+data/

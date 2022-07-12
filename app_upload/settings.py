@@ -128,6 +128,7 @@ DATABASES = {
         'PASSWORD': env('DATABASE_PASSWORD'),
         'HOST': 'localhost',
         'PORT': env('DATABASE_PORT'),
+        'CONN_MAX_AGE': 500
     }
 }
 
