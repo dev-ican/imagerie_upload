@@ -1,10 +1,8 @@
-from datetime import date
-
 from django import forms
-from django.core.validators import *
-from django.http import *
+# from django.core.validators import *
+# from django.http import *
 
-from upload.models import *
+# from upload.models import *
 
 CHOICES=[(0,'Infos'),(1,'Protocoles')]
 

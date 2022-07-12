@@ -66,11 +66,8 @@ def formulaire(request):
     date_now = timezone.now()
     user_current = request.user
     liste_protocole = []
-
-    print(user_current)
     
     if request.method == "POST":
-        # Récupération des données du formulaire
         etude = request.POST["etudes"]
         nip = request.POST["nip"]
         date = request.POST["date_irm"]
@@ -100,15 +97,10 @@ def formulaire(request):
         #TODO erreur lors de l'upload
         for centre in RefInfoCentre.objects.all():
             for user in centre.user.all():
-                print(user)
-                print(request.user)
                 if user == request.user:
                     num_centre = RefInfoCentre.objects.get(user=user)
-                    print(f"num_centre : {num_centre}")
                     break
-                    
-                # print(user)
-                # print(centre)
+
 
         if len(str(num_centre.numero)) == 3 :
             num_centre_val = str(num_centre.numero)
@@ -131,53 +123,55 @@ def formulaire(request):
         # Si un doublon est détecté rien n'est créé un message est renvoyé vers l'utilisateur
         if doublon == False:
             # Création du dossier en lien avec les fichiers chargés
-            create_jonction = DossierUpload(
-                user=user_current, controle_qualite=id_qc, date=date
-            )
+            create_jonction = DossierUpload(user=user_current, controle_qualite=id_qc, date=date)
             create_jonction.save()
+
             # Création dans la table suivi upload de
             #chaque fichier chargé en lien avec le dossier
             for f in filez:
-                create_suivi = SuiviUpload(
-                    user=user_current,
-                    etude=id_etude,
-                    id_patient=nomage_id,
-                    date_upload=date_now,
-                    date_examen=date,
-                    fichiers=f,
-                    dossier=create_jonction,
-                )
+                create_suivi = SuiviUpload(user=user_current,
+                                           etude=id_etude,
+                                           id_patient=nomage_id,
+                                           date_upload=date_now,
+                                           date_examen=date,
+                                           fichiers=f,
+                                           dossier=create_jonction,
+                                           )
                 name_file = f.name
                 create_suivi.save()
+
                 # Si le fichier chargé est une archive alors décompréssé
                 # MODIF 23112021 : Le fichier est décompréssé dans un dossier images hébergé dans Data
                 # Medis doit aller chercher les nouveaux patient ainsi décompréssé dans ce dossier
                 if name_file.find(".zip") != -1:
-                    zipfile_save = zipfile.ZipFile(
-                        create_suivi.fichiers.path, mode="r"
-                    )
-                    path_save = "/home/admin_ican/images/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
+                    zipfile_save = zipfile.ZipFile(create_suivi.fichiers.path, mode="r")
+                    path_save = "/home/koala/images_medis/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
                     path = str(path_save) + "/" + str(create_suivi.id_patient)
                     os.makedirs(path)
                     zipfile_save.extractall(path)
                     zipfile_save.close()
                     #if os.path.exists(create_suivi.fichiers.path):
-                        #os.remove(create_suivi.fichiers.path)
+                    #os.remove(create_suivi.fichiers.path)
+                    
             # Création de chaque étapes pour le patient chargé
             for etape in id_etapes:
-                create_etape = JonctionEtapeSuivi.objects.create(
-                    upload=create_jonction, etape=etape, etat=id_etape
-                )
+                JonctionEtapeSuivi.objects.create(upload=create_jonction,
+                                                  etape=etape,
+                                                  etat=id_etape
+                                                  )
             var_url = "/form/"
-            message = messages.add_message(
-                request, messages.WARNING, "SUCCES - Vos données ont été chargées"
-            )
+            message = messages.add_message(request,
+                                           messages.WARNING,
+                                           "SUCCES - Vos données ont été chargées"
+                                           )
             return redirect(var_url)
+            
         elif doublon == True:
             var_url = "/form/"
-            message = messages.add_message(
-                request, messages.WARNING, "EREUR - Cet identifiant est déjà renseigné dans la base de donnée votre upload est annulé"
-            )
+            message = messages.add_message(request,
+                                           messages.WARNING,
+                                           "EREUR - Cet identifiant est déjà renseigné dans la base de donnée votre upload est annulé"
+                                           )
             return redirect(var_url)
 
     list_log = SuiviUpload.objects.filter(user=user_current.id)

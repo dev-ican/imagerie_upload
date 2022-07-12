@@ -60,6 +60,7 @@ def log_out(request):
     # ---------------------------------------------------------
     date_now = timezone.now()
     user_current = request.user
+    print(user_current)
     type_action = RefTypeAction.objects.get(pk=6)
     nom_documentaire = "Deconnexion de l'utilisateur " + str(
         user_current.username

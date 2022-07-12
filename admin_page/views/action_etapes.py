@@ -204,6 +204,7 @@ def upload_maj_qc(request):
 		for object in image_irm:
 			os.remove(str(path) + "/" + str(object))
 		os.rmdir(path)
+
 		# Enregistrement du log-----------------
 		# --------------------------------------
 		nom_documentaire = (
@@ -213,6 +214,7 @@ def upload_maj_qc(request):
 		suppr_log(request, nom_documentaire)
 		# --------------------------------------
 		# --------------------------------------
+
 		send_rgpd_fail(id_log[0].user.username, user_current.username, id_log[0].id_patient, id_log[0].user.email)
 		files_upload.delete()
 		dos_upload.delete()
@@ -221,6 +223,7 @@ def upload_maj_qc(request):
 		DossierUpload.objects.filter(id__exact=val_jonction).update(
 			controle_qualite=qc
 		)
+
 		# Enregistrement du log-----------------
 		# --------------------------------------
 		nom_documentaire = (
@@ -229,6 +232,7 @@ def upload_maj_qc(request):
 			+ " la nouvelle étape est : "
 			+ qc.nom
 		)
+		
 		edition_log(request, nom_documentaire)
 		# --------------------------------------
 		# --------------------------------------
