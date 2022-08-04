@@ -74,6 +74,7 @@ $('td[class="clickable"]').one("click", function(){
 	var list = $("select[name='select_etude'] option:selected").val();
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 	var td_parent = $(this).parent('tr').attr('value');
+	// var td_parent = $("td.clickable").parent('tr').attr('value');
 	var var_modif = "modif_" + td_parent + value;
 	console.log(td_parent,value)
 	function csrfSafeMethod(method) {
@@ -129,8 +130,9 @@ function change_etat(event) {
 	var url_etude = "/admin_page/upfiles/maj";
 	var etat_id = $(this).children("option:selected").val();
 	var jonction_id = $(this).parent('td').attr('value');
-	var value_etude = $('select[name="select_etude"]').children("option:selected").val();
-	var url_research = "/admin_page/upfiles/tris/" + value_etude + "/"
+	var value_etude = $('select[name="etude_choice"]').children("option:selected").val();
+	// var url_research = "/admin_page/upfiles/tris/" + value_etude + "/"
+	var url_research = "/admin_page/upfiles/"
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
 	function csrfSafeMethod(method) {
@@ -158,6 +160,7 @@ function change_etat(event) {
 			console.log("SUCCESS");
 			console.log(url_research)
 			$('#ajax').html(response);
-			$('body').load(url_research, function(response, status, XHR){});}
-	})
+			location.reload(true);
+			// $('body').load(url_research, function(response, status, XHR){});}
+		}})
 };

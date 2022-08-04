@@ -60,7 +60,8 @@ function change_qc(event) {
 	var url_etude = "/admin_page/upfiles/majQC";
 	var etat_id = $(this).children("option:selected").val();
 	var jonction_id = $(this).parent('td').attr('name');
-	var value_etude = $('select[name="select_etude"]').children("option:selected").val();
+	var value_etude = $('select[name="etude_choice"]').children("option:selected").val();
+	console.log(value_etude)
 	const url_research = "/admin_page/upfiles/"
 
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
@@ -102,9 +103,12 @@ function change_qc(event) {
 			success: function(response, status, XHR){
 				console.log("SUCCESS");
 				$('#ajax').html(response);
-				$('body').load(url_research, function(response, status, XHR){});}
+				// $('body').load(url_research, function(response, status, XHR){});
+				location.reload();
+			}
 		})
 	} else {
-		$('body').load(url_research, function(response, status, XHR){})
+		// $('body').load(url_research, function(response, status, XHR){})
+		location.reload();
 	};
 };

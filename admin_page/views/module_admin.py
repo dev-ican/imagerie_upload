@@ -56,7 +56,7 @@ def choice_etude(val_zero):
 def choice_centre(val_zero):
     ''' Génère les listes déroulante des centres '''
     liste_centre = []
-    request_centre = RefInfoCentre.objects.all().order_by("nom")
+    request_centre = RefInfoCentre.objects.all().order_by("nom").distinct()
 
     for util_pro in enumerate(request_centre):
         collapse = (util_pro[1].id, util_pro[1].nom)

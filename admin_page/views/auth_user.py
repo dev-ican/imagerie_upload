@@ -37,7 +37,7 @@ def auth_edit(request, id_user):
     """Charge la page d'édition des autorisations utilisateur."""
     
     message = ""
-    valide_compte =  ValideCompte.objects.get(create_user__id=id_user)
+    valide_compte = ValideCompte.objects.get(create_user__id=id_user)
     grp_user = request.user.groups.filter(name="Administrateur service").exists()
 
     # valid_compte_id == 3 signifie REFUS
@@ -66,8 +66,6 @@ def auth_edit(request, id_user):
                 # -------------------------------------------------------------
 
                 # crée la jonction entre l'utilisateur et l'étude
-                print(user_etude, etude, user_info, user_centre, centre)
-
                 jonction_utilisateur_etude(user_etude, etude, user_info, user_centre, centre)
 
             else:
@@ -93,7 +91,7 @@ def auth_edit(request, id_user):
                                                      "etude": user_etude,
                                                      "centre": user_centre,
                                                      "user_info": user_info,
-                                                     "messages":message,
+                                                     "messages": message,
                                                     })
 
 
@@ -144,6 +142,7 @@ def auth_del(request):
         }
         creation_json = json.dumps(context)
         return HttpResponse(json.dumps(creation_json), content_type="application/json")
+
 
 @login_required(login_url="/auth/auth_in/")
 def compte_user(request):

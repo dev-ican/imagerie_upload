@@ -3,13 +3,15 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import *
 # from django.http import *
-from upload.models import RefEtudes, RefInfoCentre
+from upload.models import RefEtudes, RefInfoCentre, RefEtatEtape, RefControleQualite
+# from bootstrap_modal_forms.forms import BSModalModelForm
 
 
 CHOICES = [(0, "Collaborateurs"),
            (1, "Utilisateurs"),
            (2,"Administrateur service")
            ]
+           
 
 class FormsEtude(forms.Form):
     """ Formulaire gérant les études """
@@ -232,15 +234,17 @@ class FormsUserEdit(forms.Form):
 class FormSelectionEtudeEtape(forms.Form):
     """Formulaire permettant de séléctionner un centre et une étude afin d'afficher les données"""
 
+
     etudes = RefEtudes.objects.all()
     choice_etude = []
     for etude in etudes:
         choice_etude.append((etude.id, etude.nom))
 
-    centres = RefInfoCentre.objects.all()
+    centres = RefInfoCentre.objects.all().order_by("numero")
     choice_centre = []
     for centre in centres:
-        choice_centre.append((centre.id, centre.nom))
+        centre_nom_num = f"{centre.numero}_{centre.nom}"
+        choice_centre.append((centre.id, centre_nom_num))
 
     etude_choice = forms.ChoiceField(widget=forms.Select(),
                                      label="", 
@@ -253,3 +257,25 @@ class FormSelectionEtudeEtape(forms.Form):
                                       choices=choice_centre,
                                       initial="5",
                                       )
+
+
+class FormSelectionEtudeURC(forms.Form):
+    """Formulaire permettant de séléctionner un centre et une étude afin d'afficher les données"""
+
+    choice_etude = [(4, 'OPTIM')]
+
+    centres = RefInfoCentre.objects.all()
+    choice_centre = []
+    for centre in centres:
+        choice_centre.append((centre.id, centre.nom))
+
+    etude_choice = forms.ChoiceField(widget=forms.Select(),
+                                    label="", 
+                                    choices=choice_etude,
+                                    )
+
+    centre_choice = forms.ChoiceField(widget=forms.Select(),
+                                    label="",
+                                    choices=choice_centre,
+                                    initial="5",
+                                    )

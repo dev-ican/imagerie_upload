@@ -1,7 +1,6 @@
 {% extends "base_admin_stat.html" %}
 {% load static %}
 {% load bootstrap4 %}
-{% load sorting_tags %}
 {% block section_two %}
 <div class="row col-12">
   <div class="container">
@@ -12,42 +11,19 @@
       <span>Tableau récapitulatif des étapes pour chaque dossier chargé dans le système</span> 
     </div>
   </div>
-  {% comment %} <form>
-  <div class="form-row align-items-center">
-    <div class="col-auto my-1"> {% endcomment %}
-      {% comment %} {% csrf_token %} {% endcomment %}
-      {% comment %} <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Classer par etude</label> {% endcomment %}
-      {% comment %} <select name="select_centre" class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-        {% for centre in str_centre %}
-        <option name="select_{{centre.nom}}" value="{{centre.id}}">{{centre.nom}}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-auto my-1"> {% endcomment %}
-      {% comment %} <label class="mr-sm-2 sr-only" for="FormCustomSelect">Indiquer le centre</label> {% endcomment %}
-      {% comment %} <select name="select_etude" class="custom-select mr-sm-2" id="FormCustomSelect">
-        {% for etude in str_etude %}
-          <option name="select_{{etude.nom}}" value="{{etude.id}}" {{etude.option}}>{{etude.nom}}</option>
-        {% endfor %}
-      </select> {% endcomment %}
-      {% comment %} <input type="submit" value="Envoyer le formulaire"> {% endcomment %}
       <form action="" method="post">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Envoyer">
       </form>
-    {% comment %} </div>
-  </div>
-  </form>
-</div> {% endcomment %}
+  <div>
+  </div>  
 {% if nbr_entree != 0 %}
-
 <table class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
       <th scope="col">QC</th>
       <th scope="col">ID patient</th>
-      <!--Il faut ajouter ici le tri-->
       {% for nom_etape in nbr_noms_etape.nom_etape %}
         <th scope="col">{{ nom_etape }}</th>
       {% endfor %}
@@ -71,8 +47,8 @@
           {% if etape.en_cours_d_informations %}
             <td name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
           {% else %}
-          <td class="clickable" name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
-          {% endif %}  
+            <td class="clickable" name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
+          {% endif %}
         {% endfor %}
         {% endif %}
       </tr>
@@ -82,8 +58,13 @@
 {% else %}
 <span>Aucun fichier n'est chargé dans l'application</span>
 {% endif %}
+{% for result in page_obj %}
+    {# Each "contact" is a Contact model object. #}
+    {{ result }}<br>
+{% endfor %}
+
 {% if not "URC" in request.session.groups%}
-<script src="{% static 'js/custom_script_tab.js' %}"></script>
-<script src="{% static 'js/custom_script_QC.js' %}"></script>
+  <script src="{% static 'js/custom_script_tab.js' %}"></script>
+  <script src="{% static 'js/custom_script_QC.js' %}"></script>
 {% endif %}
 {% endblock %}

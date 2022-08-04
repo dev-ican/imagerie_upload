@@ -34,7 +34,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -62,11 +62,11 @@ INSTALLED_APPS = [
     'webstack_django_sorting',
     'django_filters',
     'django_extensions',
+    'bootstrap_modal_forms',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -177,8 +177,3 @@ STATICFILES_DIRS = (
 # MEDIA Django
 MEDIA_URL = '/data/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "data/")
-
-import django_on_heroku
-django_on_heroku.settings(locals())
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"

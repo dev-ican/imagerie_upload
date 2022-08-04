@@ -1,4 +1,5 @@
 $('select[name="select_etude"]').change(function(event) {
+
 	var url_etude = "/admin_page/upfiles/tris/"
 	var id_etude = $(this).children("option:selected").val();
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
@@ -34,10 +35,11 @@ $('td[class="clickable"]').one("click", function(){
 	var url_etude = "/admin_page/upfiles/mod";
 	var value = $(this).attr('value');
 	var value_id = $(this).attr('name');
+	
 
 	var list = $("select[name='select_etude'] option:selected").val();
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
-	var td_parent = $( "td.clickable" ).parent('tr').attr('value');
+	var td_parent = $("td.clickable").parent('tr').val();
 	var var_modif = 'modif_' + td_parent + value
 
 	function csrfSafeMethod(method) {
@@ -78,6 +80,7 @@ $('td[class="clickable"]').one("click", function(){
 			}
 		}
 		console.log(var_modif)
+		console.log(str_select)
 		document.getElementById(var_modif).innerHTML = str_select;
 		document.getElementById(var_modif).className += "_select";
 		$('td[class="clickable_select"]').off('click');

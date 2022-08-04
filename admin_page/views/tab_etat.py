@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 
+from ensurepip import bootstrap
 import os
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
 from django.shortcuts import render
+from django.urls import reverse_lazy
 
 from upload.models import RefEtapeEtude, RefEtatEtape, SuiviUpload, RefInfoCentre, RefEtudes
 # from ..filters import RefEtatEtapeFilter, RefEtapeEtudeFilter
-from ..forms import FormSelectionEtudeEtape
+from ..forms import FormSelectionEtudeEtape, FormSelectionEtudeURC
 
 from .module_log import information_log
 from .module_views import (
@@ -36,11 +40,17 @@ def admin_up(request):
 
     if request.method == "POST":
 
-        form = FormSelectionEtudeEtape(request.POST)
+        urc_users = User.objects.filter(groups__name="URC")
+
+        if request.user in urc_users:
+            form = FormSelectionEtudeURC(request.POST)
+        else:
+            form = FormSelectionEtudeEtape(request.POST)
 
         if form.is_valid():
             centre_choisi_id = form.cleaned_data["centre_choice"]
             etude_choisie_id = form.cleaned_data["etude_choice"]
+
 
             try:
                 # etude_selectionnee correspond à la dernière étude créée.
@@ -92,21 +102,10 @@ def admin_up(request):
 
                 nbr_entree = len(resultat)
 
-                # print(f"resultat : {resultat['etape_etude']}")
-
-                # gestion_info = gestion_etude_selectionnee(etude_selectionnee,
-                #                                         centres_etude_selec
-                #                                         )
-                # print(f"gestion_info : {gestion_info}")
                 
 
             except ObjectDoesNotExist:
                 dossiers = ""
-                # gestion_info = gestion_etude_selectionnee(etude_selectionnee,
-                #                                           centres_etude_selec
-                #                                           )
-
-        
 
     else:
         form = FormSelectionEtudeEtape()
@@ -125,7 +124,7 @@ def admin_up(request):
                                                     # "str_etude": gestion_info[1],
                                                     # "str_centre": gestion_info[0],
                                                     "nbr_entree": nbr_entree,
-                                                    "form": form
+                                                    "form": form,
                                                     })
 
 

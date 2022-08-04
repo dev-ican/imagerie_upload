@@ -16,8 +16,6 @@ Django==4.0.4
 django-bootstrap-datepicker-plus==4.0.0
 django-bootstrap4==22.1
 django-extensions==3.1.5
-django-filter==21.1
-django-on-heroku==1.1.2
 django-phonenumber-field==6.1.0
 django-sslserver==0.22
 gunicorn==20.1.0
@@ -57,5 +55,4 @@ tzdata==2022.1
 urllib3==1.26.9
 webstack-django-sorting==2.1.1
 Werkzeug==2.1.2
-whitenoise==6.1.0
 wsproto==1.1.0
