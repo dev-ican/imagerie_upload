@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from ensurepip import bootstrap
+# from ensurepip import bootstrap
 import os
 
 from django.contrib.auth.decorators import login_required
