@@ -1,6 +1,6 @@
 {% extends "base_admin_stat.html" %}
 {% load static %}
-{% load bootstrap4 %}
+{% comment %} {% load bootstrap4 %} {% endcomment %}
 {% block section_two %}
 <div class="row col-12">
   <div class="container">
@@ -19,7 +19,7 @@
   <div>
   </div>  
 {% if nbr_entree != 0 %}
-<table class="table table-info table-responsive-sm table-hover">
+<table id="tableau_etats" class="table table-info table-responsive-sm table-hover">
   <thead class="thead-light">
     <tr>
       <th scope="col">QC</th>
@@ -54,17 +54,63 @@
       </tr>
     {% endfor %}
   </tbody>
+  {% comment %} <tfoot>
+    <tr>
+      <th scope="col">QC</th>
+      <th scope="col">ID patient</th>
+      {% for nom_etape in nbr_noms_etape.nom_etape %}
+        <th scope="col">{{ nom_etape }}</th>
+      {% endfor %}
+    </tr>
+</tfoot> {% endcomment %}
 </table>
 {% else %}
 <span>Aucun fichier n'est chargé dans l'application</span>
 {% endif %}
-{% for result in page_obj %}
+{% comment %} {% for result in page_obj %}
     {# Each "contact" is a Contact model object. #}
     {{ result }}<br>
-{% endfor %}
+{% endfor %} {% endcomment %}
 
 {% if not "URC" in request.session.groups%}
   <script src="{% static 'js/custom_script_tab.js' %}"></script>
   <script src="{% static 'js/custom_script_QC.js' %}"></script>
+  <script>
+    $(document).ready(function() {
+      var table = $('#tableau_etats').DataTable({
+        paging: false,
+        language: {
+          url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/fr-FR.json'
+      },
+        searchPanes: {
+          layout: 'columns-5',
+            viewTotal: true,
+            orderable: false,
+            controls: false
+        },
+        dom: 'Plfrtip',
+        columnDefs: [
+            {
+                searchPanes: {
+                    show: false
+                },
+                targets: [1]
+            }
+        ]
+    });
+  
+      table.columns().every( function() {
+          var that = this;
+    
+          $('input', this.footer()).on('keyup change', function() {
+              if (that.search() !== this.value) {
+                  that
+                      .search(this.value)
+                      .draw();
+            }
+        });
+    });
+  });
+</script>
 {% endif %}
 {% endblock %}
