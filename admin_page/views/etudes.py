@@ -32,32 +32,34 @@ def admin_etude(request):
     if request.method == "POST":
         nom = request.POST["nom"]
         date_now = timezone.now()
-        RefEtudes.objects.create(
-            nom=nom, date_ouverture=date_now
-        )
+        RefEtudes.objects.create(nom=nom,
+                                 date_ouverture=date_now
+                                 )  
+        
         # Enregistrement du log------------------------------------
         # ---------------------------------------------------------
         nom_documentaire = " a créé l'étude : " + nom
         creation_log(request, nom_documentaire)
         # ---------------------------------------------------------
         # ---------------------------------------------------------
+    
     form = FormsEtude()
     etude_tab = RefEtudes.objects.all()
-    return render(
-        request,
-        "admin_etude.html",
-        {"form": form, "resultat": etude_tab},
-    )
+    return render(request, "admin_etude.html", {"form": form,
+                                                "resultat": etude_tab
+                                               })
 
 
 @login_required(login_url="/auth/auth_in/")
 def etude_edit(request, id_etape):
     """Charge la page d'édition des études."""
+
     if request.method == "POST":
         form = FormsEtude()
         nom = request.POST["nom"]
         date = request.POST["date"]
         user_info = RefEtudes.objects.get(pk=id_etape)
+
         # Enregistrement du log-------------------------------
         # ----------------------------------------------------
         nom_documentaire = (
@@ -71,6 +73,7 @@ def etude_edit(request, id_etape):
         edition_log(request, nom_documentaire)
         # ----------------------------------------------------
         # ----------------------------------------------------
+
         user_info.nom = nom
         user_info.date_ouverture = date
         user_info.save()

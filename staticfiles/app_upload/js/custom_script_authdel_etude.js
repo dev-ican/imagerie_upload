@@ -56,7 +56,7 @@ function ajax(url_etude,id_,csrftoken,id_parent,type_parent){
 		type : 'POST',
 		success: function(response, status, XHR){
 			console.log("SUCCESS");
-			console.log(response);
+			// console.log(response);
 			var val_data = JSON.parse(response);
 			var str_etude = "";
 			var tab_var = 0;
@@ -95,7 +95,6 @@ function ajax(url_etude,id_,csrftoken,id_parent,type_parent){
 			$('#message').text(Object.values(val_data)[2]);
 			x = setTimeout(effaceinfo, 2000);
 			$('button[name="clikable"]').on("click", ajaxOnClick);
-
 		}
 	})
 

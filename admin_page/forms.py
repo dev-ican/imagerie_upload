@@ -3,8 +3,8 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import *
 # from django.http import *
-from upload.models import RefEtudes, RefInfoCentre, RefEtatEtape, RefControleQualite
-# from bootstrap_modal_forms.forms import BSModalModelForm
+from upload.models import RefEtudes, RefInfoCentre
+from bootstrap_datepicker_plus.widgets import DateTimePickerInput
 
 
 CHOICES = [(0, "Collaborateurs"),
@@ -17,9 +17,8 @@ class FormsEtude(forms.Form):
     """ Formulaire gérant les études """
 
     nom = forms.CharField(label="Nom de l'étude", max_length=100)
-    date = forms.DateField(
-        widget=forms.DateInput(
-            format="%d/%m/%Y",
+    date = forms.DateField(widget=forms.DateInput(
+            format="%Y-%m-%d",
             attrs={"placeholder": "yyyy-mm-dd"},
         )
     )
@@ -72,15 +71,6 @@ class FormCentre(forms.Form):
 class FormCentreEdit(forms.Form):
     """ Formulaire gérant les centres """
 
-    # TODO supprimer la date d'ajout dans l'édition, et ajouter un champs multiplechoicefield pour séléctionner les utilisateurs.
-
-    # class RefInfoCentre(models.Model):
-    #     '''Modèle gérant les centres'''
-    #     nom = models.CharField(max_length=5000)
-    #     numero = models.IntegerField(blank=True)
-    #     date_ajout = models.DateTimeField("Date d'ajout")
-    #     user = models.ManyToManyField(User)
-
     users = User.objects.filter(is_staff=False).filter(is_superuser=False)
     centres = RefInfoCentre.objects.all()
 
@@ -95,12 +85,12 @@ class FormCentreEdit(forms.Form):
     utilisateurs = forms.MultipleChoiceField(label="Utilisateurs rattachés au centre",
                                              widget=forms.Select(),
                                              choices=choix_utilisateurs)
-    # date_ajout = forms.DateField(
-    #     widget=forms.DateInput(
-    #         format="%d/%m/%Y",
-    #         attrs={"placeholder": "yyyy-mm-dd"},
-    #     )
-    # )
+    date_ajout = forms.DateField(
+        widget=forms.DateInput(
+            format="%Y-%m-%d",
+            attrs={"placeholder": "yyyy-mm-dd"},
+        )
+    )
 
 
 class FormPwdChange(forms.Form):
@@ -190,50 +180,40 @@ class FormsUser(forms.Form):
 class FormsUserEdit(forms.Form):
     """ Formulaire gérant les éditions des utilisateurs """
 
-    username = forms.CharField(
-        label="Identifiant de l'utilisateur", max_length=100
-    )
-    type = forms.ChoiceField(
-        label="",
-        choices=CHOICES,
-        widget=forms.RadioSelect(
-            attrs={"class": "d-inline-flex"}
-        ),
-    )
-    email = forms.EmailField(
-        label="Courriel de l'utilisateur",
-        max_length=200,
-        validators=[EmailValidator()],
-    )
-    pass_first = forms.CharField(
-        required=False,
-        label="Mot de passe",
-        widget=forms.PasswordInput,
-        max_length=100,
-        validators=[
-            RegexValidator(
-                regex="([a-zA-Z]){4,12}([0-9]){2,12}",
-                message="Mot de passe invalide",
-            )
-        ],
-    )
-    pass_second = forms.CharField(
-        required=False,
-        label="Répéter le mot de passe",
-        widget=forms.PasswordInput,
-        max_length=100,
-        validators=[
-            RegexValidator(
-                regex="([a-zA-Z]){4,12}([0-9]){2,12}",
-                message="Mot de passe invalide",
-            )
-        ],
-    )
+    username = forms.CharField(label="Identifiant de l'utilisateur",
+                               max_length=100
+                               )
+
+    type = forms.ChoiceField(label="",
+                             choices=CHOICES,
+                             widget=forms.RadioSelect(
+                                    attrs={"class": "d-inline-flex"}
+                             ))
+
+    email = forms.EmailField(label="Courriel de l'utilisateur",
+                             max_length=200,
+                             validators=[EmailValidator()]
+                             )
+
+    pass_first = forms.CharField(required=False,
+                                 label="Mot de passe",
+                                 widget=forms.PasswordInput,
+                                 max_length=100,
+                                 validators=[RegexValidator(regex="([a-zA-Z]){4,12}([0-9]){2,12}",
+                                                            message="Mot de passe invalide",
+                                                            )])
+
+    pass_second = forms.CharField(required=False,
+                                  label="Répéter le mot de passe",
+                                  widget=forms.PasswordInput,
+                                  max_length=100,
+                                  validators=[RegexValidator(regex="([a-zA-Z]){4,12}([0-9]){2,12}",
+                                                             message="Mot de passe invalide"
+                                                             )])
 
 
 class FormSelectionEtudeEtape(forms.Form):
     """Formulaire permettant de séléctionner un centre et une étude afin d'afficher les données"""
-
 
     etudes = RefEtudes.objects.all()
     choice_etude = []

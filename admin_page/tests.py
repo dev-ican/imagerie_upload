@@ -30,84 +30,68 @@ class TestApp(TestCase):
         test_user1 = User.objects.create_user(username="testuser1", password="testtest")
         test_user2 = User.objects.create_user(username="testuser2", password="testtest")
         test_user3 = User.objects.create_user(username="testuser3", password="testtest")
-                
-        test_user1.save()
-        test_user2.save()
-        test_user3.save()
-
+    
         groupe_collaborateur.user_set.add(test_user1, test_user2, test_user3)
 
         test_etude1 = RefEtudes.objects.create(nom="test_etude1", date_ouverture=date_now)
         test_etude2 = RefEtudes.objects.create(nom="test_etude2", date_ouverture=date_now)
 
-        test_etude1.save()
-        test_etude2.save()
-
-        etat_1 = RefEtatEtape.objects.create(nom="test")
-        etat_1.save()
+        etat_01 = RefEtatEtape.objects.create(nom="Nouveau")
+        etat_02 = RefEtatEtape.objects.create(nom="En cours")
+        etat_03 = RefEtatEtape.objects.create(nom="Erreur")
+        etat_04 = RefEtatEtape.objects.create(nom="Demandes d'informations")
+        etat_05 = RefEtatEtape.objects.create(nom="Terminé")
 
         jonction_etude1 = (JonctionUtilisateurEtude.objects.create(user=test_user1,
                                                                    etude=test_etude2,
                                                                    date_autorisation=date_now,
                                                                    ))
-        jonction_etude1.save()
         jonction_etude2 = (JonctionUtilisateurEtude.objects.create(user=test_user2,
                                                                    etude=test_etude1,
                                                                    date_autorisation=date_now,
-                                                                  ))
-        jonction_etude2.save()
+                                                                   ))
         jonction_etude3 = (JonctionUtilisateurEtude.objects.create(user=test_user3,
                                                                    etude=test_etude1,
                                                                    date_autorisation=date_now,
-                                                                  ))
-        jonction_etude3.save()
+                                                                   ))
 
         etape_etude = RefEtapeEtude.objects.create(nom="Etape_test1")
-        etape_etude.save()
         etape_etude.etude.add(test_etude1)
         etape_etude.save()
-
 
         etape_etude = RefEtapeEtude.objects.create(nom="Etape_test2")
         etape_etude.etude.add(test_etude2)
         etape_etude.save()
 
-        test_centre = RefInfoCentre.objects.create(nom="Centre_test1",
-                                                   numero="1258",
-                                                   date_ajout=date_now,
-                                                  )
-        test_centre.save()
+        test_centre_01 = RefInfoCentre.objects.create(nom="Centre_test1",
+                                                   numero="125",
+                                                   date_ajout=date_now
+                                                   )
+        test_centre_01.user.add(test_user1)
+        test_centre_01.save()
 
-        test_centre = RefInfoCentre.objects.create(nom="Centre_test2",
-                                                   numero="12587",
-                                                   date_ajout=date_now,
-                                                  )
-        test_centre.save()
+        test_centre_02 = RefInfoCentre.objects.create(nom="Centre_test2",
+                                                   numero="32",
+                                                   date_ajout=date_now
+                                                   )
+        test_centre_02.user.add(test_user2)
+        test_centre_02.save()
 
-        test_typeaction = RefTypeAction.objects.create(id=1, nom="Action_1")
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(id=2, nom="Action_2")
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(id=3, nom="Action_3")
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(id=4, nom="Action_4")
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(id=5, nom="Action_5")
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(id=6, nom="Action_6")
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(id=7, nom="Action_7")
-        test_typeaction.save()
+        RefTypeAction.objects.create(id=1, nom="Action_1")
+        RefTypeAction.objects.create(id=2, nom="Action_2")
+        RefTypeAction.objects.create(id=3, nom="Action_3")
+        RefTypeAction.objects.create(id=4, nom="Action_4")
+        RefTypeAction.objects.create(id=5, nom="Action_5")
+        RefTypeAction.objects.create(id=6, nom="Action_6")
+        RefTypeAction.objects.create(id=7, nom="Action_7")
 
         test_cq = RefControleQualite.objects.create(id=1, nom="QC_1")
-        test_cq.save()
 
         test_dossier = DossierUpload.objects.create(id=1,
                                                     user=test_user1,
                                                     controle_qualite=test_cq,
                                                     date="2020-10-22",
                                                    )
-        test_dossier.save()
 
         test_suivi = SuiviUpload.objects.create(id=1,
                                                 user=test_user1,
@@ -117,8 +101,7 @@ class TestApp(TestCase):
                                                 date_examen="2020-10-22",
                                                 dossier=test_dossier,
                                                 fichiers="",
-                                               )
-        test_suivi.save()
+                                                )
 
     # ---------------------------------------------------------------------------------------------
     # ---------------------------------------------------------------------------------------------
@@ -163,22 +146,25 @@ class TestApp(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
 
-        val_dict = {"nom": "test_etude_edit"}
+        val_dict = {"nom": "test_etude1"}
+
         post_etude = self.client.post(reverse("admin_etude"), data=val_dict)
         self.assertEqual(post_etude.status_code, 200)
 
-        select_del = RefEtudes.objects.all()
-        for item in select_del:
-            if item.nom == "test_etude_edit":
-                id_projet = item.id
+        etudes = RefEtudes.objects.all()
+        for etude in etudes:
+            if etude.nom == "test_etude1":
+                etude_id = etude.id
                 break
-        post_edit_etude = self.client.post(reverse("etude_edit", args=(id_projet,)),
-                                                                {"nom": "test_edit", "date_ouverture": date_now},
-                                                  )
+        
+        post_edit_etude = self.client.post(reverse("etude_edit", args=(etude_id,)), {"nom": "test_edit",
+                                                                                     "date": date_now
+                                                                                     })
         self.assertEqual(post_edit_etude.status_code, 302)
         
         projet_id = RefEtudes.objects.all()
         reponse = False
+
         for item_edit in projet_id:
             if item_edit.nom == "test_edit":
                 reponse = True
@@ -261,14 +247,14 @@ class TestApp(TestCase):
         post_etape = self.client.post(reverse("admin_etape"), data=val_dict)
         self.assertEqual(post_etape.status_code, 200)
 
-        select_del = RefEtapeEtude.objects.all()
-        for item in select_del:
-            if item.nom == "test_etape_edit":
-                id_projet = item.id
+        etapes = RefEtapeEtude.objects.all()
+        for etape in etapes:
+            if etape.nom == "test_etape_edit":
+                etape_id = etape.id
                 break
 
-        id_etape = RefEtapeEtude.objects.get(id__exact=id_projet)
-        check_etude = self.client.get(reverse("etape_edit", args=(id_projet,)))
+        id_etape = RefEtapeEtude.objects.get(id__exact=etape_id)
+        check_etude = self.client.get(reverse("etape_edit", args=(etape_id,)))
         self.assertEqual(check_etude.status_code, 200)
         self.assertTemplateUsed(check_etude, "admin_etapes_edit.html")
 
@@ -348,13 +334,16 @@ class TestApp(TestCase):
                                           "testuser3",
                                           "testuser4",
                                          ])
+        
+        centre = RefInfoCentre.objects.get(nom="Centre_test1")
 
         dict_user = {"username": "test_user_create",
                      "email": "test_email@gmail.com",
                      "pass_first": "testtest12345",
                      "pass_second": "testtest12345",
-                     "nom": "",
-                     "numero": "",
+                     "centre": centre.id,
+                    #  "nom": "",
+                    #  "numero": "",
                      "type": 1,
                     }
         post_user = self.client.post(reverse("admin_utilisateur"), data=dict_user)
@@ -369,31 +358,35 @@ class TestApp(TestCase):
 
     def test_admin_user_edit(self):
 
-        """Test le module admin user edition."""
         self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
         self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
 
+        centre = RefInfoCentre.objects.get(nom="Centre_test1")
+
         val_dict = {"username": "test_user_edit",
                     "email": "test_user@gmail.com",
                     "pass_first": "testtest12345",
                     "pass_second": "testtest12345",
-                    "nom": "",
-                    "numero": "",
+                    "centre": centre.id,
+                    # "nom": "",
+                    # "numero": "",
                     "type": 1,
                    }
+
         post_user = self.client.post(reverse("admin_utilisateur"), data=val_dict)
         self.assertEqual(post_user.status_code, 200)
 
-        select_del = User.objects.all()
-        for item in select_del:
-            if item.username == "test_user_edit":
-                id_projet = item.id
+        users = User.objects.all()
+        for user in users:
+            if user.username == "test_user_edit":
+                user_id = user.id
                 break
-        id_user = User.objects.get(id__exact=id_projet)
-        check_user = self.client.get(reverse("user_edit", args=(id_projet,)))
+
+        id_user = User.objects.get(id__exact=user_id)
+        check_user = self.client.get(reverse("user_edit", args=(user_id,)))
         self.assertEqual(check_user.status_code, 200)
         self.assertTemplateUsed(check_user, "admin_user_edit.html")
 
@@ -423,19 +416,23 @@ class TestApp(TestCase):
 
 
     def test_admin_user_del(self):
-        """Test le module admin user suppr."""
+        """Test le module admin de suppression d'utilisateur"""
         
         self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
         self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
+
+        centre = RefInfoCentre.objects.get(nom="Centre_test1")
+
         val_dict = {"username": "test_user_del",
                     "email": "test_user@gmail.com",
                     "pass_first": "testtest12345",
                     "pass_second": "testtest12345",
-                    "nom": "",
-                    "numero": "",
+                    "centre": centre.id,
+                    # "nom": "",
+                    # "numero": "",
                     "type": 1,
                    }
         post_user = self.client.post(reverse("admin_utilisateur"), data=val_dict)
@@ -614,13 +611,16 @@ class TestApp(TestCase):
         self.assertEqual(str(response.context["user"]),"testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
+
+        centre = RefInfoCentre.objects.get(nom="Centre_test1")
         
         val_dict = {"username": "test_user_Auth",
                     "email": "test_user@gmail.com",
                     "pass_first": "testtest12345",
                     "pass_second": "testtest12345",
-                    "nom": "",
-                    "numero": "",
+                    "centre": centre.id,
+                    # "nom": "",
+                    # "numero": "",
                     "type": 1,
                     }
         post_user = self.client.post(reverse("admin_utilisateur"), data=val_dict)
@@ -725,4 +725,4 @@ class TestApp(TestCase):
 
         get_mod = self.client.get(reverse("upload_mod"))
         result = json.loads(get_mod.content)
-        self.assertEqual(len(result), 54)
+        self.assertEqual(len(result), 306)

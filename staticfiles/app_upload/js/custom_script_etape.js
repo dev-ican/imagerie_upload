@@ -29,7 +29,7 @@ $('#supprEtape a[role="button"]').click(function(event) {
 			$('#ajax').html(response);}
 	})
 	} else {
-		  window.alert("La suppréssion est annulée");
+		  window.alert("La suppression est annulée");
 		}
 	
 });

@@ -20,12 +20,14 @@ def gestion_documentaire(request):
     ''' Charge la page de la gestion documentaire
     Si le formulaire est renvoyé enregistre le document
     '''
+
     if request.method == "POST":
         date_now = timezone.now()
         titre = request.POST["titre"]
         desc = request.POST["description"]
         etude = request.POST["etudes"]
         type = request.POST["type"]
+
         # Enregistrement du log-----------------------
         # --------------------------------------------
         user_current = request.user
@@ -39,6 +41,7 @@ def gestion_documentaire(request):
         )
         # --------------------------------------------
         # --------------------------------------------
+        
         # Permet de sélectionner la bonne image de fond
         if type == str(0):
             url_img = "bg-nw-info.jpg"

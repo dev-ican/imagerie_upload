@@ -16,62 +16,33 @@ class TestApp(TestCase):
         """Mise en place des bases de données."""
         date_now = timezone.now()
 
-        test_user1 = User.objects.create_user(
-            username="testuser1", password="testtest"
-        )
-        test_user2 = User.objects.create_user(
-            username="testuser2", password="testtest"
-        )
+        test_user1 = User.objects.create_user(username="testuser1",
+                                              password="testtest"
+                                              )
+        test_user2 = User.objects.create_user(username="testuser2",
+                                              password="testtest"
+                                              )
 
-        test_user1.save()
-        test_user2.save()
+        test_contact1 = Contact.objects.create(nom="Nom_contact1",
+                                               prenom="Prenom_contact1",
+                                               courriel="test@test.com",
+                                               telephone="0147896523",
+                                               poste="Test contact",
+                                               )
+        test_contact2 = Contact.objects.create(nom="Nom_contact2",
+                                               prenom="Prenom_contact2",
+                                               courriel="test@test.com",
+                                               telephone="0147896523",
+                                               poste="Test contact_2",
+                                               )
 
-        test_contact1 = Contact.objects.create(
-            nom="Nom_contact1",
-            prenom="Prenom_contact1",
-            courriel="test@test.com",
-            telephone="0147896523",
-            poste="Test contact",
-        )
-        test_contact2 = Contact.objects.create(
-            nom="Nom_contact2",
-            prenom="Prenom_contact2",
-            courriel="test@test.com",
-            telephone="0147896523",
-            poste="Test contact_2",
-        )
-
-        test_contact1.save()
-        test_contact2.save()
-
-        test_typeaction = RefTypeAction.objects.create(
-            id=1, nom="Action_1"
-        )
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(
-            id=2, nom="Action_2"
-        )
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(
-            id=3, nom="Action_3"
-        )
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(
-            id=4, nom="Action_4"
-        )
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(
-            id=5, nom="Action_5"
-        )
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(
-            id=6, nom="Action_6"
-        )
-        test_typeaction.save()
-        test_typeaction = RefTypeAction.objects.create(
-            id=7, nom="Action_7"
-        )
-        test_typeaction.save()
+        RefTypeAction.objects.create(id=1, nom="Action_1")
+        RefTypeAction.objects.create(id=2, nom="Action_2")
+        RefTypeAction.objects.create(id=3, nom="Action_3")
+        RefTypeAction.objects.create(id=4, nom="Action_4")
+        RefTypeAction.objects.create(id=5, nom="Action_5")
+        RefTypeAction.objects.create(id=6, nom="Action_6")
+        RefTypeAction.objects.create(id=7, nom="Action_7")
 
     # ---------------------------------------------------------------------------------------------
     # ---------------------------------------------------------------------------------------------
@@ -81,17 +52,15 @@ class TestApp(TestCase):
 
     def test_gestion_contact(self):
         """Test le module gestion de contact."""
-        self.client.login(
-            username="testuser1", password="testtest"
-        )
+
+        self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
-        self.assertEqual(
-            str(response.context["user"]), "testuser1"
-        )
+        self.assertEqual(str(response.context["user"]), "testuser1")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "auth.html")
         id_user = User.objects.all()
         id_contact = Contact.objects.all()
+
         val_dict = {
             "nom": "Nom_contact1_ajout",
             "prenom": "Prenom_contact1",
@@ -99,26 +68,22 @@ class TestApp(TestCase):
             "telephone": "0147896523",
             "poste": "Test contact",
         }
-        post_document = self.client.post(
-            reverse("new_contact"), data=val_dict
-        )
+
+        post_document = self.client.post(reverse("new_contact"), data=val_dict)
         self.assertEqual(post_document.status_code, 302)
-        get_document = self.client.get(
-            reverse("contact_gestion")
-        )
+        get_document = self.client.get(reverse("contact_gestion"))
         result = get_document.context["resultat"]
+
         for item in result:
-            self.assertIn(
-                item.nom,
-                [
-                    "Nom_contact1_ajout",
-                    "Nom_contact1",
-                    "Nom_contact2",
-                ],
-            )
+            self.assertIn(item.nom, ["Nom_contact1_ajout",
+                                     "Nom_contact1",
+                                     "Nom_contact2",
+                                     ])
+
 
     def test_contact_edit(self):
         """Test le module d'édition documentaire."""
+
         self.client.login(
             username="testuser1", password="testtest"
         )

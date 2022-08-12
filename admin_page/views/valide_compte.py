@@ -79,6 +79,7 @@ def compte_valide(request, id_user):
     check_user.save()
     return redirect('/admin_page/authacc/', {"message" : message })
 
+
 @login_required(login_url="/auth/auth_in/")
 @staff_member_required
 def compte_refus(request, id_user):

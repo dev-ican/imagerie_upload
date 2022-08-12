@@ -61,7 +61,6 @@ function change_qc(event) {
 	var etat_id = $(this).children("option:selected").val();
 	var jonction_id = $(this).parent('td').attr('name');
 	var value_etude = $('select[name="etude_choice"]').children("option:selected").val();
-	console.log(value_etude)
 	const url_research = "/admin_page/upfiles/"
 
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();

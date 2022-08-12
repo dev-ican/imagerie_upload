@@ -92,15 +92,12 @@ def formulaire(request):
         id_etapes = RefEtapeEtude.objects.filter(etude=id_etude.etude.id)
         date_now = timezone.now()
         filez = request.FILES.getlist("upload")
-        # num_centre = RefInfoCentre.objects.get(user__exact=user_current.id)
 
-        #TODO erreur lors de l'upload
         for centre in RefInfoCentre.objects.all():
             for user in centre.user.all():
                 if user == request.user:
                     num_centre = RefInfoCentre.objects.get(user=user)
                     break
-
 
         if len(str(num_centre.numero)) == 3 :
             num_centre_val = str(num_centre.numero)
@@ -126,8 +123,7 @@ def formulaire(request):
             create_jonction = DossierUpload(user=user_current, controle_qualite=id_qc, date=date)
             create_jonction.save()
 
-            # Création dans la table suivi upload de
-            #chaque fichier chargé en lien avec le dossier
+            # Création dans la table suivi upload de chaque fichier chargé en lien avec le dossier
             for f in filez:
                 create_suivi = SuiviUpload(user=user_current,
                                            etude=id_etude,

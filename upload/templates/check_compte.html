@@ -30,9 +30,9 @@
         {% endif %}
         <td><div class="row justify-content-start">
           {% if item.Compte_Valider.etat.id == 1 %}
-            <a role="button" class="btn btn-sm btn-outline-info text-success" href=#>Ce compte à une demande en cours</a>
+            <a role="button" class="btn btn-sm btn-outline-info text-success" href=#>Ce compte a une demande en cours</a>
           {% elif item.Compte_Valider.etat.id == 3 %}
-            <a role="button" class="btn btn-sm btn-outline-warning text-danger" href="/admin_page/authacc/verif/{{item.id}}/">Ce compte à vue son activation refusé <i>- Cliquer pour faire une nouvelle demande -</i></a>
+            <a role="button" class="btn btn-sm btn-outline-warning text-danger" href="/admin_page/authacc/verif/{{item.id}}/">Ce compte a vue son activation refusé <i>- Cliquer pour faire une nouvelle demande -</i></a>
           {% else %}
           {% if not user.is_staff or user.is_superuser %}
             <a role="button" class="btn btn-sm btn-outline-secondary" href="/admin_page/authacc/verif/{{item.id}}/">Demande d'approbation</a>

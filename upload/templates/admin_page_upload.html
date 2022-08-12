@@ -10,6 +10,7 @@
     <div class="row d-flex justify-content-center">
       <span>Tableau récapitulatif des étapes pour chaque dossier chargé dans le système</span> 
     </div>
+  <br/>
   </div>
       <form action="" method="post">
         {% csrf_token %}
@@ -24,6 +25,7 @@
     <tr>
       <th scope="col">QC</th>
       <th scope="col">ID patient</th>
+      <th scope="col">Date d'examen</th>
       {% for nom_etape in nbr_noms_etape.nom_etape %}
         <th scope="col">{{ nom_etape }}</th>
       {% endfor %}
@@ -43,6 +45,7 @@
         {% if item.error == True %}
           <td colspan="{{ nbr_noms_etape.nbr_etape }}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}
+          <td name="{{ item.date_examen}}">{{ item.date_examen|date:"d F Y"}}</td>
         {% for etape in item.etape_etude %}
           {% if etape.en_cours_d_informations %}
             <td name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
@@ -54,23 +57,10 @@
       </tr>
     {% endfor %}
   </tbody>
-  {% comment %} <tfoot>
-    <tr>
-      <th scope="col">QC</th>
-      <th scope="col">ID patient</th>
-      {% for nom_etape in nbr_noms_etape.nom_etape %}
-        <th scope="col">{{ nom_etape }}</th>
-      {% endfor %}
-    </tr>
-</tfoot> {% endcomment %}
 </table>
 {% else %}
 <span>Aucun fichier n'est chargé dans l'application</span>
 {% endif %}
-{% comment %} {% for result in page_obj %}
-    {# Each "contact" is a Contact model object. #}
-    {{ result }}<br>
-{% endfor %} {% endcomment %}
 
 {% if not "URC" in request.session.groups%}
   <script src="{% static 'js/custom_script_tab.js' %}"></script>
@@ -94,7 +84,7 @@
                 searchPanes: {
                     show: false
                 },
-                targets: [1]
+                targets: [1, 2]
             }
         ]
     });

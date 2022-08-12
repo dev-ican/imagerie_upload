@@ -157,6 +157,7 @@ def info_upload(suivi_upload):
     infos_upload["qc_nom"] = var_qc.controle_qualite.nom
     infos_upload["qc_id"] = var_qc.id
     infos_upload["id_patient"] = upload[0].id_patient
+    infos_upload["date_examen"] = upload[0].date_examen
 
     return infos_upload
 
@@ -207,25 +208,25 @@ def send_mail(user_send, compte, to_mail, origin):
     # origin représente l'origine de la demande : Vérification pour une demande d'ouverture de compte venant d'un admin service
     # valider pour un compte validé par un admin SI
     # refus pour un compte refusé par un admin SI
-    # Il faut poursuivre l'utilisation d'un document annexe pour le contenue texte.
+    # Il faut poursuivre l'utilisation d'un document annexe pour le contenu texte.
     if origin == 'verification':
         title = str(user_send) + " demande la validation du compte " + str(compte.username)
         corps = "Bonjour, \n\n Une demande de validation de compte sur l'application d'upload est demandé par : " + str(user_send)
-        corps += "\n\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.73/admin_page/authacc \n"
+        corps += "\n\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://upload.fondation-ican.fr/auth/auth_in/?next=/ \n"
         corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
         corps += "\n Système app upload"
     elif origin == 'valider':
         title = str(user_send) + " vient de valider le compte : " + str(compte.username)
         corps = "Bonjour, \n\n Le compte en attente de validation " + str(compte.username) + " vient d'être validé par : " + str(user_send)
         corps += "\n\n Si vous avez une question sur cette validation, vous pouvez joindre le service SI par ce courriel : support_si@ican-institute.org \n"
-        corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.73/admin_page/authacc \n"
+        corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://upload.fondation-ican.fr/auth/auth_in/?next=/ \n"
         corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
         corps += "\n Système app upload"
     elif origin == 'refus':
         title = str(user_send) + " vient de REFUSER le compte : " + str(compte.username)
         corps = "Bonjour, \n\n Le compte en attente de validation " + str(compte.username) + " vient d'être refusé par : " + str(user_send)
         corps += "\n\n Si vous avez une question sur cette validation, vous pouvez joindre le service SI par ce courriel : support_si@ican-institute.org \n"
-        corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://134.157.204.73/admin_page/authacc \n"
+        corps += "\n Vous pouvez vous rendre sur l'application web Upload via ce lien : https://upload.fondation-ican.fr/auth/auth_in/?next=/ \n"
         corps += "\n CE COURRIEL EST UN MAIL AUTOMATIQUE MERCI DE NE PAS REPONDRE \n"
         corps += "\n Système app upload"
     email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)

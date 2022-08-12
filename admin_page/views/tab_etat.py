@@ -6,12 +6,10 @@ import os
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.urls import reverse_lazy
 
-from upload.models import RefEtapeEtude, RefEtatEtape, SuiviUpload, RefInfoCentre, RefEtudes
-# from ..filters import RefEtatEtapeFilter, RefEtapeEtudeFilter
+from upload.models import RefEtapeEtude, SuiviUpload, RefInfoCentre, RefEtudes
 from ..forms import FormSelectionEtudeEtape, FormSelectionEtudeURC
 
 from .module_log import information_log
@@ -50,7 +48,6 @@ def admin_up(request):
         if form.is_valid():
             centre_choisi_id = form.cleaned_data["centre_choice"]
             etude_choisie_id = form.cleaned_data["etude_choice"]
-
 
             try:
                 # etude_selectionnee correspond à la dernière étude créée.
@@ -98,11 +95,9 @@ def admin_up(request):
                 nbr_noms_etape["nom_etape"] = noms_etape
 
                 centres_etude_selec = centres_etude_selectionnee(dossiers_lies_a_l_etude)
-                print(f"centre_etude_selectionne ; {centres_etude_selec}")
+                # print(f"centre_etude_selectionne : {centres_etude_selec}")
 
                 nbr_entree = len(resultat)
-
-                
 
             except ObjectDoesNotExist:
                 dossiers = ""
@@ -117,12 +112,10 @@ def admin_up(request):
     nom_documentaire = "Affiche le tableau des études en cours"
     information_log(request, nom_documentaire)
     # --------------------------------------------------
-
     # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
+  
     return render(request, "admin_page_upload.html",{"resultat": resultat,
                                                     "nbr_noms_etape": nbr_noms_etape,
-                                                    # "str_etude": gestion_info[1],
-                                                    # "str_centre": gestion_info[0],
                                                     "nbr_entree": nbr_entree,
                                                     "form": form,
                                                     })

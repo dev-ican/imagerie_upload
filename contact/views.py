@@ -19,15 +19,14 @@ def gestion_contact(request):
     date_now = timezone.now()
     user_current = request.user
     type_action = RefTypeAction.objects.get(pk=4)
-    Log.objects.create(
-        user=user_current,
-        action=type_action,
-        date=date_now,
-        info="Visite des contacts",
-    )
-    return render(
-        request, "V1_CONTACT.html", {"resultat": contact_tab, "form": form}
-    )
+    Log.objects.create(user=user_current,
+                       action=type_action,
+                       date=date_now,
+                       info="Visite des contacts",
+                       )
+    return render(request, "V1_CONTACT.html", {"resultat": contact_tab,
+                                               "form": form
+                                               })
 
 
 @login_required(login_url="/auth/auth_in/")
@@ -59,6 +58,7 @@ def contact_edit(request, id):
         courriel = request.POST["email"]
         telephone = request.POST["telephone"]
         poste = request.POST["poste"]
+
         # Enregistrement du log------------------------------------------------------------------------
         # ---------------------------------------------------------------------------------------------
         date_now = timezone.now()
@@ -80,6 +80,7 @@ def contact_edit(request, id):
         )
         # ----------------------------------------------------------------------------------------------
         # ----------------------------------------------------------------------------------------------
+        
         Contact.objects.filter(id=id).update(
             nom=nom,
             prenom=prenom,
