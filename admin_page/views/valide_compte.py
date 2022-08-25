@@ -12,7 +12,7 @@ from admin_page.forms import FormsAutorisation
 from upload.models import ValideCompte, RefEtatValideCompte
 from datetime import datetime
 from django.utils import timezone
-from .module_views import send_mail
+from .module_views import valid_user_send_mail
 from django.contrib import messages
 
 from .module_log import (
@@ -92,7 +92,7 @@ def compte_refus(request, id_user):
     # Propriété et appel de la fonction d'envois de mail
     origin = 'refus'
     check = [check_user.demandeur.email]
-    send_mail(request.user,User.objects.get(pk=id_user),check,origin)
+    valid_user_send_mail(request.user,User.objects.get(pk=id_user),check,origin)
 
     # Message à afficher aux utilisateurs
     message = messages.add_message(

@@ -21,8 +21,11 @@ from upload.models import (
 	RefEtapeEtude,
 	RefEtatEtape,
 	RefEtudes,
+	RefInfoCentre,
 	SuiviUpload,
 )
+
+from ..forms import FormSelectionEtudeEtape
 
 from .module_log import edition_log, information_log, suppr_log
 from .module_views import (
@@ -35,64 +38,66 @@ from .module_views import (
 	send_rgpd_fail,
 )
 
+from ..forms import FormSelectionEtudeEtape
+from django.http import JsonResponse
 
-@login_required(login_url="/auth/auth_in/")
-def upload_tris(request, id_tri):
-	"""Cette page est appelé lors du tri du tableau vers une autre étude, cet
-	appel est fait via ajax."""
 
-	tab_list = []
-	dict_nbr = {}
-	val_centre = request.POST.get("centre")
-	etude_change = RefEtudes.objects.get(id=id_tri)
+# @login_required(login_url="/auth/auth_in/")
+# def upload_tris(request, id_tri):
+# 	"""Cette page est appelé lors du tri du tableau vers une autre étude, cet appel est fait via ajax."""
 
-	if val_centre != "0" and val_centre is not None:
-		user_id = User.objects.filter(Centre__id=val_centre)
-		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tri).filter(user__in=user_id).distinct("dossier")
-	else:
-		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tri).distinct("dossier")
+# 	tab_list = []
+# 	dict_nbr = {}
+# 	val_centre = request.POST.get("centre")
+# 	etude_change = RefEtudes.objects.get(id=id_tri)
 
-	if dossier_all.exists():
-		nbr_etape = RefEtapeEtude.objects.filter(etude=etude_change.id).count()
-		nom_etape = nom_etape_tris(etude_change.id)
-		for files in dossier_all:
-			dictupload = info_upload(files)
-			infoetape = infos_etats_etape(files)
-			var_etape = gestion_etape(nom_etape,
-									  infoetape,
-									  nbr_etape,
-									  files,
-									  etude_change
-									 )
-			dictupload["etape_etude"] = var_etape[1]
-			dictupload["error"] = var_etape[0]
-			tab_list.append(dictupload)
+# 	if val_centre != "0" and val_centre is not None:
+# 		user_id = User.objects.filter(Centre__id=val_centre)
+# 		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tri).filter(user__in=user_id).distinct("dossier")
+# 	else:
+# 		dossier_all = SuiviUpload.objects.filter(etude__etude=id_tri).distinct("dossier")
 
-		dict_nbr["nbr_etape"] = nbr_etape
-		dict_nbr["nom_etape"] = nom_etape
+# 	if dossier_all.exists():
+# 		nbr_etape = RefEtapeEtude.objects.filter(etude=etude_change.id).count()
+# 		nom_etape = nom_etape_tris(etude_change.id)
+# 		for files in dossier_all:
+# 			dictupload = info_upload(files)
+# 			infoetape = infos_etats_etape(files)
+# 			var_etape = gestion_etape(nom_etape,
+# 									  infoetape,
+# 									  nbr_etape,
+# 									  files,
+# 									  etude_change
+# 									 )
+# 			dictupload["etape_etude"] = var_etape[1]
+# 			dictupload["error"] = var_etape[0]
+# 			tab_list.append(dictupload)
 
-	list_centre = etude_tris(dossier_all)
-	gestion_info = gestion_etude_tris(etude_change,
-									  dossier_all,
-									  list_centre
-									 )
-	nbr_entrée = len(tab_list)
+# 		dict_nbr["nbr_etape"] = nbr_etape
+# 		dict_nbr["nom_etape"] = nom_etape
 
-	# Enregistrement du log------------------------
-	# ---------------------------------------------
-	nom_documentaire = (
-		" a créé un tri vers l'étude : " + etude_change.nom
-	)
-	information_log(request, nom_documentaire)
-	# ---------------------------------------------
-	# ---------------------------------------------
+# 	list_centre = etude_tris(dossier_all)
+# 	gestion_info = gestion_etude_tris(etude_change,
+# 									  dossier_all,
+# 									  list_centre
+# 									 )
+# 	nbr_entrée = len(tab_list)
 
-	return render(request, "admin_page_upload.html", {"resultat": tab_list,
-													  "dict_nbr": dict_nbr,
-													  "str_etude": gestion_info[1],
-													  "str_centre": gestion_info[0],
-													  "taille": nbr_entrée,
-												     })
+# 	# Enregistrement du log------------------------
+# 	# ---------------------------------------------
+# 	nom_documentaire = (
+# 		" a créé un tri vers l'étude : " + etude_change.nom
+# 	)
+# 	information_log(request, nom_documentaire)
+# 	# ---------------------------------------------
+# 	# ---------------------------------------------
+
+# 	return render(request, "admin_page_upload.html", {"resultat": tab_list,
+# 													  "dict_nbr": dict_nbr,
+# 													  "str_etude": gestion_info[1],
+# 													  "str_centre": gestion_info[0],
+# 													  "taille": nbr_entrée,
+# 												     })
 
 
 @xframe_options_exempt
@@ -122,6 +127,7 @@ def upload_mod(request):
 @login_required(login_url="/auth/auth_in/")
 def upload_mod_qc(request):
 	"""Appel ajax lors du double clic sur une case du tableau.
+
 	Ce module renvoi la liste des états du controle qualité et
 	l'intégre dans la cellule où l'utilisateur a cliqué.
 	"""
@@ -148,6 +154,7 @@ def upload_maj(request):
 	val_jonction = request.GET.get("jonction")
 	val_etat = request.GET.get("etat_id")
 	val_etude = request.GET.get("etude_id")
+	print(f"jonction : {val_jonction}, etat_id : {val_etat}, val_etude : {val_etude}" )
 	id_log = JonctionEtapeSuivi.objects.get(id__exact=val_jonction)
 
 	if val_etat == str(4):
@@ -157,7 +164,9 @@ def upload_maj(request):
 	else:
 		JonctionEtapeSuivi.objects.filter(id__exact=val_jonction).update(etat=val_etat)
 
-	var_url = "/admin_page/upfiles/tris/" + str(val_etude) + "/"
+	# var_url = "/admin_page/upfiles/tris/" + str(val_etude) + "/"
+	var_url = "/admin_page/upfiles/"
+
 	
 	# Enregistrement du log---------------------
 	# ------------------------------------------
@@ -170,34 +179,52 @@ def upload_maj(request):
 	edition_log(request, nom_documentaire)
 	# ------------------------------------------
 	# ------------------------------------------
+
 	return redirect(var_url)
+
 
 
 @xframe_options_exempt
 @login_required(login_url="/auth/auth_in/")
 def upload_maj_qc(request):
-	"""Appel ajax lors du changement d'état d'un controle qualité.
-	Ce module modifie l'état dans la base de donnée puis renvois vers la
+	""" Appel ajax lors du changement d'état d'un controle qualité.
+	Ce module modifie l'état dans la base de donnée puis renvoi vers la
 	page pour afficher la modification
 	"""
-	val_jonction = request.GET.get("jonction")
+
+	dossier_upload_id = request.GET.get("dossier_upload_id")
 	val_etat = request.GET.get("etat_id")
 	val_etude = request.GET.get("etude_id")
 	suppr_data = request.GET.get("data_suppr")
-	id_log = SuiviUpload.objects.filter(
-		dossier__id__exact=val_jonction
-	)[:1]
+	val_centre = request.GET.get("centre_id")
+
+	suppr_data = request.GET.get("data_suppr")
+	print(dossier_upload_id, val_etat, val_etude, suppr_data, val_centre)
+	
+	id_log = SuiviUpload.objects.filter(dossier__id__exact=dossier_upload_id)[:1]
 	user_current = request.user
+	user_uploadeur_id = id_log[0].user.id
+
+	for centre in RefInfoCentre.objects.all():
+		for user in centre.user.all():
+			if user.id == user_uploadeur_id:
+				centre_liee_uploadeur = RefInfoCentre.objects.get(user=user)
+				break
+
+	print(centre_liee_uploadeur.nom)
 
 	if suppr_data == "true":
-		dos_upload = DossierUpload.objects.get(id__exact=val_jonction)
+		dos_upload = DossierUpload.objects.get(id__exact=dossier_upload_id)
 		files_upload = SuiviUpload.objects.filter(dossier__id=dos_upload.id)
+		print(files_upload[0].etude.etude.nom)
 		path_name = files_upload[0].fichiers
-		path_pic = "/home/admin_ican/images" #os.getcwd() + "\data\images\\" + files_upload[0].etude.etude.nom
-		path = str(path_pic) + "/" + str(files_upload[0].id_patient)
+		# path_pic = "/home/admin_ican/images" #os.getcwd() + "\data\images\\" + files_upload[0].etude.etude.nom
+		path_pic = "/images_medis/" 
+		path = str(path_pic) + str(files_upload[0].id_patient)
 		dir_name = os.path.dirname("data/" + str(path_name))
 		fichiers = [f for f in os.listdir(dir_name) if os.path.isfile(os.path.join(dir_name, f))]
 		image_irm = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+		
 		for item in fichiers:
 			os.remove(str(dir_name) + "/" + str(item))
 		os.rmdir(dir_name)
@@ -218,11 +245,10 @@ def upload_maj_qc(request):
 		send_rgpd_fail(id_log[0].user.username, user_current.username, id_log[0].id_patient, id_log[0].user.email)
 		files_upload.delete()
 		dos_upload.delete()
+		
 	else:
 		qc = RefControleQualite.objects.get(id__exact=val_etat)
-		DossierUpload.objects.filter(id__exact=val_jonction).update(
-			controle_qualite=qc
-		)
+		DossierUpload.objects.filter(id__exact=dossier_upload_id).update(controle_qualite=qc)
 
 		# Enregistrement du log-----------------
 		# --------------------------------------
@@ -232,12 +258,18 @@ def upload_maj_qc(request):
 			+ " la nouvelle étape est : "
 			+ qc.nom
 		)
-		
 		edition_log(request, nom_documentaire)
 		# --------------------------------------
 		# --------------------------------------
-	var_url = "/admin_page/upfiles/tris/" + str(val_etude) + "/"
-	return redirect(var_url)
+
+	form = FormSelectionEtudeEtape
+	form.etude_choice = val_etude
+	form.centre_choice = val_centre
+
+	# var_url = "/admin_page/upfiles/tris/" + str(val_etude) + "/"
+	var_url = "/admin_page/upfiles/"
+	# return redirect(var_url)
+	return render(request, "admin_page_upload.html", {form : form})
 
 
 @xframe_options_exempt
@@ -362,7 +394,7 @@ def down_once(request, id):
 def down_all(request, id):
 	"""Ce module est appelé lorsque l'utilisateur souhaite téléchargé la
 	totalité des fichiers chargé dans le dossier Ce téléchargement utilise
-	zipfile en mémoir temporaire."""
+	zipfile en mémoire temporaire."""
 	obj = SuiviUpload.objects.get(id=id)
 	path = os.path.dirname(obj.fichiers.path)
 	list_dir = os.listdir(path)

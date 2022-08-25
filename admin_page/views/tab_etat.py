@@ -28,7 +28,7 @@ from .module_views import (
 # --------------------------------------------------------------------------------------
 
 @login_required(login_url="/auth/auth_in/")
-def admin_up(request):
+def admin_up(request, etude_id="4", centre_id="1"):
     """Affiche la page du tableau gérant les différents états des étapes d'une étude."""
 
     resultat = []
@@ -75,7 +75,7 @@ def admin_up(request):
                     infos_upload["qc_nom"] = var_qc.controle_qualite.nom
                     infos_upload["qc_id"] = var_qc.id
                     infos_upload["id_patient"] = upload[0].id_patient
-                                
+                    infos_upload["date_examen"] = upload[0].date_examen            
                     """            
                     donnees_de_l_upload = info_upload(dossier)
                     infoetape = infos_etats_etape(dossier)
@@ -113,6 +113,8 @@ def admin_up(request):
     information_log(request, nom_documentaire)
     # --------------------------------------------------
     # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
+
+    # print(resultat)
   
     return render(request, "admin_page_upload.html",{"resultat": resultat,
                                                     "nbr_noms_etape": nbr_noms_etape,
@@ -124,7 +126,7 @@ def admin_up(request):
 @login_required(login_url="/auth/auth_in/")
 def aff_dossier(request, id_suivi):
     """Lors du clic sur un dossier chargé dans le tableau des étapes, cela
-    appel le module qui affiche les fichiers chargé pour le patient donné."""
+    appel le module qui affiche les fichiers chargés pour le patient donné."""
     tab_list = []
     var_suivi = SuiviUpload.objects.get(id=id_suivi)
     path = os.path.dirname(var_suivi.fichiers.path)

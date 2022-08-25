@@ -1,7 +1,6 @@
 {% extends "base_admin_stat.html" %}
-{% load static %}
-{% comment %} {% load bootstrap4 %} {% endcomment %}
 {% block section_two %}
+{% load static %}
 <div class="row col-12">
   <div class="container">
     <div class="row d-flex justify-content-center"> 
@@ -34,10 +33,10 @@
   <tbody>
     {% for item in resultat %}
       <tr value="{{item.suivi_upload_id}}">
-        {% if 'passed' in qc_nom %}
-          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-success">{{ item.qc_nom }}</span><h5></td>
-        {% elif 'QC refused - GDPR' in item.qc_nom %}
-          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod"><h5><span class="badge badge-danger">{{ item.qc_nom }}</span><h5></td>
+        {% if item.qc_nom == 'QC passed' %}
+          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod_{{ item.qc_id }}{{item.suivi_upload_id}}"><h5><span class="badge badge-success">{{ item.qc_nom }}</span><h5></td>
+        {% elif item.qc_nom == 'QC refused - GDPR' %}
+          <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod_{{ item.qc_id }}{{item.suivi_upload_id}}"><h5><span class="badge badge-danger">{{ item.qc_nom }}</span><h5></td>
         {% else %}
           <td name="{{ item.qc_id }}" class="click_qc" id="qc_mod_{{ item.qc_id }}{{item.suivi_upload_id}}"><h5><span class="badge badge-warning">{{ item.qc_nom }}</span><h5></td>
         {% endif %}
@@ -45,7 +44,7 @@
         {% if item.error == True %}
           <td colspan="{{ nbr_noms_etape.nbr_etape }}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}
-          <td name="{{ item.date_examen}}">{{ item.date_examen|date:"d F Y"}}</td>
+          <td name="{{ item.date_examen }}">{{ item.date_examen|date:"Y-m-d" }}</td>
         {% for etape in item.etape_etude %}
           {% if etape.en_cours_d_informations %}
             <td name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
@@ -62,45 +61,8 @@
 <span>Aucun fichier n'est chargé dans l'application</span>
 {% endif %}
 
-{% if not "URC" in request.session.groups%}
+{% comment %} {% if not "URC" in request.session.groups%}
   <script src="{% static 'js/custom_script_tab.js' %}"></script>
   <script src="{% static 'js/custom_script_QC.js' %}"></script>
-  <script>
-    $(document).ready(function() {
-      var table = $('#tableau_etats').DataTable({
-        paging: false,
-        language: {
-          url: '//cdn.datatables.net/plug-ins/1.12.1/i18n/fr-FR.json'
-      },
-        searchPanes: {
-          layout: 'columns-5',
-            viewTotal: true,
-            orderable: false,
-            controls: false
-        },
-        dom: 'Plfrtip',
-        columnDefs: [
-            {
-                searchPanes: {
-                    show: false
-                },
-                targets: [1, 2]
-            }
-        ]
-    });
-  
-      table.columns().every( function() {
-          var that = this;
-    
-          $('input', this.footer()).on('keyup change', function() {
-              if (that.search() !== this.value) {
-                  that
-                      .search(this.value)
-                      .draw();
-            }
-        });
-    });
-  });
-</script>
-{% endif %}
+{% endif %} {% endcomment %}
 {% endblock %}

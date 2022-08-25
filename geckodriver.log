@@ -6010,3 +6010,23 @@ interaction.flushEventLoop@chrome://remote/content/marionette/interaction.js:431
 webdriverClickElement@chrome://remote/content/marionette/interaction.js:179:31
 1655890152958	Marionette	INFO	Stopped listening on port 1302
 1655969310640	geckodriver	INFO	Listening on 127.0.0.1:4946
+1661427409772	geckodriver	INFO	Listening on 127.0.0.1:56211
+1661427412815	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "56212" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ajurquet\\AppData\\Local\\Temp\\rust_mozprofiledh6THn"
+1661427413319	Marionette	INFO	Marionette enabled
+1661427413327	Marionette	INFO	Listening on port 56229
+WebDriver BiDi listening on ws://localhost:56212
+Read port: 56229
+1661427413507	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ajurquet\\AppData\\Local\\Temp\\rust_mozprofiledh6THn\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:56212/devtools/browser/e209e0b2-1491-4daa-a985-ec9efb2d003f
+1661427419916	Marionette	INFO	Stopped listening on port 56229
+1661427421141	geckodriver	INFO	Listening on 127.0.0.1:56279
+1661427424194	mozrunner::runner	INFO	Running command: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" "--marionette" "--remote-debugging-port" "56280" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\ajurquet\\AppData\\Local\\Temp\\rust_mozprofileUpoOmc"
+1661427424581	Marionette	INFO	Marionette enabled
+1661427424585	Marionette	INFO	Listening on port 56297
+WebDriver BiDi listening on ws://localhost:56280
+Read port: 56297
+1661427424739	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+console.warn: SearchSettings: "get: No settings file exists, new profile?" (new NotFoundError("Could not open the file at C:\\Users\\ajurquet\\AppData\\Local\\Temp\\rust_mozprofileUpoOmc\\search.json.mozlz4", (void 0)))
+DevTools listening on ws://localhost:56280/devtools/browser/8b03c3fd-6a8b-4366-bd3f-7272cc01b669
+1661427430915	Marionette	INFO	Stopped listening on port 56297

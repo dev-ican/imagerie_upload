@@ -2,11 +2,12 @@
 {% load bootstrap4 %}
 <!DOCTYPE html>
 <html lang="en" style="min-height: 100vh;">
-<!-- Bootstrap CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.12.1/sp-2.0.2/sl-1.4.0/datatables.min.css"/>
+{% include "include_head.html" %}
 
-  {% include "include_head.html" %}
+{% comment %} <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"> {% endcomment %}
+{% comment %} <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.12.1/sp-2.0.2/sl-1.4.0/datatables.min.css"/> {% endcomment %}
+
+ 
   <body id="ajax" style="min-height: 100vh;">
 {% include "include_menus.html" %}
     <div class="container col-11" style="min-height: 100vh;padding:0px;margin:0px;">
@@ -32,10 +33,29 @@
       </div>
     </footer>
     <!-- Bootstrap core JavaScript -->
-    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.12.1/sp-2.0.2/sl-1.4.0/datatables.min.js"></script>
+    {% comment %} <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> {% endcomment %}
+    {% comment %} <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> {% endcomment %}
+    {% comment %} <script src="//cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script> {% endcomment %}
+    {% comment %} <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.12.1/sp-2.0.2/sl-1.4.0/datatables.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> {% endcomment %}
+    {% comment %} <script src="{% static 'vendor/jquery/jquery.js' %}"></script> {% endcomment %}
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.js"></script>
+   
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/2.0.2/js/dataTables.searchPanes.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/2.0.2/js/searchPanes.bootstrap4.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.4.0/js/dataTables.select.js"></script>
+    
+    {% comment %} <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script> {% endcomment %}
+
+    {% if not "URC" in request.session.groups%}
+      <script src="{% static 'js/custom_script_tab.js' %}"></script>
+      <script src="{% static 'js/custom_script_QC.js' %}"></script>
+    {% endif %}
+    <script src="{% static 'js/filtre_multicriteres.js' %}"></script>
     <script src="{% static 'js/custom_script.js' %}"></script>
     <script src="{% static 'js/custom_script_etape.js' %}"></script>
     <script src="{% static 'js/custom_script_centre.js' %}"></script>

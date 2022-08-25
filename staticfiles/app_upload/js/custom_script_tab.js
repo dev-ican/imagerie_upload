@@ -1,68 +1,68 @@
-$('select[name="select_etude"]').change(function(event) {
-	var url_etude = "/admin_page/upfiles/tris/"
-	var id_etude = $(this).children("option:selected").val();
-	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
-	var val_centre = "0";
+// $('select[name="select_etude"]').change(function(event) {
+// 	var url_etude = "/admin_page/upfiles/tris/"
+// 	var id_etude = $(this).children("option:selected").val();
+// 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+// 	var val_centre = "0";
 
-	function csrfSafeMethod(method) {
-		// these HTTP methods do not require CSRF protection
-		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	}
+// 	function csrfSafeMethod(method) {
+// 		// these HTTP methods do not require CSRF protection
+// 		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+// 	}
 
-	$.ajaxSetup({
-		beforeSend: function(xhr, settings) {
-	if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-		xhr.setRequestHeader("X-CSRFToken", csrftoken);
-		}
-	}
-	});
+// 	$.ajaxSetup({
+// 		beforeSend: function(xhr, settings) {
+// 	if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+// 		xhr.setRequestHeader("X-CSRFToken", csrftoken);
+// 		}
+// 	}
+// 	});
 
-	$.ajax({
-		url : url_etude + id_etude + "/",
-		data : {
-			demande : id_etude,
-			centre : val_centre,
-		},
-		type : 'POST',
-		success: function(response, status, XHR){
-			console.log("SUCCESS");
-			$('#ajax').html(response);}
-	})
+// 	$.ajax({
+// 		url : url_etude + id_etude + "/",
+// 		data : {
+// 			demande : id_etude,
+// 			centre : val_centre,
+// 		},
+// 		type : 'POST',
+// 		success: function(response, status, XHR){
+// 			console.log("SUCCESS");
+// 			$('#ajax').html(response);}
+// 	})
 	
-});
+// });
 
-$('select[name="select_centre"]').change(function(event) {
-	var url_etude = "/admin_page/upfiles/tris/"
-	var id_centre = $(this).children("option:selected").val();
-	var id_etude = $('select[name="select_etude"]').children("option:selected").val();
-	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
+// $('select[name="select_centre"]').change(function(event) {
+// 	var url_etude = "/admin_page/upfiles/tris/"
+// 	var id_centre = $(this).children("option:selected").val();
+// 	var id_etude = $('select[name="select_etude"]').children("option:selected").val();
+// 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
 
-	function csrfSafeMethod(method) {
-		// these HTTP methods do not require CSRF protection
-		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-	}
+// 	function csrfSafeMethod(method) {
+// 		// these HTTP methods do not require CSRF protection
+// 		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+// 	}
 
-	$.ajaxSetup({
-		beforeSend: function(xhr, settings) {
-	if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-		xhr.setRequestHeader("X-CSRFToken", csrftoken);
-		}
-	}
-	});
+// 	$.ajaxSetup({
+// 		beforeSend: function(xhr, settings) {
+// 	if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+// 		xhr.setRequestHeader("X-CSRFToken", csrftoken);
+// 		}
+// 	}
+// 	});
 
-	$.ajax({
-		url : url_etude + id_etude + "/",
-		data : {
-			demande : id_etude,
-			centre : id_centre
-		},
-		type : 'POST',
-		success: function(response, status, XHR){
-			console.log("SUCCESS");
-			$('#ajax').html(response);}
-	})
+// 	$.ajax({
+// 		url : url_etude + id_etude + "/",
+// 		data : {
+// 			demande : id_etude,
+// 			centre : id_centre
+// 		},
+// 		type : 'POST',
+// 		success: function(response, status, XHR){
+// 			console.log("SUCCESS");
+// 			$('#ajax').html(response);}
+// 	})
 	
-});
+// });
 
 
 $('td[class="clickable"]').one("click", function(){
@@ -73,10 +73,10 @@ $('td[class="clickable"]').one("click", function(){
 
 	var list = $("select[name='select_etude'] option:selected").val();
 	var csrftoken = $('input[name="csrfmiddlewaretoken"]').val();
-	var td_parent = $(this).parent('tr').attr('value');
-	// var td_parent = $("td.clickable").parent('tr').attr('value');
+	// var td_parent = $(this).parent('tr').attr('value');
+	var td_parent = $("td.clickable").parent('tr').attr('value');
 	var var_modif = "modif_" + td_parent + value;
-	console.log(td_parent,value)
+	
 	function csrfSafeMethod(method) {
 		// these HTTP methods do not require CSRF protection
 		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -100,6 +100,7 @@ $('td[class="clickable"]').one("click", function(){
 		},
 		type : 'POST',
 		success: function(response, status, XHR){
+			console.log(list);
 			console.log("SUCCESS");}
 	}).done(function(data) {
 		var val_data = JSON.parse(data);
@@ -114,7 +115,6 @@ $('td[class="clickable"]').one("click", function(){
 				str_select = str_select + '<option value="' + Object.values(val_data)[i].id + '">' + Object.values(val_data)[i].nom + '</option>'
 			}
 		}
-		console.log(var_modif)
 		document.getElementById(var_modif).innerHTML = str_select;
 		document.getElementById(var_modif).className += "_select";
 		$('td[class="clickable_select"]').off('click');
@@ -161,6 +161,6 @@ function change_etat(event) {
 			console.log(url_research)
 			$('#ajax').html(response);
 			location.reload(true);
-			// $('body').load(url_research, function(response, status, XHR){});}
+			// $('body').load(url_research, function(response, status, XHR){});
 		}})
 };

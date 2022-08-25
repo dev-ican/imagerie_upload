@@ -59,6 +59,7 @@ def etape_edit(request, id_etape):
     """Charge la page d'édition des étapes."""
 
     liste_protocole = []
+
     if request.method == "POST":
         select_etape = RefEtapeEtude.objects.get(pk=id_etape)
         nom_edit = request.POST["nom"]
@@ -107,7 +108,6 @@ def etape_edit(request, id_etape):
         # --------------------------------------------------
         # --------------------------------------------------
 
-    # etape_tab = RefEtudes.objects.filter(refetapeetude__id=id_etape)
     etape_tab = RefEtudes.objects.filter(refetapeetude__id=id_etape)
     return render(request, "admin_etapes_edit.html", {"form": form,
                                                       "resultat": etape_tab,

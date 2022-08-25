@@ -232,7 +232,7 @@ class TestApp(TestCase):
 
 
     def test_admin_etape_edit(self):
-        """Test le module admin etape edition."""
+        """Test le module admin d'édition d'étapes."""
         
         self.client.login(username="testuser1", password="testtest")
         response = self.client.get(reverse("login"))
@@ -254,20 +254,27 @@ class TestApp(TestCase):
                 break
 
         id_etape = RefEtapeEtude.objects.get(id__exact=etape_id)
-        check_etude = self.client.get(reverse("etape_edit", args=(etape_id,)))
-        self.assertEqual(check_etude.status_code, 200)
-        self.assertTemplateUsed(check_etude, "admin_etapes_edit.html")
+        check_etape = self.client.get(reverse("etape_edit", args=(etape_id,)))
+        self.assertEqual(check_etape.status_code, 200)
+        self.assertTemplateUsed(check_etape, "admin_etapes_edit.html")
 
-        var_etude = check_etude.context["resultat"]
-        for item in var_etude:
+        var_etape = check_etape.context["resultat"]
+        for item in var_etape:
             self.assertIn(item.nom, ["Etape_test1",
                                      "Etape_test2",
                                      "test_etape_edit",
                                     ])
 
+        # print(id_etape, id_etape.id, id_etape.etude)
+
+        # id_etape.etude.add(etude)
+        # id_etape.save()
+
+        # print(id_etape, id_etape.id, id_etape.etude)
+
         post_etape = self.client.post(reverse("etape_edit", args=(id_etape.id,)),
                                                             data={"nom": "test_case_etape",
-                                                                  "etudes": id_etape.etude.id,
+                                                                  "etudes": id_etape.etude,
                                                                   })
         self.assertEqual(post_etape.status_code, 302)
 
@@ -503,8 +510,9 @@ class TestApp(TestCase):
         self.assertTemplateUsed(response, "auth.html")
 
         val_dict = {"nom": "test_centre_edit",
-                    "numero": "9875",
-                    "date_ajout": date_now,
+                    "numero": "125",
+                    # "utilisateurs": 
+                    # "date_ajout": date_now,
                    }
         post_user = self.client.post(reverse("admin_centre"), data=val_dict)
         self.assertEqual(post_user.status_code, 200)
@@ -528,7 +536,7 @@ class TestApp(TestCase):
 
         post_centre = self.client.post(reverse("centre_edit", args=(id_centre.id,)), data={"nom": "centre_edit",
                                                                                            "numero": "56987",
-                                                                                           "date_ajout": date_now,
+                                                                                        #    "date_ajout": date_now,
                                                                                           })
         self.assertEqual(post_centre.status_code, 302)
         
@@ -598,7 +606,7 @@ class TestApp(TestCase):
                                           "testuser2",
                                           "testuser3",
                                           "testuser4",
-                                         ])
+                                          ])
 
 
     def test_admin_auth_edit(self):
@@ -651,7 +659,7 @@ class TestApp(TestCase):
             dict_centre = item.id
         post_centre = self.client.post(reverse("auth_edit", args=(id_projet,)), data={"centre": dict_centre,
                                                                                       "etude": dict_etude
-                                                                                     })
+                                                                                      })
         self.assertEqual(post_centre.status_code, 200)
 
 
@@ -697,20 +705,20 @@ class TestApp(TestCase):
         self.assertTemplateUsed(check_user, "admin_page_upload.html")
 
 
-    def test_page_etat_tris(self):
-        """Test le module tris pour la page état étapes."""
+    # def test_page_etat_tris(self):
+    #     """Test le module tris pour la page état étapes."""
 
-        self.client.login(username="testuser1", password="testtest")
-        response = self.client.get(reverse("login"))
-        self.assertEqual(str(response.context["user"]), "testuser1")
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "auth.html")
+    #     self.client.login(username="testuser1", password="testtest")
+    #     response = self.client.get(reverse("login"))
+    #     self.assertEqual(str(response.context["user"]), "testuser1")
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTemplateUsed(response, "auth.html")
 
-        id_etude = RefEtudes.objects.filter(id__gte=0)[:1]
-        get_tris = self.client.get(reverse("upload_tris", args=(id_etude[0].id,)))
-        self.assertTemplateUsed(get_tris, "admin_page_upload.html")
-        self.assertEqual(get_tris.status_code, 200)
-        self.assertEqual(len(get_tris.context["resultat"]), 0)
+    #     id_etude = RefEtudes.objects.filter(id__gte=0)[:1]
+    #     get_tris = self.client.get(reverse("upload_tris", args=(id_etude[0].id,)))
+    #     self.assertTemplateUsed(get_tris, "admin_page_upload.html")
+    #     self.assertEqual(get_tris.status_code, 200)
+    #     self.assertEqual(len(get_tris.context["resultat"]), 0)
 
 
     def test_page_etat_mod(self):

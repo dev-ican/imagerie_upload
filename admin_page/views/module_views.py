@@ -1,5 +1,6 @@
 # -*-coding:Utf-8 -*
 
+from platform import libc_ver
 from django.contrib.auth.models import Group, User
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -9,7 +10,7 @@ from upload.models import (DossierUpload, JonctionEtapeSuivi,
 from configparser import ConfigParser
 from .module_log import suppr_log
 from django.utils import timezone
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, send_mail
 
 import ast
 
@@ -43,6 +44,7 @@ def gestion_etape(dict_etape_nom, dict_etape_value, nbr_etape, id_dossier, etude
 # ancien nom : etude_recente
 def centres_etude_selectionnee(dossiers_suiviupload):
     """renvoi les centres liès à l'étude selectionnée."""
+
     centres = []
     
     try:
@@ -79,7 +81,6 @@ def gestion_etude_selectionnee(etude_selectionnee, centres):
     etudes = RefEtudes.objects.all()
     infos_etude = []
     infos_centre = []
-    # print(f'centres: {centres}')
 
     for centre in centres:
         dict_centre = {}
@@ -161,6 +162,7 @@ def info_upload(suivi_upload):
 
     return infos_upload
 
+
 # ancien nom : info_etape
 def infos_etats_etape(dossier):
     """Renvoi les infos des états liés à une étape."""
@@ -203,12 +205,13 @@ def nom_etape_tris(etude_change):
     return dict_etape_nom
 
 
-def send_mail(user_send, compte, to_mail, origin):
+def valid_user_send_mail(user_send, compte, to_mail, origin):
     ''' Gère l'envois de courriel lors du processus de validation d'un compte'''
     # origin représente l'origine de la demande : Vérification pour une demande d'ouverture de compte venant d'un admin service
     # valider pour un compte validé par un admin SI
     # refus pour un compte refusé par un admin SI
     # Il faut poursuivre l'utilisation d'un document annexe pour le contenu texte.
+
     if origin == 'verification':
         title = str(user_send) + " demande la validation du compte " + str(compte.username)
         corps = "Bonjour, \n\n Une demande de validation de compte sur l'application d'upload est demandé par : " + str(user_send)
@@ -238,8 +241,10 @@ def send_rgpd_fail(user_stock, user_suppr, nip, to_mail):
     # user_stock représente l'utilisateur ayant déposé le patient
     # user_suppr représente l'utilisateur supprimant les données
     # nip représente le code utilisateur
+    # to_mail est l'email de destination
+
     config = ConfigParser()		
-    config.read("texte_app.ini",encoding="utf8")#read("texte_app.ini")
+    config.read("texte_app.ini", encoding="utf8") #read("texte_app.ini")
     mail_txt = config['mod_view']
     list_corp = ast.literal_eval(config.get("mod_view", "corp_rgpd"))
 
@@ -255,8 +260,14 @@ def send_rgpd_fail(user_stock, user_suppr, nip, to_mail):
         str(list_corp[6]) + "\n\n" + \
         str(list_corp[7])
 
-    email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)
-    email.send()
+    send_mail(title, corps, 'si_ican@ihuican.onmicrosoft.com', to_mail)
+
+    # email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)
+
+    # print("---------------------")
+    # print(email)
+
+    # email.send()
 
 
 def creation_utilisateur(check_mdp, groupe_utilisateurs, centre, username, pass_first, email):

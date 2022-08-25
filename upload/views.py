@@ -141,7 +141,7 @@ def formulaire(request):
                 # Medis doit aller chercher les nouveaux patient ainsi décompréssé dans ce dossier
                 if name_file.find(".zip") != -1:
                     zipfile_save = zipfile.ZipFile(create_suivi.fichiers.path, mode="r")
-                    path_save = "/home/koala/images_medis/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
+                    path_save = "/images_medis/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
                     path = str(path_save) + "/" + str(create_suivi.id_patient)
                     os.makedirs(path)
                     zipfile_save.extractall(path)
