@@ -95,7 +95,6 @@ def admin_up(request, etude_id="4", centre_id="1"):
                 nbr_noms_etape["nom_etape"] = noms_etape
 
                 centres_etude_selec = centres_etude_selectionnee(dossiers_lies_a_l_etude)
-                # print(f"centre_etude_selectionne : {centres_etude_selec}")
 
                 nbr_entree = len(resultat)
 
@@ -113,8 +112,6 @@ def admin_up(request, etude_id="4", centre_id="1"):
     information_log(request, nom_documentaire)
     # --------------------------------------------------
     # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
-
-    # print(resultat)
   
     return render(request, "admin_page_upload.html",{"resultat": resultat,
                                                     "nbr_noms_etape": nbr_noms_etape,

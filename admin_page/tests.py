@@ -265,13 +265,6 @@ class TestApp(TestCase):
                                      "test_etape_edit",
                                     ])
 
-        # print(id_etape, id_etape.id, id_etape.etude)
-
-        # id_etape.etude.add(etude)
-        # id_etape.save()
-
-        # print(id_etape, id_etape.id, id_etape.etude)
-
         post_etape = self.client.post(reverse("etape_edit", args=(id_etape.id,)),
                                                             data={"nom": "test_case_etape",
                                                                   "etudes": id_etape.etude,

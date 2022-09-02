@@ -154,7 +154,6 @@ def upload_maj(request):
 	val_jonction = request.GET.get("jonction")
 	val_etat = request.GET.get("etat_id")
 	val_etude = request.GET.get("etude_id")
-	print(f"jonction : {val_jonction}, etat_id : {val_etat}, val_etude : {val_etude}" )
 	id_log = JonctionEtapeSuivi.objects.get(id__exact=val_jonction)
 
 	if val_etat == str(4):
@@ -197,9 +196,7 @@ def upload_maj_qc(request):
 	val_etude = request.GET.get("etude_id")
 	suppr_data = request.GET.get("data_suppr")
 	val_centre = request.GET.get("centre_id")
-
 	suppr_data = request.GET.get("data_suppr")
-	print(dossier_upload_id, val_etat, val_etude, suppr_data, val_centre)
 	
 	id_log = SuiviUpload.objects.filter(dossier__id__exact=dossier_upload_id)[:1]
 	user_current = request.user
@@ -211,12 +208,9 @@ def upload_maj_qc(request):
 				centre_liee_uploadeur = RefInfoCentre.objects.get(user=user)
 				break
 
-	print(centre_liee_uploadeur.nom)
-
 	if suppr_data == "true":
 		dos_upload = DossierUpload.objects.get(id__exact=dossier_upload_id)
 		files_upload = SuiviUpload.objects.filter(dossier__id=dos_upload.id)
-		print(files_upload[0].etude.etude.nom)
 		path_name = files_upload[0].fichiers
 		# path_pic = "/home/admin_ican/images" #os.getcwd() + "\data\images\\" + files_upload[0].etude.etude.nom
 		path_pic = "/images_medis/" 

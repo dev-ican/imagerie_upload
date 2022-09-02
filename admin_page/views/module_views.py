@@ -262,13 +262,6 @@ def send_rgpd_fail(user_stock, user_suppr, nip, to_mail):
 
     send_mail(title, corps, 'si_ican@ihuican.onmicrosoft.com', to_mail)
 
-    # email = EmailMessage(title, corps, 'app_upload@ican-institute.org', to=to_mail)
-
-    # print("---------------------")
-    # print(email)
-
-    # email.send()
-
 
 def creation_utilisateur(check_mdp, groupe_utilisateurs, centre, username, pass_first, email):
     """Crée un utilisateur"""

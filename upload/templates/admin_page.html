@@ -39,6 +39,7 @@
 {% for cle, value in item.items %}
 {% if cle == 'data' %}
 <canvas id="{{key}}" name='graph_{{key}}' width="100" height="80"></canvas>
+
 <script>
 	var id = $("canvas[name*='graph_{{key}}']").attr('id');
 	var ctx = document.getElementById(id).getContext('2d');

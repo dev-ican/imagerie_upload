@@ -9,3 +9,4 @@ htmlcov
 app_upload/settings.py
 app_upload/.env
 data/
+geckodriver.log
