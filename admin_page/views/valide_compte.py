@@ -103,6 +103,7 @@ def compte_refus(request, id_user):
     check_user.save()
     return redirect('/admin_page/authacc/', {"message" : message })
 
+
 @login_required(login_url="/auth/auth_in/")
 def compte_verif(request, id_user):
 
@@ -120,6 +121,7 @@ def compte_verif(request, id_user):
     )
     check_user.save()
     return redirect('/admin_page/authacc/', {"message" : message })
+
 
 @login_required(login_url="/auth/auth_in/")
 def compte_edit(request, id_user):

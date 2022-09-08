@@ -81,7 +81,7 @@ def formulaire(request):
                        action=type_action,
                        date=date_now,
                        info= str(info_str),
-                      )
+                       )
         log_info.save()
         # ---------------------------------------
         # ---------------------------------------

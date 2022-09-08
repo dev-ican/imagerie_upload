@@ -127,8 +127,8 @@ def admin_page(request):
             
     creation_json = json.dumps(tab_list)
 
-    print(f"dict_etat : {dict_etat}")
-    print(f"derniers_uploads : {derniers_uploads}")
+    # print(f"dict_etat : {dict_etat}")
+    # print(f"derniers_uploads : {derniers_uploads}")
 
     return render(request, "admin_page.html", {"nbr_etat": dict_etat,
                                             "derniers_upload": derniers_uploads,

@@ -221,6 +221,7 @@ class FormSelectionEtudeEtape(forms.Form):
         choice_etude.append((etude.id, etude.nom))
 
     centres = RefInfoCentre.objects.all().order_by("numero")
+    print(centres)
     choice_centre = []
     for centre in centres:
         centre_nom_num = f"{centre.numero}_{centre.nom}"

@@ -35,7 +35,8 @@ def admin_centre(request):
                                                  numero=numero,
                                                  date_ajout=date_now
                                                  )
-
+        print(nw_centre)
+        
         # Enregistrement du log---------------------------------------
         nom_documentaire = (" a créé le centre : "
                             + nw_centre.nom

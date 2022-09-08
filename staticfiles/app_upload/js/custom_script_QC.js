@@ -106,7 +106,7 @@ function change_qc(event) {
 			type : 'GET',
 			success: function(response, status, XHR){
 				console.log("SUCCESS");
-				console.log(response)
+				console.log(response);
 				$('#ajax').html(response);
 				// $('body').load(url_research, function(response, status, XHR){});
 				location.reload();
