@@ -35,12 +35,7 @@ def admin_page(request):
         resume_etat["data"] = json.dumps({"nbr_suivi": [suivis_upload.count()],
                                           "nom_etude": [etude.nom]
                                           })
-        # resume_etat["data"] = json.dumps({"nbr": [suivis_upload.count()],
-        #                                   "nom": [etude.nom]
-        #                                   })
 
-
-        # print(f"suivis_upload : {suivis_upload}")
         if suivis_upload.exists():
             # TODO ajouter les refus RGPD dans le graphique quand ils seront intégrés dans la page de suivi des études.
 
@@ -76,11 +71,7 @@ def admin_page(request):
             # resume_etat["Nouveau"] = nbr_qc_new
             # resume_etat["Refused"] = nbr_qc_refused_technical
             # resume_etat["Passed"] = nbr_qc_passed
-
-            # print(f"resume_etat : {resume_etat}")
-
             dict_etat[etude.nom] = resume_etat
-            # print(f"dict_etat : {dict_etat}")
 
     # Enregistrement du log-----------------------------------
     # --------------------------------------------------------
@@ -100,7 +91,7 @@ def admin_page(request):
         id_etape = etape.id
         # etat = 1 correspond à l'étape "Nouveau"
         jonctions_etape_suivi = JonctionEtapeSuivi.objects.filter(etape=id_etape).filter(etat=1)
-        print(f"jonctions_etape_suivi : {jonctions_etape_suivi}")
+        # print(f"jonctions_etape_suivi : {jonctions_etape_suivi}")
 
         for jonction in jonctions_etape_suivi:
             dict_object = {}
@@ -131,9 +122,9 @@ def admin_page(request):
     # print(f"derniers_uploads : {derniers_uploads}")
 
     return render(request, "admin_page.html", {"nbr_etat": dict_etat,
-                                            "derniers_upload": derniers_uploads,
-                                            'title_page':'Accueil Administration de l\'application Upload'
-                                            })
+                                               "derniers_upload": derniers_uploads,
+                                               "title_page": "Accueil Administration de l\'application Upload"
+                                               })
 
     # return render(request, "admin_page.html", {"nbr_etat": dict_etat,
     #                                            "list_json": derniers_uploads,

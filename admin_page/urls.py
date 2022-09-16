@@ -41,4 +41,6 @@ urlpatterns = [
 	re_path(r'^upfiles/walk_up/',views.walk_up, name='walk_up'),
 	re_path(r'^upfiles/walk_return/',views.walk_down, name='walk_return'),
 	path('compte/', views.compte_user, name='compte'),
+	path("demande_info/<int:suivi_upload>", views.demande_info, name="demande_info"),
+	path("send_mail_success/", views.demande_info_success, name="send_mail_success")
 ]

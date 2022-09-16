@@ -25,6 +25,7 @@
       <th scope="col">QC</th>
       <th scope="col">ID patient</th>
       <th scope="col">Date d'examen</th>
+      <th scope="col"></th>
       {% for nom_etape in nbr_noms_etape.nom_etape %}
         <th scope="col">{{ nom_etape }}</th>
       {% endfor %}
@@ -45,6 +46,10 @@
           <td colspan="{{ nbr_noms_etape.nbr_etape }}">{{ item.etape_etude.Aucune_etape }}</td>
         {% else %}
           <td name="{{ item.date_examen }}">{{ item.date_examen|date:"Y-m-d" }}</td>
+          <td>
+            <a href="" onclick="window.open('{% url 'demande_info' suivi_upload=item.suivi_upload_id  %}', 'newwindow', 'width=600, height=600'); return false;" id="demande_info" class="btn btn-secondary btn-sm">Demande d'informations</a>
+          </td>
+        </td>
         {% for etape in item.etape_etude %}
           {% if etape.en_cours_d_informations %}
             <td name="{{ etape.val_item }}" id="modif_{{ item.suivi_upload_id }}{{ etape.etape_id }}" value="{{ etape.etape_id }}">{{ etape.val_item }}</td>
@@ -60,9 +65,4 @@
 {% else %}
 <span>Aucun fichier n'est chargé dans l'application</span>
 {% endif %}
-
-{% comment %} {% if not "URC" in request.session.groups%}
-  <script src="{% static 'js/custom_script_tab.js' %}"></script>
-  <script src="{% static 'js/custom_script_QC.js' %}"></script>
-{% endif %} {% endcomment %}
 {% endblock %}

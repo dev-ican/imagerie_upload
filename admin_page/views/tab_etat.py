@@ -8,9 +8,12 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.core.mail import send_mail, BadHeaderError
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, redirect
 
 from upload.models import RefEtapeEtude, SuiviUpload, RefInfoCentre, RefEtudes
-from ..forms import FormSelectionEtudeEtape, FormSelectionEtudeURC
+from ..forms import FormSelectionEtudeEtape, FormSelectionEtudeURC, FormEnvoiMail
 
 from .module_log import information_log
 from .module_views import (
@@ -176,3 +179,45 @@ def aff_dossier(request, id_suivi):
         "admin_page_down.html",
         {"resultat": tab_list, "tab_dossier": info_dossier},
     )
+
+def demande_info(request, suivi_upload):
+
+    suivi_upload = SuiviUpload.objects.get(id=suivi_upload)
+    uploadeur = User.objects.get(id=suivi_upload.user_id)
+
+    if request.method == 'POST':
+        initial_dict = {"subject" : f"Demande d'informations sur votre envoi {suivi_upload.id_patient}",
+                        "to_email": uploadeur.email
+                        }   
+        form = FormEnvoiMail(request.POST or None, initial=initial_dict)
+
+        if form.is_valid():
+            subject = form.cleaned_data["subject"]
+            to_email = form.cleaned_data["to_email"]
+            message = form.cleaned_data['message']
+            try:
+                send_mail(subject, message, "si_ican@ihuican.onmicrosoft.com", [to_email],)
+            except BadHeaderError:
+                return HttpResponse("Invalid header found.")
+            return redirect("send_mail_success")
+
+
+    # if request.method == "GET":
+        initial_dict = {
+        "subject" : f"Demande d'informations sur votre envoi {suivi_upload.id_patient}",
+        "to_email": uploadeur.email,
+        # "message": f"Ceci est un email automatique, veuillez ne pas répondre. Utilisez cette adresse : {utilisateur_connecte.email} pour tous renseignements complémentaires"
+        }   
+        form = FormEnvoiMail(request.POST or None, initial=initial_dict)
+
+    else:
+        initial_dict = {"subject" : f"Demande d'informations sur votre envoi {suivi_upload.id_patient}",
+                        "to_email": uploadeur.email
+                        }   
+        form = FormEnvoiMail(request.POST or None, initial=initial_dict)
+
+    return render(request, "envoi_mail.html", {"form": form})
+
+
+def demande_info_success(request):
+    return HttpResponse("Votre demande d'information a bien été envoyé")

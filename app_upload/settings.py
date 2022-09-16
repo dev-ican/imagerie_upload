@@ -62,7 +62,6 @@ INSTALLED_APPS = [
     'webstack_django_sorting',
     'django_filters',
     'django_extensions',
-    'bootstrap_modal_forms',
 ]
 
 MIDDLEWARE = [

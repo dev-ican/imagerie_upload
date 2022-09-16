@@ -1,0 +1,32 @@
+{% load static %}
+{% load bootstrap4 %}
+<!DOCTYPE html>
+<html lang="en" style="min-height: 100vh;">
+{% include "include_head.html" %}
+
+<h1>Demande d'informations</h1><br /><br />
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="form-group">
+        {{ form.to_email.errors }}
+        <label for="{{ form.to_email.id_for_label }}">Email :</label>
+          {{ form.to_email }}
+        </div>
+    </div>
+    <div class="form-group">
+        {{ form.subject.errors }}
+        <label for="{{ form.subject.id_for_label }}">Intitulé :</label><br />
+        {{ form.subject }}
+    </div>
+    <div class="form-group">
+        {{ form.message.errors }}
+        <label for="{{ form.message.id_for_label }}"> Message:</label><br />
+        {{ form.message }}
+        <div class="form-actions">
+          <button class="btn btn-primary" type="submit">Envoyer</button>
+        </div>
+    </div>
+</form>
+

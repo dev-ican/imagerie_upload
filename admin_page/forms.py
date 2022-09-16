@@ -1,4 +1,5 @@
 # from datetime import date
+# from zipfile import _ClosableZipStream
 from django import forms
 from django.contrib.auth.models import User
 from django.core.validators import *
@@ -221,7 +222,6 @@ class FormSelectionEtudeEtape(forms.Form):
         choice_etude.append((etude.id, etude.nom))
 
     centres = RefInfoCentre.objects.all().order_by("numero")
-    print(centres)
     choice_centre = []
     for centre in centres:
         centre_nom_num = f"{centre.numero}_{centre.nom}"
@@ -260,3 +260,12 @@ class FormSelectionEtudeURC(forms.Form):
                                     choices=choice_centre,
                                     initial="5",
                                     )
+
+
+class FormEnvoiMail(forms.Form):
+    """Formulaire permettant l'ouverture d'une fenêtre d'envoi de mail lors d'une demande d'information"""
+
+    to_email = forms.EmailField(required=True)
+    subject = forms.CharField(widget=forms.TextInput(attrs={'size': 60}), required=True)
+    message = forms.CharField(widget=forms.Textarea(attrs={'rows': 10, 'cols':60}), required=True, 
+                                    initial="\n\n\n\n\nCeci est un email automatique, veuillez ne pas répondre.")
