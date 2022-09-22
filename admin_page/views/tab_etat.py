@@ -8,9 +8,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.core.mail import send_mail, BadHeaderError
-from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
+import win32com.client as win32
+import pythoncom
 
 from upload.models import RefEtapeEtude, SuiviUpload, RefInfoCentre, RefEtudes
 from ..forms import FormSelectionEtudeEtape, FormSelectionEtudeURC, FormEnvoiMail
@@ -20,7 +20,6 @@ from .module_views import (
     info_upload,
     centres_etude_selectionnee,
     gestion_etape,
-    # gestion_etude_selectionnee,
     infos_etats_etape,
     nom_etape,
 )
@@ -31,7 +30,7 @@ from .module_views import (
 # --------------------------------------------------------------------------------------
 
 @login_required(login_url="/auth/auth_in/")
-def admin_up(request, etude_id="4", centre_id="1"):
+def admin_up(request, etude_id, centre_id):
     """Affiche la page du tableau gérant les différents états des étapes d'une étude."""
 
     resultat = []
@@ -103,12 +102,21 @@ def admin_up(request, etude_id="4", centre_id="1"):
 
             except ObjectDoesNotExist:
                 dossiers = ""
+            
+            return render(request, "admin_page_upload.html",{"resultat": resultat,
+                                                    "nbr_noms_etape": nbr_noms_etape,
+                                                    "nbr_entree": nbr_entree,
+                                                    "form": form,
+                                                    "centre_id": centre_choisi_id,
+                                                    "etude_id": etude_choisie_id 
+                                                    })
 
     else:
         form = FormSelectionEtudeEtape()
         resultat = None
         nbr_entree = None
-
+        centre_choisi_id = centre_id
+        etude_choisie_id = etude_id
 
     # Enregistrement du log-----------------------------
     nom_documentaire = "Affiche le tableau des études en cours"
@@ -117,9 +125,11 @@ def admin_up(request, etude_id="4", centre_id="1"):
     # V1_ADMIN_DATA_TAB.html > Nom de la template HTML pour la version V1
   
     return render(request, "admin_page_upload.html",{"resultat": resultat,
-                                                    "nbr_noms_etape": nbr_noms_etape,
-                                                    "nbr_entree": nbr_entree,
+                                                    # "nbr_noms_etape": nbr_noms_etape,
+                                                    # "nbr_entree": nbr_entree,
                                                     "form": form,
+                                                    "centre_id": centre_choisi_id,
+                                                    "etude_id": etude_choisie_id 
                                                     })
 
 
@@ -180,44 +190,22 @@ def aff_dossier(request, id_suivi):
         {"resultat": tab_list, "tab_dossier": info_dossier},
     )
 
+
+@login_required(login_url="/auth/auth_in/")
 def demande_info(request, suivi_upload):
 
     suivi_upload = SuiviUpload.objects.get(id=suivi_upload)
     uploadeur = User.objects.get(id=suivi_upload.user_id)
 
-    if request.method == 'POST':
-        initial_dict = {"subject" : f"Demande d'informations sur votre envoi {suivi_upload.id_patient}",
-                        "to_email": uploadeur.email
-                        }   
-        form = FormEnvoiMail(request.POST or None, initial=initial_dict)
+    pythoncom.CoInitialize()
+    olApp = win32.Dispatch('Outlook.Application')
+    olNS = olApp.GetNameSpace('MAPI')
 
-        if form.is_valid():
-            subject = form.cleaned_data["subject"]
-            to_email = form.cleaned_data["to_email"]
-            message = form.cleaned_data['message']
-            try:
-                send_mail(subject, message, "si_ican@ihuican.onmicrosoft.com", [to_email],)
-            except BadHeaderError:
-                return HttpResponse("Invalid header found.")
-            return redirect("send_mail_success")
+    mailItem = olApp.CreateItem(0)
+    mailItem.Subject = f"ICAN - UPLOAD - Demande d'informations sur votre envoi {suivi_upload.id_patient}"
+    mailItem.BodyFormat = 1
+    mailItem.To = f'<{uploadeur.email}>'
+    mailItem.Sensitivity  = 2
+    mailItem.Display()
 
-
-    # if request.method == "GET":
-        initial_dict = {
-        "subject" : f"Demande d'informations sur votre envoi {suivi_upload.id_patient}",
-        "to_email": uploadeur.email,
-        # "message": f"Ceci est un email automatique, veuillez ne pas répondre. Utilisez cette adresse : {utilisateur_connecte.email} pour tous renseignements complémentaires"
-        }   
-        form = FormEnvoiMail(request.POST or None, initial=initial_dict)
-
-    else:
-        initial_dict = {"subject" : f"Demande d'informations sur votre envoi {suivi_upload.id_patient}",
-                        "to_email": uploadeur.email
-                        }   
-        form = FormEnvoiMail(request.POST or None, initial=initial_dict)
-
-    return render(request, "envoi_mail.html", {"form": form})
-
-
-def demande_info_success(request):
-    return HttpResponse("Votre demande d'information a bien été envoyé")
+    return redirect(request.META['HTTP_REFERER'])

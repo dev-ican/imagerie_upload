@@ -11,7 +11,7 @@
     </div>
   <br/>
   </div>
-      <form action="" method="post">
+      <form action="{% url 'admin_upload' etude_id=etude_id centre_id=centre_id %}" method="post">
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="Envoyer">
@@ -47,7 +47,7 @@
         {% else %}
           <td name="{{ item.date_examen }}">{{ item.date_examen|date:"Y-m-d" }}</td>
           <td>
-            <a href="" onclick="window.open('{% url 'demande_info' suivi_upload=item.suivi_upload_id  %}', 'newwindow', 'width=600, height=600'); return false;" id="demande_info" class="btn btn-secondary btn-sm">Demande d'informations</a>
+            <a href="{% url 'demande_info' suivi_upload=item.suivi_upload_id %}" class="btn btn-secondary btn-sm">Demande d'informations</a>
           </td>
         </td>
         {% for etape in item.etape_etude %}
