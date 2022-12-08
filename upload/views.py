@@ -139,13 +139,13 @@ def formulaire(request):
                 # Si le fichier chargé est une archive alors décompréssé
                 # MODIF 23112021 : Le fichier est décompréssé dans un dossier images hébergé dans Data
                 # Medis doit aller chercher les nouveaux patient ainsi décompréssé dans ce dossier
-                if name_file.find(".zip") != -1:
-                    zipfile_save = zipfile.ZipFile(create_suivi.fichiers.path, mode="r")
-                    path_save = "/images_medis/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
-                    path = str(path_save) + "/" + str(create_suivi.id_patient)
-                    os.makedirs(path)
-                    zipfile_save.extractall(path)
-                    zipfile_save.close()
+                # if name_file.find(".zip") != -1:
+                #     zipfile_save = zipfile.ZipFile(create_suivi.fichiers.path, mode="r")
+                #     path_save = "/images_medis/" #os.getcwd() + "\data\images\\" + create_suivi.etude.etude.nom
+                #     path = str(path_save) + "/" + str(create_suivi.id_patient)
+                #     os.makedirs(path)
+                #     zipfile_save.extractall(path)
+                #     zipfile_save.close()
                     #if os.path.exists(create_suivi.fichiers.path):
                     #os.remove(create_suivi.fichiers.path)
                     
