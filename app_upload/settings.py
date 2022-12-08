@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'webstack_django_sorting',
     'django_filters',
     'django_extensions',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -176,3 +177,7 @@ STATICFILES_DIRS = (
 # MEDIA Django
 MEDIA_URL = '/data/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "data/")
+
+RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
+RECAPTCHA_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']

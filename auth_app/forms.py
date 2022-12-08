@@ -1,8 +1,6 @@
 from django import forms
-from django.core.validators import *
-from django.http import *
-
-from .models import *
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 
 
 class LogIn(forms.Form):
